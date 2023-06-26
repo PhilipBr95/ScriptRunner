@@ -1,0 +1,110 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Scripts";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<br />
+
+
+<form method="post" action="/Script" id="form">
+@Html.AntiForgeryToken()
+
+<div class="container">
+    <div class="row withGap">
+        <div class="col-1">
+            <label>System</label>
+        </div>
+        <div class="col-lg">
+            <select id="systems" class="dropdown"></select>
+        </div>
+    </div>
+    <div class="row withGap">
+        <div class="col-1">
+            <label>Script</label>
+        </div>
+        <div class="col-lg">
+            <select id="scripts" class="dropdown"></select>
+        </div>
+    </div>
+    <div class="row withGap">
+        <div class="col-1">
+            <label>Description</label>
+        </div>
+        <div class="col-lg">
+            <label id="description"></label>
+        </div>
+    </div>
+    <div class="row withGap">
+        <div class="col-1">
+            <label>Tags</label>
+        </div>
+        <div class="col-lg">
+            <label id="tags"></label>
+        </div>
+    </div>
+    <div class="row withGap">
+        <div class="col-1">
+            <label>Version</label>
+        </div>
+        <div class="col-lg">
+            <label id="version"></label>
+        </div>
+    </div>
+    <div class="row withGap">
+        <div class="col-1">
+            <label>Params</label>
+        </div>
+        <div class="col-lg">
+            <div id="Params">
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row withGap">
+        <div class="col-1">            
+        </div>
+        <div class="col-lg">
+            <div>
+                <input id="execute" type="button" value="Execute" class="hidden" />
+                <a href="todo" id="copyScript" class="hidden padded">Copy Script</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="paramTemplate" style="visibility:hidden">
+        <div class="row withGap">
+            <div class="col-1">
+                <label>{Name}</label>
+            </div>
+            <div class="col-lg">
+                <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="valueinputs" {required} />
+            </div>
+        </div>
+    </div>
+
+    <hr width="50%" style="margin: auto;margin-bottom:30px" />
+
+    <div id="results" class="row withGap hidden">
+        <div class="col-1">
+            <label>Results</label>
+        </div>
+        <div class="col-lg" id="resultsTables">
+        </div>
+    </div>
+</div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/js/runner.js" asp-append-version="true"></script>
+
+    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
+
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.min.css" rel="stylesheet" />
+}
+

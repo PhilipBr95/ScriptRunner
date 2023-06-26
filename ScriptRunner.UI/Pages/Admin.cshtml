@@ -1,0 +1,80 @@
+﻿@page
+@model AdminModel
+@{
+    ViewData["Title"] = "Script Admin";
+}
+<h1>@ViewData["Title"]</h1>
+
+<br />
+
+<form method="post" action="/Admin" id="form">
+@Html.AntiForgeryToken()
+
+    <div class="container">
+        <div class="row withGap">
+            <div class="col-1 label">
+                <label>Local NugetFolder</label>
+            </div>
+            <div class="col-lg">
+                <label>@Model.NugetFolder</label>
+            </div>
+        </div>
+        <div class="row withGap">
+                <div class="col-1 label">
+                <label>Local ScriptFolder</label>
+            </div>
+            <div class="col-lg">
+                <label>@Model.ScriptFolder</label>
+            </div>
+        </div>
+        <div class="row withGap">
+                <div class="col-1 label">
+                <label>Remote Git Repo</label>
+            </div>
+            <div class="col-lg">
+                <label>@Model.GitRepo</label>
+            </div>
+        </div>
+        <div class="row withGap">
+                <div class="col-1 label">
+                <label>Git Repo Tags</label>
+            </div>
+            <div class="col-lg">
+                <label>@Model.Tags</label>
+            </div>
+        </div>
+        <br />
+        <div class="row withGap">
+                <div class="col-1 label">
+                <label>Local Scripts</label>
+            </div>
+            <div class="col-lg tableDiv">
+                <table id='scripts' class="display" style="width:100%">
+                </table>
+            </div>
+        </div>
+        <br />
+        <div class="row withGap">
+            <div class="col-1 label">
+                <label></label>
+            </div>
+            <div class="col-lg">                
+                <input id="reload" type="submit" value="Reload local scripts" asp-page-handler="Reload" />
+                <input id="sync" type="submit" value="Sync with remote Git repo" asp-page-handler="Sync" class="padded" />
+            </div>
+        </div>
+
+    </div>
+</form>
+
+
+@section Scripts {
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+        
+    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
+
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.min.css" rel="stylesheet" />
+}

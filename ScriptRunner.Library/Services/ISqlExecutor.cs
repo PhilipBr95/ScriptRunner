@@ -5,6 +5,6 @@ namespace ScriptRunner.Library.Services
 {
     public interface ISqlExecutor
     {
-        Task<PackageResults> ExecuteAsync(SqlScript sqlScript, Param[] @params);
+        Task<ScriptResults> ExecuteAsync(SqlScript sqlScript, Param[] @params);
     }
 }

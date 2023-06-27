@@ -21,7 +21,7 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<PackageResults>> ExecuteAsync(Package package, string actionedBy)
+        public async Task<PackageResult> ExecuteAsync(Package package, string actionedBy)
         {
             string scriptFilename = string.Empty;
 
@@ -36,22 +36,22 @@ namespace ScriptRunner.Library.Services
                     ActionedBy = actionedBy 
                 });
 
-                var results = new List<PackageResults>();
+                var scriptResults = new List<ScriptResults>();
 
                 foreach (var script in package.Scripts)
                 {
                     switch (script)
                     {
                         case SqlScript sqlScript:
-                            results.Add(await _sqlRunner.ExecuteAsync(sqlScript, package.Params));
+                            scriptResults.Add(await _sqlRunner.ExecuteAsync(sqlScript, package.Params));
                             break;
                         case PowershellScript powershellScript:
-                            results.Add(await _powerShellRunner.ExecuteAsync(powershellScript, package.Params));
+                            scriptResults.Add(await _powerShellRunner.ExecuteAsync(powershellScript, package.Params));
                             break;
                     }
                 }
 
-                return results;
+                return new PackageResult { ScriptResults = scriptResults };
             }
             catch(Exception ex)
             {

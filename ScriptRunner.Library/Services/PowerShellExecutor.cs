@@ -5,7 +5,7 @@ namespace ScriptRunner.Library.Services
 {
     public class PowerShellExecutor : IPowerShellExecutor
     {               
-        public async Task<PackageResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params)
+        public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params)
         {
             throw new NotImplementedException();
         }

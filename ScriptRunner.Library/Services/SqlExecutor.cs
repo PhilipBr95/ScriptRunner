@@ -19,7 +19,7 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
-        public async Task<PackageResults> ExecuteAsync(SqlScript sqlScript, Param[] @params)
+        public async Task<ScriptResults> ExecuteAsync(SqlScript sqlScript, Param[] @params)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace ScriptRunner.Library.Services
                     results.Add(dataTable);
                 }
 
-                return new PackageResults { DataTables = results, Messages = messages };
+                return new ScriptResults { DataTables = results, Messages = messages };
             }
             catch(Exception ex)
             {

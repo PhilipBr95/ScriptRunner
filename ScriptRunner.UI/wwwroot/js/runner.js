@@ -134,11 +134,11 @@ function updateParamValues() {
     });
 }
 
-function showResults(results) {
+function showResults(packageResult) {
     $('#results').removeClass('hidden');
     $('#resultsTables').html('');
 
-    results.forEach(function (obj, x) {
+    packageResult.scriptResults.forEach(function (obj, x) {
         if (obj.messages != null) {
             let id = `resultsMessage${x}`
             $('#resultsTables').append(`<label id='${id}' class="display" style="width:100%">${obj.messages}</label>`);

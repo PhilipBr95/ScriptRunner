@@ -2,10 +2,11 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using ScriptRunner.Library.Extensions;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
-using ScriptRunner.UI.Fakes;
+using ScriptRunner.UI.Services;
 
 namespace ScriptRunner.UI
 {
@@ -29,17 +30,22 @@ namespace ScriptRunner.UI
                 options.SingleLine = true;
                 options.TimestampFormat = "HH:mm:ss ";
             });
+            builder.Logging.AddMemoryLogger();
 
             // Add services to the container.
             builder.Services.AddRazorPages();
 
             //builder.Services.AddOptions<RepoSettings>();
             builder.Services.Configure<RepoSettings>(builder.Configuration.GetSection(nameof(RepoSettings)));
-
             builder.Services.AddTransient<INugetRepo, NugetRepo>();
             builder.Services.AddTransient<IScriptRepo, ScriptRepo>();
 
-            builder.Services.AddTransient<ITransactionService, FakeTransactionService>();
+            builder.Services.Configure<HistorySettings>(builder.Configuration.GetSection(nameof(HistorySettings)));
+            builder.Services.AddTransient<IHistoryService, HistoryService>();
+            builder.Services.AddTransient<IHistoryRepo, JsonHistoryRepo>();
+
+            builder.Services.AddTransient<ITransactionService, LoggerTransactionService>();
+
             builder.Services.AddTransient<IPackageRetriever, PackageRetriever>();
             builder.Services.AddTransient<IPackageExecutor, PackageExecutor>();
             builder.Services.AddTransient<ISqlExecutor, SqlExecutor>();

@@ -1,4 +1,4 @@
-﻿$.ajax({ url: "/Script", type: 'GET', contentType: 'application/json' }).done(function (response) {
+﻿$.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
 
     $('#scripts').DataTable({

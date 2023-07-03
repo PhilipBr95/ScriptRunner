@@ -6,7 +6,7 @@ using ScriptRunner.Library.Services;
 namespace ScriptRunner.UI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ScriptController : Controller
     {
         private readonly IPackageRetriever _scriptRetriever;

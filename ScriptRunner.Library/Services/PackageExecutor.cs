@@ -10,32 +10,29 @@ namespace ScriptRunner.Library.Services
     {
         private readonly ISqlExecutor _sqlRunner;
         private readonly IPowerShellExecutor _powerShellRunner;
-        private readonly ITransactionService _transaction;
+        private readonly ITransactionService _transactionService;
+        private readonly IHistoryService _historyService;
         private readonly ILogger<IPackageExecutor> _logger;
 
-        public PackageExecutor(ISqlExecutor sqlRunner, IPowerShellExecutor powerShellRunner, ITransactionService transaction, ILogger<IPackageExecutor> logger)
+        public PackageExecutor(ISqlExecutor sqlRunner, IPowerShellExecutor powerShellRunner, ITransactionService transactionService, 
+                                IHistoryService historyService, ILogger<IPackageExecutor> logger)
         {
             _sqlRunner = sqlRunner;
             _powerShellRunner = powerShellRunner;
-            _transaction = transaction;
+            _transactionService = transactionService;
+            _historyService = historyService;
             _logger = logger;
         }
 
         public async Task<PackageResult> ExecuteAsync(Package package, string actionedBy)
         {
             string scriptFilename = string.Empty;
+            bool success = true;
 
             try
             {
                 _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");
-
-                _transaction.LogActivity(new Activity<Param[]> { 
-                    System = package.System, 
-                    Description = $"{package.Title} ({package.UniqueId})", 
-                    Data = package.Params, 
-                    ActionedBy = actionedBy 
-                });
-
+                                
                 var scriptResults = new List<ScriptResults>();
 
                 foreach (var script in package.Scripts)
@@ -53,11 +50,41 @@ namespace ScriptRunner.Library.Services
 
                 return new PackageResult { ScriptResults = scriptResults };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger?.LogError(ex, $"Unknown error running {package.UniqueId} - {scriptFilename} with Params: {JsonConvert.SerializeObject(package.Params)}");
+                success = false;
+
                 throw;
             }
+            finally
+            {
+                await LogHistory(package, actionedBy, success);
+            }
+        }
+
+        private async Task LogHistory(Package package, string actionedBy, bool success)
+        {
+            var historyActivity = new Activity<Package>
+            {
+                System = package.System,
+                Description = $"{package.Title} ({package.UniqueId})",
+                Data = package,
+                ActionedBy = actionedBy,
+                Success = success
+            };
+
+            await _historyService.LogActivityAsync(historyActivity);
+
+            var activity = new Activity<Param[]>
+            {
+                System = package.System,
+                Description = $"{package.Title} ({package.UniqueId})",
+                Data = package.Params,
+                ActionedBy = actionedBy
+            };
+
+            await _transactionService.LogActivityAsync(activity);
         }
     }
 }

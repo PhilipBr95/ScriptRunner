@@ -1,0 +1,22 @@
+﻿@page
+@model LogModel
+@{
+    ViewData["Title"] = "Script Logs";
+}
+<h1>@ViewData["Title"]</h1>
+
+<br />
+
+<table id='logs' class="display" style="width:100%">
+</table>
+
+@section Scripts {
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/js/logs.js" asp-append-version="true"></script>
+
+    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
+
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.min.css" rel="stylesheet" />
+}

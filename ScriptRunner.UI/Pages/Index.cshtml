@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Scripts";
+    ViewData["Title"] = "Script Execution";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -9,7 +9,7 @@
 <br />
 
 
-<form method="post" action="/Script" id="form">
+<form method="post" action="/api/Script" id="form">
 @Html.AntiForgeryToken()
 
 <div class="container">
@@ -91,7 +91,7 @@
         <div class="col-1">
             <label>Results</label>
         </div>
-        <div class="col-lg" id="resultsTables">
+            <div class="col-lg tableDiv" id="resultsTables">
         </div>
     </div>
 </div>

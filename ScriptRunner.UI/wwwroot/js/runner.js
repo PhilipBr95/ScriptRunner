@@ -1,7 +1,7 @@
 ﻿var scripts;
 var selectedScript;
 
-$.ajax({ url: "/Script", type: 'GET', contentType: 'application/json' }).done(function (response) {
+$.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
 
     let systems = [... new Set(scripts.map(obj => obj.system))];
@@ -139,7 +139,7 @@ function showResults(packageResult) {
     $('#resultsTables').html('');
 
     packageResult.scriptResults.forEach(function (obj, x) {
-        if (obj.messages != null) {
+        if (obj.messages != null && obj.messages.length > 0) {
             let id = `resultsMessage${x}`
             $('#resultsTables').append(`<label id='${id}' class="display" style="width:100%">${obj.messages}</label>`);
         }
@@ -184,7 +184,7 @@ $('#execute').on("click", function (e) {
 
     var jsonData = JSON.stringify(selectedScript);
     $.ajax({
-        url: "/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
+        url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
     }).done(function (response) {
         showResults(response);
     }).fail(function (jqXHR, textStatus, errorThrown) {

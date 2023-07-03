@@ -1,0 +1,26 @@
+﻿@page
+@model HistoryModel
+@{
+    ViewData["Title"] = "Script History";
+}
+<h1>@ViewData["Title"]</h1>
+
+<br />
+
+<form method="post" action="/History" id="form">
+@Html.AntiForgeryToken()
+
+    <table id='history' class="display" style="width:100%">
+    </table>
+</form>
+
+@section Scripts {
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/js/history.js" asp-append-version="true"></script>
+
+    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
+    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
+
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-dt/css/jquery.datatables.min.css" rel="stylesheet" />
+}

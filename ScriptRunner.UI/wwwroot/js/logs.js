@@ -9,9 +9,9 @@ $(document).ready(function () {
             { "data": "logLevel", "title": "LogLevel" },
             { "data": "message", "title": "Message" },
             {
-                "data": "createdDate", "title": "Created Date", render: function (data, type, row) {
+                "data": "createdDate", "title": "Created Date", "type": "date", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);
-                    return dt.format('DD/MM/YYYY hh:mm:ss');
+                    return dt.format('DD/MM/YYYY HH:mm:ss');
                 }
 
             }

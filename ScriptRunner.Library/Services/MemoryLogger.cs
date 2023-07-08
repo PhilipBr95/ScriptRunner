@@ -21,7 +21,12 @@ namespace ScriptRunner.Library.Services
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            _messages.Enqueue(new MemoryLog { LogLevel = logLevel, CategoryName = _categoryName, Message = formatter(state, exception), CreatedDate = DateTime.Now });
+            string message = formatter(state, exception);
+
+            if (exception != null)
+                message += Environment.NewLine + exception.ToString();
+
+            _messages.Enqueue(new MemoryLog { LogLevel = logLevel, CategoryName = _categoryName, Message = message, CreatedDate = DateTime.Now });
         }
     }
 }

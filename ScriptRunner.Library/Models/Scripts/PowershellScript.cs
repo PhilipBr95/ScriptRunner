@@ -1,6 +1,6 @@
 ﻿namespace ScriptRunner.Library.Models.Scripts
 {
-    public class PowershellScript : BaseScript
+    public class PowershellScript : SimpleScript
     {
     }
 }

@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
+using ScriptRunner.UI.Services;
+using System.Text.RegularExpressions;
 
-namespace ScriptRunner.UI.Services
+namespace ScriptRunner.Library.Repos
 {
     public class JsonHistoryRepo : IHistoryRepo
     {
@@ -23,12 +26,9 @@ namespace ScriptRunner.UI.Services
             {
                 await _repoLock.WaitAsync();
 
+                BackupRepo();
+
                 var json = JsonConvert.SerializeObject(activities, Formatting.Indented);
-
-                //Back it up
-                if (File.Exists(_historySettings.Filename))
-                    File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);
-
                 await File.WriteAllTextAsync(_historySettings.Filename, json);
             }
             catch (Exception ex)
@@ -39,6 +39,32 @@ namespace ScriptRunner.UI.Services
             finally
             {
                 _repoLock.Release();
+            }
+        }
+
+        private void BackupRepo()
+        {
+            if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
+            {
+                //Create a daily backup
+                var regex = new Regex("^.*{([\\w]+)}");
+                var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
+
+                if (File.Exists(dailyBackup) == false)
+                {
+                    //Back it up
+                    File.Copy(_historySettings.Filename, dailyBackup, true);
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(_historySettings.Filename) == false)
+            {
+                if (File.Exists(_historySettings.Filename))
+                {
+                    //Back it up
+                    if (File.Exists(_historySettings.Filename))
+                        File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);
+                }
             }
         }
 

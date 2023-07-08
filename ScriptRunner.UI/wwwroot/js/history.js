@@ -43,7 +43,7 @@ $(document).ready(function () {
             {
                 "data": "createdDate", "title": "Created Date", "type": "date", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);
-                    return dt.format('DD/MM/YYYY hh:mm');
+                    return dt.format('DD/MM/YYYY HH:mm:ss');
                 }
 
             },

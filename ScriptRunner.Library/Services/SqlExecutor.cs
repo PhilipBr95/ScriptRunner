@@ -24,14 +24,10 @@ namespace ScriptRunner.Library.Services
             try
             {
                 var results = new List<DataTable>();
-                var messages = string.Empty;
+                var messages = new List<string>();
 
                 using var conn = new SqlConnection(sqlScript.ConnectionString);
-
-                conn.InfoMessage += (sender, e) =>
-                {
-                    messages += e.Message;
-                };
+                conn.InfoMessage += (sender, e) => messages.Add(e.Message);
 
                 await conn.OpenAsync();
                 var sql = TagHelper.PopulateTags(sqlScript.Script, @params);

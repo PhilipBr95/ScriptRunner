@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Script Execution";
+    ViewData["Title"] = "Execute Script";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -87,11 +87,21 @@
 
     <hr width="50%" style="margin: auto;margin-bottom:30px" />
 
-    <div id="results" class="row withGap hidden">
-        <div class="col-1">
-            <label>Results</label>
-        </div>
+    <div id="results" class="hidden">
+        <div class="row withGap">
+            <div class="col-1">
+                <label>Results</label>
+            </div>
             <div class="col-lg tableDiv" id="resultsTables">
+            </div>
+        </div>
+
+        <div class="row withBigGap">
+            <div class="col-1">
+                <label>Messages</label>
+            </div>
+            <div class="col-lg" id="resultsMessages">
+            </div>
         </div>
     </div>
 </div>

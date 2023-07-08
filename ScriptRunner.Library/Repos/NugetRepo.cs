@@ -110,7 +110,7 @@ namespace ScriptRunner.Library.Repos
             nugetPackage.Version = nuspec.GetVersion().OriginalVersion;
             nugetPackage.CreationTime = new FileInfo(filename).CreationTime;
 
-            var scripts = new List<BaseScript>();
+            var scripts = new List<SimpleScript>();
 
             foreach(var file in nugetPackage.Files)
             {
@@ -137,7 +137,7 @@ namespace ScriptRunner.Library.Repos
             return reader.ReadToEnd();
         }
 
-        private static BaseScript StreamToScript(string filename, Stream stream)
+        private static SimpleScript StreamToScript(string filename, Stream stream)
         {
             var text = StreamToString(stream);
 

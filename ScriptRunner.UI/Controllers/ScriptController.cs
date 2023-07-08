@@ -31,7 +31,7 @@ namespace ScriptRunner.UI.Controllers
             }
             catch(Exception ex)
             {
-                _logger?.LogError(ex, "");
+                _logger?.LogError(ex, "Unknown error");
                 return Json(null);
             }
         }
@@ -40,13 +40,21 @@ namespace ScriptRunner.UI.Controllers
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> RunScript(Package script)
         {
-            //Play it safe and get the Script again :-)
-            var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
-            repoScript.PopulateParams(script);
-            
-            var currentUser = HttpContext.User.Identity.Name;
-            var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
-            return Ok(result);
+            try
+            {
+                //Play it safe and get the Script again :-)
+                var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
+                repoScript.PopulateParams(script);
+
+                var currentUser = HttpContext.User.Identity.Name;
+                var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                _logger?.LogError(ex, $"Unknown error with {script.UniqueId}");
+                throw;
+            }
         }
     }
 }

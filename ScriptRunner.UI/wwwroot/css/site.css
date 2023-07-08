@@ -31,10 +31,14 @@ body {
 
 .hidden {
     visibility: hidden;
+    display: none;
 }
 
 .withGap {
     margin-top: 2px
+}
+.withBigGap {
+    margin-top: 8px
 }
 
 .tableDiv {

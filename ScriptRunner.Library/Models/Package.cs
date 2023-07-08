@@ -8,7 +8,7 @@ namespace ScriptRunner.Library.Models
     {
         public string System { get; set; }
         public string Description { get; set; }
-        public IEnumerable<BaseScript> Scripts { get; set; }
+        public IEnumerable<SimpleScript> Scripts { get; set; }
         public IEnumerable<string> Tags { get; set; }
         public string Title { get; set; }
         public string Id { get; set; }

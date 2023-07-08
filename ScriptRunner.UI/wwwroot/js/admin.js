@@ -9,12 +9,16 @@
         columns: [
             { "data": "system", "title": "System" },
             { "data": "title", "title": "Title" },
-            { "data": "id", "title": "Id" },
+            {
+                "data": "id", "title": "Id", render: function (data, type, row) {                    
+                    return `<a href='/?ScriptId=${data}'>${data}</a>`;
+                }
+            },
             { "data": "version", "title": "Version" },
             {
-                "data": "creationTime", "title": "Created Date", render: function (data, type, row) {
+                "data": "creationTime", "title": "Created Date", "type": "date", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);
-                    return dt.format('DD/MM/YYYY hh:mm');
+                    return dt.format('DD/MM/YYYY HH:mm:ss');
                 }
             }
         ]

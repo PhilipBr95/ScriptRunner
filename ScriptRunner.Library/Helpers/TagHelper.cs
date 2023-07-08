@@ -1,4 +1,5 @@
-﻿using ScriptRunner.Library.Models;
+﻿
+using ScriptRunner.Library.Models;
 using System.Text.RegularExpressions;
 
 namespace ScriptRunner.Library.Helpers
@@ -7,8 +8,13 @@ namespace ScriptRunner.Library.Helpers
     {
         public static string PopulateTags(string scriptText, IEnumerable<Param> @params)
         {
-            var regex = new Regex(@"{(\w+)}");
-            return regex.Replace(scriptText, (e) => e.Value.Replace(e.Groups[0].Value, @params.Single(s => s.Name == e.Groups[1].Value).Value));
+            foreach(var param in @params)
+            {
+                var regex = new Regex($"{{{param.Name}}}");
+                scriptText = regex.Replace(scriptText, param.Value);
+            }
+
+            return scriptText;
         }
     }
 }

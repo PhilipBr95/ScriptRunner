@@ -59,7 +59,7 @@ function showScriptDetails(script) {
 
         let createdDate = new moment(script.creationTime, moment.ISO_8601);
 
-        $('#version').text(`${script.version} (${createdDate.format('DD/MM/YYYY hh:mm')})`);
+        $('#version').text(`${script.version} (${createdDate.format('DD/MM/YYYY HH:mm')})`);
 
         $('#execute').removeClass('hidden');
         $('#copyScript').removeClass('hidden');
@@ -137,11 +137,24 @@ function updateParamValues() {
 function showResults(packageResult) {
     $('#results').removeClass('hidden');
     $('#resultsTables').html('');
+    $('#resultsMessages').html('');
+
+    let showMessages = false;
+    let showResults = false;
 
     packageResult.scriptResults.forEach(function (obj, x) {
         if (obj.messages != null && obj.messages.length > 0) {
             let id = `resultsMessage${x}`
-            $('#resultsTables').append(`<label id='${id}' class="display" style="width:100%">${obj.messages}</label>`);
+
+            let messages = '';
+            obj.messages.forEach(function (obj, x) {
+                messages += `<div>${obj}</div>`;
+            });
+            
+            $('#resultsMessages').append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);
+
+            $('#resultsMessages').parent().removeClass('hidden');
+            showMessages = true;
         }
 
         obj.dataTables.forEach(function (obj, y) {
@@ -149,9 +162,19 @@ function showResults(packageResult) {
             let id = `resultsTable${i}`
             $('#resultsTables').append(`<table id='${id}' class="display" style="width:100%"></table>`);
             showResultsTable(id, obj);
+
+            $('#resultsTables').parent().removeClass('hidden');
+            showResults = true;
         });
     });
-   
+
+    if (showMessages == false) {
+        $('#resultsMessages').parent().addClass('hidden');
+    }
+
+    if (showResults == false) {
+        $('#resultsTables').parent().addClass('hidden');
+    }
 }
 
 function showResultsTable(id, dataTable) {
@@ -182,12 +205,16 @@ $('#execute').on("click", function (e) {
 
     updateParamValues();
 
+    $('#execute').attr("disabled", true);
+
     var jsonData = JSON.stringify(selectedScript);
     $.ajax({
         url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
     }).done(function (response) {
         showResults(response);
+        $('#execute').attr("disabled", false);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(jqXHR.responseText);
+        $('#execute').attr("disabled", false);
     });
 });

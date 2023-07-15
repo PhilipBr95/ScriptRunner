@@ -23,24 +23,7 @@ namespace ScriptRunner.UI.Services
 
         public async Task LogActivityAsync<T>(Activity<T> activity)
         {
-            try
-            {
-                await _cacheLock.WaitAsync();
-                
-                var activities = await GetActivitiesAsync<T>();
-                activities.Add(activity);
-
-                //if(_memoryCache.TryGetValue(nameof(GetActivitiesAsync), out IList<Activity<T>> values))
-                //    values.Add(activity);
-
-                _logger.LogInformation($"Saving {activity.System} transaction");
-
-                await _historyRepo.SaveActiviesAsync(activities);
-            }
-            finally
-            {
-                _cacheLock.Release();
-            }            
+            await _historyRepo.SaveActivityAsync(activity);
         }
 
         public async Task<IList<Activity<T>>> GetActivitiesAsync<T>()

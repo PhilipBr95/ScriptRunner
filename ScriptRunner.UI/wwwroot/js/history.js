@@ -3,6 +3,9 @@
     var params = row.data.params;
     var html = '';
 
+    if (params == null)
+        return;
+
     var ss = params.forEach(function (obj, x) {
         html += `<div><dt>${obj.name}</dt><dd>${obj.value}</dd></div>`
     });
@@ -15,7 +18,7 @@ $(document).ready(function () {
     $('#history').on('requestChild.dt', function (e, row) {
         row.child(format(row.data())).show();
     })
-
+    
     var table = $('#history').DataTable({
         "rowId": 'id',
         ajax: { url: "/api/history", dataSrc: "" },
@@ -26,6 +29,10 @@ $(document).ready(function () {
                 "data": null,
                 "width": "0px", render: function (data, type, row) {
                     let url = generateUrl(data);
+
+                    if (url == null)
+                        return '';
+
                     return `<a href="${url}"><img width="16px" height="16px" src="../img/play-solid.svg" title="Execute Script" /></a>`
                 }
             },
@@ -33,15 +40,20 @@ $(document).ready(function () {
                 "className": 'details-control',
                 "orderable": false,
                 "data": null,
-                "defaultContent": '<a href="" class="showChild"><img class="showChildImg" width="16px" height="16px" src="../img/icons8-info.svg" title="View Parameters" /></a>',
-                "width": "0px"
+                "width": "0px", render: function (data, type, row) {
+
+                    if (data?.data?.params == null)
+                        return '';
+
+                    return '<a href="" class="showChild"><img class="showChildImg" width="16px" height="16px" src="../img/icons8-info.svg" title="View Parameters" /></a>'
+                }
             },
             { "data": "system", "title": "System" },
-            { "data": "description", "title": "Package" },
+            { "data": "description", "title": "Detail" },
             { "data": "success", "title": "Success" },
             { "data": "actionedBy", "title": "Actioned By" },
             {
-                "data": "createdDate", "title": "Created Date", "type": "date", render: function (data, type, row) {
+                "data": "createdDate", "title": "Created Date", "type": "datetime", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);
                     return dt.format('DD/MM/YYYY HH:mm:ss');
                 }
@@ -51,11 +63,17 @@ $(document).ready(function () {
                 "data": "extn", "visible": false,
                 "render": function (data, type, row, meta) {
 
-                    var htmlDetail = '';
-                    row.data.params.forEach(function (item) {
-                        htmlDetail += item.value + '|';
-                    });
-                    return type === 'display' ? htmlDetail : htmlDetail;
+                    if (row.data != null) {
+                        var htmlDetail = '';
+                        row.data.params.forEach(function (item) {
+                            htmlDetail += item.value + '|';
+                        });
+
+                        return type === 'display' ? htmlDetail : htmlDetail;
+                    } else {
+                        return '';
+                    }
+
                 }
             }
         ],
@@ -96,12 +114,14 @@ $(document).ready(function () {
 });
 
 function generateUrl(script) {
-    let url = `/?ScriptId=${script.data.id}`;
+    if (script.data != null) {
+        let url = `/?ScriptId=${script.data.id}`;
+    
+        script.data.params.forEach(el => {
+            let value = $(`#${el.name}`).val();
+            url += `&${el.name}=${el.value}`;
+        });
 
-    script.data.params.forEach(el => {
-        let value = $(`#${el.name}`).val();
-        url += `&${el.name}=${el.value}`;
-    });
-
-    return encodeURI(url);
+        return encodeURI(url);
+    }
 }

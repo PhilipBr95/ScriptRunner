@@ -4,6 +4,6 @@ namespace ScriptRunner.Library.Repos
 {
     public interface INugetRepo : IScriptRepo
     {
-        Task ImportScriptsAsync();
+        Task ImportScriptsAsync(string user);
     }
 }

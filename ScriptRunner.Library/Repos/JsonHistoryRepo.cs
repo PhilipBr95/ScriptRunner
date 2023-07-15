@@ -20,11 +20,15 @@ namespace ScriptRunner.Library.Repos
             _logger = logger;
         }
 
-        public async Task SaveActiviesAsync<T>(IList<Activity<T>> activities)
+        public async Task SaveActivityAsync<T>(Activity<T> activitity)
         {
             try
             {
+                var activities = await LoadActivitiesAsync<T>();
+
                 await _repoLock.WaitAsync();
+              
+                activities.Add(activitity);
 
                 BackupRepo();
 

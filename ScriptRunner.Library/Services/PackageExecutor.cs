@@ -65,7 +65,7 @@ namespace ScriptRunner.Library.Services
 
         private async Task LogHistory(Package package, string actionedBy, bool success)
         {
-            var historyActivity = new Activity<Package>
+            var activity = new Activity<Package>
             {
                 System = package.System,
                 Description = $"{package.Title} ({package.UniqueId})",
@@ -74,16 +74,7 @@ namespace ScriptRunner.Library.Services
                 Success = success
             };
 
-            await _historyService.LogActivityAsync(historyActivity);
-
-            var activity = new Activity<Param[]>
-            {
-                System = package.System,
-                Description = $"{package.Title} ({package.UniqueId})",
-                Data = package.Params,
-                ActionedBy = actionedBy
-            };
-
+            await _historyService.LogActivityAsync(activity);
             await _transactionService.LogActivityAsync(activity);
         }
     }

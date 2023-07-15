@@ -43,8 +43,10 @@ namespace ScriptRunner.Library.Services
             _scriptCache.Remove(nameof(_scriptCache));
         }
 
-        public async Task ImportPackagesAsync()
+        public async Task ImportPackagesAsync(string user)
         {
+            await _nugetRepo.ImportScriptsAsync(user);
+
             ClearPackageCache();
             await GetPackagesAsync();
         }

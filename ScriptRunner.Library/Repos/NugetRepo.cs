@@ -7,6 +7,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
+using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
 using System.IO;
 using System.Text;
@@ -15,15 +16,17 @@ namespace ScriptRunner.Library.Repos
 {
     public class NugetRepo : INugetRepo
     {
+        private readonly ITransactionService _transactionService;
         private readonly RepoSettings _repoSettings;
         private readonly ILogger<INugetRepo> _logger;
 
-        public NugetRepo(IOptions<RepoSettings> options, ILogger<INugetRepo> logger) : this(options.Value, logger)
+        public NugetRepo(ITransactionService transactionService, IOptions<RepoSettings> options, ILogger<INugetRepo> logger) : this(transactionService, options.Value, logger)
         {            
         }
 
-        public NugetRepo(RepoSettings repoSettings, ILogger<INugetRepo> logger)
+        public NugetRepo(ITransactionService transactionService, RepoSettings repoSettings, ILogger<INugetRepo> logger)
         {
+            _transactionService = transactionService;
             _repoSettings = repoSettings;
             _logger = logger;
 
@@ -44,57 +47,71 @@ namespace ScriptRunner.Library.Repos
             return parsedScripts;
         }
 
-        public async Task ImportScriptsAsync()
-        {                     
-            var packageSource = new PackageSource(_repoSettings.GitRepo);
-            var repository = Repository.Factory.GetCoreV3(packageSource);
-
-            SourceCacheContext cache = new SourceCacheContext();
-            PackageSearchResource packageSearchResource = await repository.GetResourceAsync<PackageSearchResource>();
-            FindPackageByIdResource findPackageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>();
-            SearchFilter searchFilter = new SearchFilter(includePrerelease: true);
-
-            var logger = NuGet.Common.NullLogger.Instance;
-            var cancellationToken = CancellationToken.None;
-
-            var results = (await packageSearchResource.SearchAsync(
-                "", // search string
-                searchFilter,
-                skip: 0,
-                take: _repoSettings.SearchTake,
-                logger,
-                cancellationToken)).ToList();
-
-            foreach (IPackageSearchMetadata result in results)
+        public async Task ImportScriptsAsync(string user)
+        {
+            try
             {
-                if (result.Tags.Contains(_repoSettings.Tags))
+                var packageSource = new PackageSource(_repoSettings.GitRepo);
+                var repository = Repository.Factory.GetCoreV3(packageSource);
+
+                SourceCacheContext cache = new SourceCacheContext();
+                PackageSearchResource packageSearchResource = await repository.GetResourceAsync<PackageSearchResource>();
+                FindPackageByIdResource findPackageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>();
+                SearchFilter searchFilter = new SearchFilter(includePrerelease: true);
+
+                var logger = NuGet.Common.NullLogger.Instance;
+                var cancellationToken = CancellationToken.None;
+
+                var results = (await packageSearchResource.SearchAsync(
+                    "", // search string
+                    searchFilter,
+                    skip: 0,
+                    take: _repoSettings.SearchTake,
+                    logger,
+                    cancellationToken)).ToList();
+
+                foreach (IPackageSearchMetadata result in results)
                 {
-                    _logger.LogInformation($"Found package {result.Identity.Id} {result.Identity.Version}");
-                    var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Identity.Id}.{result.Identity.Version}.nupkg");
-
-                    if (!File.Exists(filename))
+                    if (result.Tags.Contains(_repoSettings.Tags))
                     {
-                        //Wipe the old versions
-                        Directory.GetFiles(_repoSettings.NugetFolder, $"{result.Identity.Id}.*.nupkg")
-                                 .ToList()
-                                 .ForEach(fe => File.Delete(fe));
+                        _logger.LogInformation($"Found package {result.Identity.Id} {result.Identity.Version}");
+                        var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Identity.Id}.{result.Identity.Version}.nupkg");
 
-                        using var packageStream = File.OpenWrite(filename);
-                        await findPackageByIdResource.CopyNupkgToStreamAsync(
-                            result.Identity.Id, // package id
-                            result.Identity.Version,
-                            packageStream,
-                            cache,
-                            logger,
-                            cancellationToken);
+                        if (!File.Exists(filename))
+                        {
+                            //Wipe the old versions
+                            Directory.GetFiles(_repoSettings.NugetFolder, $"{result.Identity.Id}.*.nupkg")
+                                     .ToList()
+                                     .ForEach(fe => File.Delete(fe));
 
-                        _logger.LogInformation($"Downloaded {result.Identity.Id} version {result.Identity.Version} {packageStream.Length} bytes");
-                    }
-                    else
-                    {
-                        _logger.LogInformation($"Already have {result.Identity.Id} version {result.Identity.Version}");
+                            using (var packageStream = File.OpenWrite(filename))
+                            {
+                                var success = await findPackageByIdResource.CopyNupkgToStreamAsync(
+                                    result.Identity.Id, // package id
+                                    result.Identity.Version,
+                                    packageStream,
+                                    cache,
+                                    logger,
+                                    cancellationToken);
+
+                                await packageStream.FlushAsync();
+                                packageStream.Close();
+
+                                _logger.LogInformation($"Downloaded {result.Identity.Id} version {result.Identity.Version} - {success}");
+                                await _transactionService.LogActivityAsync(new Activity<Param[]> { ActionedBy = user, System = "ScriptRunner", Success = true, Description = $"Package imported - {result.Identity.Id} version {result.Identity.Version}" });
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation($"Already have {result.Identity.Id} version {result.Identity.Version}");
+                        }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                _logger?.LogError(ex, $"Unknown error retrieving packages from {_repoSettings.GitRepo}");
+                throw;
             }
         }
 
@@ -134,7 +151,10 @@ namespace ScriptRunner.Library.Repos
         private static string StreamToString(Stream stream)
         {
             using var reader = new StreamReader(stream, Encoding.UTF8);
-            return reader.ReadToEnd();
+            var json = reader.ReadToEnd();
+            reader.Close();
+
+            return json;
         }
 
         private static SimpleScript StreamToScript(string filename, Stream stream)

@@ -42,10 +42,9 @@ namespace ScriptRunner.UI
             builder.Services.AddTransient<IHistoryRepo, JsonHistoryRepo>();
 
             builder.Services.Configure<HistorySettings>(builder.Configuration.GetSection(nameof(HistorySettings)));
-            builder.Services.AddTransient<IHistoryService, HistoryService>();            
+            builder.Services.AddTransient<IHistoryService, HistoryService>();
 
-            builder.Services.AddTransient<ITransactionService, LoggerTransactionService>();
-
+            builder.Services.AddTransient<ITransactionService, TransactionService>();
             builder.Services.AddTransient<IPackageRetriever, PackageRetriever>();
             builder.Services.AddTransient<IPackageExecutor, PackageExecutor>();
             builder.Services.AddTransient<ISqlExecutor, SqlExecutor>();

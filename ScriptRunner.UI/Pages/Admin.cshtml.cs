@@ -29,11 +29,17 @@ namespace ScriptRunner.UI.Pages
 
         public void OnPostReload()
         {
+            var currentUser = HttpContext.User.Identity.Name;
+            _logger?.LogInformation($"{currentUser} - Refreshing InMemory Package Cache");
+            
             _scriptRetriever.ClearPackageCache();
         }
         public async Task OnPostSyncAsync()
         {
-            await _scriptRetriever.ImportPackagesAsync();
+            var currentUser = HttpContext.User.Identity.Name;
+            _logger?.LogInformation($"{currentUser} - Importing Packages");
+
+            await _scriptRetriever.ImportPackagesAsync(currentUser);
         }
     }
 }

@@ -57,9 +57,9 @@ function showScriptDetails(script) {
         $('#description').text(script.description);
         $('#tags').text(script.tags);
 
-        let createdDate = new moment(script.creationTime, moment.ISO_8601);
+        let importedDate = new moment(script.importedDate, moment.ISO_8601);
 
-        $('#version').text(`${script.version} (${createdDate.format('DD/MM/YYYY HH:mm')})`);
+        $('#version').text(`${script.version} (${importedDate.format('DD/MM/YYYY HH:mm')})`);
 
         $('#execute').removeClass('hidden');
         $('#copyScript').removeClass('hidden');
@@ -206,6 +206,7 @@ $('#execute').on("click", function (e) {
     updateParamValues();
 
     $('#execute').attr("disabled", true);
+    $('*').css('cursor', 'wait');
 
     var jsonData = JSON.stringify(selectedScript);
     $.ajax({
@@ -216,5 +217,7 @@ $('#execute').on("click", function (e) {
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(jqXHR.responseText);
         $('#execute').attr("disabled", false);
+    }).always(function () {
+        $('*').css('cursor', '');
     });
 });

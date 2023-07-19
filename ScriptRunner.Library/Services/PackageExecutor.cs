@@ -29,8 +29,11 @@ namespace ScriptRunner.Library.Services
             string scriptFilename = string.Empty;
             bool success = true;
 
+            if (string.IsNullOrWhiteSpace(actionedBy))
+                throw new Exception($"Unknown user running {package.UniqueId}");
+
             try
-            {
+            {                
                 _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");
                                 
                 var scriptResults = new List<ScriptResults>();

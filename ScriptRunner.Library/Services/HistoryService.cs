@@ -8,15 +8,13 @@ namespace ScriptRunner.UI.Services
 {
     public class HistoryService : IHistoryService
     {
-        private readonly IMemoryCache _memoryCache;
         private readonly IHistoryRepo _historyRepo;
         private readonly ILogger<IHistoryService> _logger;
 
         private readonly SemaphoreSlim _cacheLock = new SemaphoreSlim(1);
 
-        public HistoryService(IMemoryCache memoryCache, IHistoryRepo historyRepo, ILogger<IHistoryService> logger)
-        {
-            _memoryCache = memoryCache;
+        public HistoryService(IHistoryRepo historyRepo, ILogger<IHistoryService> logger)
+        {            
             _historyRepo = historyRepo;
             _logger = logger;
         }
@@ -28,10 +26,7 @@ namespace ScriptRunner.UI.Services
 
         public async Task<IList<Activity<T>>> GetActivitiesAsync<T>()
         {
-            return await _memoryCache.GetOrCreateAsync(nameof(GetActivitiesAsync), async (cacheEntry) =>
-            {
-                return await _historyRepo.LoadActivitiesAsync<T>();
-            });
+            return await _historyRepo.LoadActivitiesAsync<T>();            
         }
     }
 }

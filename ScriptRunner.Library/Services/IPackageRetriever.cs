@@ -7,6 +7,6 @@ namespace ScriptRunner.Library.Services
         Task<IEnumerable<Package>> GetPackagesAsync();
         Task<Package> GetPackageAsync(string packageId, string version);
         void ClearPackageCache();
-        Task ImportPackagesAsync(string user);
+        Task ImportPackagesAsync(string user, string[] packageIds);
     }
 }

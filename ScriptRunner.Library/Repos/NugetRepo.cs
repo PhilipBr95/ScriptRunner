@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NuGet.Configuration;
+using NuGet.Packaging;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
-using System.IO;
 using System.Text;
 
 namespace ScriptRunner.Library.Repos
@@ -17,16 +17,18 @@ namespace ScriptRunner.Library.Repos
     public class NugetRepo : INugetRepo
     {
         private readonly ITransactionService _transactionService;
+        private readonly IHistoryService _historyService;
         private readonly RepoSettings _repoSettings;
         private readonly ILogger<INugetRepo> _logger;
 
-        public NugetRepo(ITransactionService transactionService, IOptions<RepoSettings> options, ILogger<INugetRepo> logger) : this(transactionService, options.Value, logger)
+        public NugetRepo(ITransactionService transactionService, IHistoryService historyService, IOptions<RepoSettings> options, ILogger<INugetRepo> logger) : this(transactionService, historyService, options.Value, logger)
         {            
         }
 
-        public NugetRepo(ITransactionService transactionService, RepoSettings repoSettings, ILogger<INugetRepo> logger)
+        public NugetRepo(ITransactionService transactionService, IHistoryService historyService, RepoSettings repoSettings, ILogger<INugetRepo> logger)
         {
             _transactionService = transactionService;
+            _historyService = historyService;
             _repoSettings = repoSettings;
             _logger = logger;
 
@@ -44,11 +46,82 @@ namespace ScriptRunner.Library.Repos
                 parsedScripts.Add(GenerateScript(file));
             }
 
+            _logger?.LogInformation($"{parsedScripts.Count()} Local nuget packages found");
             return parsedScripts;
         }
 
-        public async Task ImportScriptsAsync(string user)
+        public async Task ImportScriptsAsync(string user, string[] packageIds)
         {
+            try
+            {
+                var newPackages = await ListScriptsAsync(packageIds);
+                
+                var packageSource = new PackageSource(_repoSettings.GitRepo);
+                var repository = Repository.Factory.GetCoreV3(packageSource);
+
+                SourceCacheContext cache = new SourceCacheContext();
+                PackageSearchResource packageSearchResource = await repository.GetResourceAsync<PackageSearchResource>();
+                FindPackageByIdResource findPackageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>();
+
+                var logger = NuGet.Common.NullLogger.Instance;
+                var cancellationToken = CancellationToken.None;
+
+                foreach (var result in newPackages)
+                {
+                    var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Id}.{result.Version}.nupkg");
+
+                    if (!File.Exists(filename))
+                    {
+                        //Wipe the old versions
+                        Directory.GetFiles(_repoSettings.NugetFolder, $"{result.Id}.*.nupkg")
+                                    .ToList()
+                                    .ForEach(fe => File.Delete(fe));
+
+                        using (var packageStream = File.OpenWrite(filename))
+                        {
+                            var success = await findPackageByIdResource.CopyNupkgToStreamAsync(
+                                result.Id, // package id                                
+                                NuGetVersion.Parse(result.Version),
+                                packageStream,
+                                cache,
+                                logger,
+                                cancellationToken);
+
+                            await packageStream.FlushAsync();
+                            packageStream.Close();
+
+                            if (success)
+                            {
+                                _logger.LogInformation($"Downloaded {result.Id} version {result.Version} - {success}");
+
+                                await LogActivity(new Activity<Package> { ActionedBy = user, System = "ScriptRunner", Success = success, Description = $"Package imported - {result.Id} version {result.Version}" });
+                            }
+                            else
+                                _logger.LogError($"Failed to Download {result.Id} version {result.Version}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, $"Unknown error retrieving packages from {_repoSettings.GitRepo}");
+                throw;
+            }
+        }
+
+        private async Task LogActivity(Activity<Package> activity)
+        {
+            await _historyService.LogActivityAsync(activity);
+            await _transactionService.LogActivityAsync(activity);
+        }
+
+        public async Task<IEnumerable<Package>> ListScriptsAsync(string[]? packageIds = null)
+        {
+            var packages = new List<Package>();
+
+            if (packageIds == null || packageIds.Length == 0)
+                packageIds = new string[] { "" };   //List everything
+
             try
             {
                 var packageSource = new PackageSource(_repoSettings.GitRepo);
@@ -62,74 +135,87 @@ namespace ScriptRunner.Library.Repos
                 var logger = NuGet.Common.NullLogger.Instance;
                 var cancellationToken = CancellationToken.None;
 
-                var results = (await packageSearchResource.SearchAsync(
-                    "", // search string
-                    searchFilter,
-                    skip: 0,
-                    take: _repoSettings.SearchTake,
-                    logger,
-                    cancellationToken)).ToList();
-
-                foreach (IPackageSearchMetadata result in results)
+                foreach (var packageId in packageIds)
                 {
-                    if (result.Tags.Contains(_repoSettings.Tags))
+                    if(string.IsNullOrWhiteSpace(packageId) == false)
+                        _logger.LogInformation($"Finding Remote package {packageId}");
+
+                    var results = (await packageSearchResource.SearchAsync(
+                        packageId,
+                        searchFilter,
+                        skip: 0,
+                        take: _repoSettings.SearchTake,
+                        logger,
+                        cancellationToken)).ToList();
+
+                    foreach (IPackageSearchMetadata result in results)
                     {
-                        _logger.LogInformation($"Found package {result.Identity.Id} {result.Identity.Version}");
-                        var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Identity.Id}.{result.Identity.Version}.nupkg");
-
-                        if (!File.Exists(filename))
+                        if (result.Tags.Contains(_repoSettings.Tags))
                         {
-                            //Wipe the old versions
-                            Directory.GetFiles(_repoSettings.NugetFolder, $"{result.Identity.Id}.*.nupkg")
-                                     .ToList()
-                                     .ForEach(fe => File.Delete(fe));
+                            var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Identity.Id}.{result.Identity.Version}.nupkg");
 
-                            using (var packageStream = File.OpenWrite(filename))
+                            if (!File.Exists(filename))
                             {
-                                var success = await findPackageByIdResource.CopyNupkgToStreamAsync(
-                                    result.Identity.Id, // package id
-                                    result.Identity.Version,
-                                    packageStream,
-                                    cache,
-                                    logger,
-                                    cancellationToken);
+                                _logger.LogInformation($"Found Remote package {result.Identity.Id} {result.Identity.Version}");
 
-                                await packageStream.FlushAsync();
-                                packageStream.Close();
+                                using (var packageStream = new MemoryStream())
+                                {
+                                    var success = await findPackageByIdResource.CopyNupkgToStreamAsync(
+                                        result.Identity.Id, // package id
+                                        result.Identity.Version,
+                                        packageStream,
+                                        cache,
+                                        logger,
+                                        cancellationToken);
 
-                                _logger.LogInformation($"Downloaded {result.Identity.Id} version {result.Identity.Version} - {success}");
-                                await _transactionService.LogActivityAsync(new Activity<Param[]> { ActionedBy = user, System = "ScriptRunner", Success = true, Description = $"Package imported - {result.Identity.Id} version {result.Identity.Version}" });
+                                    if (success)
+                                    {
+                                        var package = new PackageArchiveReader(packageStream);
+                                        packages.Add(GenerateScript(package));
+                                    }
+
+                                    await packageStream.FlushAsync();
+                                    packageStream.Close();
+                                }
                             }
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Already have {result.Identity.Id} version {result.Identity.Version}");
+                            else
+                            {
+                                _logger.LogDebug($"Ignoring {result.Identity.Id} version {result.Identity.Version} as we already have it");
+                            }
                         }
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger?.LogError(ex, $"Unknown error retrieving packages from {_repoSettings.GitRepo}");
                 throw;
             }
+
+            return packages;
         }
 
         private Package GenerateScript(string filename)
         {
-            var package = new NuGet.Packaging.PackageArchiveReader(filename);
-            var nuspec = package.NuspecReader;
+            var importedDate = new FileInfo(filename).CreationTime;
+            var package = new PackageArchiveReader(filename);
+            return GenerateScript(package, importedDate);
+        }
 
+        private Package GenerateScript(PackageArchiveReader package, DateTime? importedDate = null)
+        {
+            var nuspec = package.NuspecReader;
+            
             var json = StreamToString(package.GetStream("config.json"));
             var nugetPackage = JsonConvert.DeserializeObject<NugetPackage>(json);
-
+            
             nugetPackage.Id = nuspec.GetId();
             nugetPackage.Version = nuspec.GetVersion().OriginalVersion;
-            nugetPackage.CreationTime = new FileInfo(filename).CreationTime;
+            nugetPackage.ImportedDate = importedDate;
 
             var scripts = new List<SimpleScript>();
 
-            foreach(var file in nugetPackage.Files)
+            foreach (var file in nugetPackage.Files)
             {
                 scripts.Add(StreamToScript(file, package.GetStream(GetFilename(file))));
             }
@@ -164,7 +250,7 @@ namespace ScriptRunner.Library.Repos
             switch (Path.GetExtension(filename).ToLower())
             {
                 case ".sql":
-                    return new SqlScript { Filename = filename, Script = text, ConnectionString = ConnectionString.GetConnectionFromFilePath(filename) };
+                    return new SqlScript { Filename = filename, Script = text, ConnectionString = Models.ConnectionString.GetConnectionFromFilePath(filename) };
                 case ".ps1":
                     return new PowershellScript { Filename = filename, Script = text };
                 default:

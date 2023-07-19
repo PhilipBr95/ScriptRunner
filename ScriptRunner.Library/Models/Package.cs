@@ -13,7 +13,7 @@ namespace ScriptRunner.Library.Models
         public string Title { get; set; }
         public string Id { get; set; }
         public string Version { get; set; }
-        public DateTime? CreationTime { get; set; }
+        public DateTime? ImportedDate { get; set; }
 
         public Param[] Params { get; set; }
         public string UniqueId => $"{Id} - {Version}";

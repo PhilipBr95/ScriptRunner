@@ -1,7 +1,7 @@
 ﻿@page
 @model AdminModel
 @{
-    ViewData["Title"] = "Script Admin";
+    ViewData["Title"] = "ScriptRunner Admin";
 }
 <h1>@ViewData["Title"]</h1>
 
@@ -49,18 +49,34 @@
                 <label>Local Packages</label>
             </div>
             <div class="col-lg tableDiv">
-                <table id='scripts' class="display" style="width:100%">
+                <table id='localScripts' class="display" style="width:100%">
                 </table>
+            </div>
+        </div>
+        <div class="row withGap">
+            <div class="col-1 label">
+                <label></label>
+            </div>
+            <div class="col-lg">
+                <input id="reload" type="submit" value="Reload local scripts" asp-page-handler="Reload" />             
             </div>
         </div>
         <br />
         <div class="row withGap">
             <div class="col-1 label">
+                <label>Remote Packages</label>
+            </div>
+            <div class="col-lg tableDiv">
+                <table id='remoteScripts' class="display" style="width:100%">
+                </table>
+            </div>
+        </div>
+        <div class="row withGap">
+            <div class="col-1 label">
                 <label></label>
             </div>
             <div class="col-lg">                
-                <input id="reload" type="submit" value="Reload local scripts" asp-page-handler="Reload" />
-                <input id="sync" type="submit" value="Sync with remote Git repo" asp-page-handler="Sync" class="padded" />
+                <input id="remote-sync" type="submit" value="Import Selected Packages" asp-page-handler="Sync" disabled />
             </div>
         </div>
 

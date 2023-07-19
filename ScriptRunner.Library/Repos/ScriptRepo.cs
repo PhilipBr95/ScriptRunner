@@ -11,16 +11,19 @@ namespace ScriptRunner.Library.Repos
     public class ScriptRepo : IScriptRepo
     {
         private readonly RepoSettings _repoSettings;
-        private readonly ILogger<INugetRepo> _logger;
+        private readonly ILogger<IScriptRepo> _logger;
 
-        public ScriptRepo(IOptions<RepoSettings> options, ILogger<INugetRepo> logger) : this(options.Value, logger)
+        public ScriptRepo(IOptions<RepoSettings> options, ILogger<IScriptRepo> logger) : this(options.Value, logger)
         {
         }
 
-        public ScriptRepo(RepoSettings repoSettings, ILogger<INugetRepo> logger)
+        public ScriptRepo(RepoSettings repoSettings, ILogger<IScriptRepo> logger)
         {
             _repoSettings = repoSettings;
             _logger = logger;
+
+            if (!Directory.Exists(_repoSettings.ScriptFolder))
+                Directory.CreateDirectory(_repoSettings.ScriptFolder);
         }
 
         public async Task<IEnumerable<Package>> GetScriptsAsync()
@@ -47,6 +50,7 @@ namespace ScriptRunner.Library.Repos
                 }
             }
 
+            _logger?.LogInformation($"{parsedScripts.Count()} Local script packages found");
             return parsedScripts;
         }
 
@@ -61,7 +65,7 @@ namespace ScriptRunner.Library.Repos
             var package = JsonConvert.DeserializeObject<Package>(config);
             var text = await File.ReadAllTextAsync(filename);
 
-            package.CreationTime ??= new FileInfo(filename).CreationTime;
+            package.ImportedDate ??= new FileInfo(filename).CreationTime;
             package.Scripts = new PowershellScript[] { new PowershellScript { Filename = filename, Script = text } };
             return package;
         }
@@ -71,7 +75,7 @@ namespace ScriptRunner.Library.Repos
             var sqlPackage = JsonConvert.DeserializeObject<SqlPackage>(config);
             var text = await File.ReadAllTextAsync(filename);
 
-            sqlPackage.CreationTime ??= new FileInfo(filename).CreationTime;
+            sqlPackage.ImportedDate ??= new FileInfo(filename).CreationTime;
             sqlPackage.Scripts = new SimpleScript[] { new SqlScript { Filename = filename, Script = text, ConnectionString = sqlPackage.ConnectionString } };
             return sqlPackage;
         }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Settings;
 using ScriptRunner.UI.Services;
 using System.Text.RegularExpressions;
 
@@ -18,6 +19,9 @@ namespace ScriptRunner.Library.Repos
         {
             _historySettings = options.Value;
             _logger = logger;
+
+            if (!Directory.Exists(_historySettings.Folder))
+                Directory.CreateDirectory(_historySettings.Folder);
         }
 
         public async Task SaveActivityAsync<T>(Activity<T> activitity)
@@ -77,10 +81,7 @@ namespace ScriptRunner.Library.Repos
             try
             {
                 await _repoLock.WaitAsync();
-
-                if (Directory.Exists(_historySettings.Filename) == false)
-                    Directory.CreateDirectory(_historySettings.Folder);
-
+                
                 if (File.Exists(_historySettings.Filename) == false)
                     return new List<Activity<T>>();
 
@@ -92,7 +93,7 @@ namespace ScriptRunner.Library.Repos
                 return JsonConvert.DeserializeObject<IList<Activity<T>>>(json);
             }
             catch (Exception ex)
-            {
+            {                
                 _logger?.LogError(ex, $"Unknown error loading repo");
                 throw;
             }

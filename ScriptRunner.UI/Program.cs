@@ -1,12 +1,17 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ScriptRunner.Library.Extensions;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
+using ScriptRunner.UI.Auth;
 using ScriptRunner.UI.Services;
+using ScriptRunner.UI.Settings;
+using System.Security.Claims;
 
 namespace ScriptRunner.UI
 {
@@ -20,7 +25,10 @@ namespace ScriptRunner.UI
                             .AddNegotiate();
 
             builder.Services.AddAuthorization(options =>
-            {
+            {                
+                var webSettings = builder.Configuration.GetSection(nameof(WebSettings)).Get<WebSettings>();
+
+                options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new CheckADGroupRequirement(webSettings.AdminAD)));
                 options.FallbackPolicy = options.DefaultPolicy;
             });
 
@@ -50,7 +58,8 @@ namespace ScriptRunner.UI
             builder.Services.AddTransient<ISqlExecutor, SqlExecutor>();
             builder.Services.AddTransient<IPowerShellExecutor, PowerShellExecutor>();
             builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
-
+            
+            builder.Services.AddSingleton<IAuthorizationHandler, CheckADGroupHandler>();
             builder.Services.AddMvc(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());

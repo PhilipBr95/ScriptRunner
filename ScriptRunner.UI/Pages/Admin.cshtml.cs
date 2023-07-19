@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using ScriptRunner.Library.Models;
@@ -6,9 +7,11 @@ using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
 using ScriptRunner.UI.Pages.Shared;
+using System.Security.Claims;
 
 namespace ScriptRunner.UI.Pages
 {
+    [Authorize(Policy = "AdminOnly")]
     public class AdminModel : PageModel
     {
         private readonly IPackageRetriever _scriptRetriever;
@@ -34,12 +37,12 @@ namespace ScriptRunner.UI.Pages
             
             _scriptRetriever.ClearPackageCache();
         }
-        public async Task OnPostSyncAsync()
+        public async Task OnPostSyncAsync(string[] selectedIds)
         {
             var currentUser = HttpContext.User.Identity.Name;
-            _logger?.LogInformation($"{currentUser} - Importing Packages");
+            _logger?.LogInformation($"{currentUser} - Importing PackageIds: {string.Join(",", selectedIds)}");
 
-            await _scriptRetriever.ImportPackagesAsync(currentUser);
+            await _scriptRetriever.ImportPackagesAsync(currentUser, selectedIds);
         }
     }
 }

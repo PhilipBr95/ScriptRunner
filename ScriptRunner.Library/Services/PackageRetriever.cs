@@ -40,12 +40,13 @@ namespace ScriptRunner.Library.Services
 
         public void ClearPackageCache()
         {
+            _logger?.LogInformation($"Clearing Local Package Cache");
             _scriptCache.Remove(nameof(_scriptCache));
         }
 
-        public async Task ImportPackagesAsync(string user)
+        public async Task ImportPackagesAsync(string user, string[] packageIds)
         {
-            await _nugetRepo.ImportScriptsAsync(user);
+            await _nugetRepo.ImportScriptsAsync(user, packageIds);
 
             ClearPackageCache();
             await GetPackagesAsync();

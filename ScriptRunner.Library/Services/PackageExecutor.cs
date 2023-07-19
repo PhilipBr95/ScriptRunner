@@ -59,11 +59,11 @@ namespace ScriptRunner.Library.Services
             }
             finally
             {
-                await LogHistory(package, actionedBy, success);
+                await LogActivity(package, actionedBy, success);
             }
         }
 
-        private async Task LogHistory(Package package, string actionedBy, bool success)
+        private async Task LogActivity(Package package, string actionedBy, bool success)
         {
             var activity = new Activity<Package>
             {

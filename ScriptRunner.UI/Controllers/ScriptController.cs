@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
@@ -11,12 +12,14 @@ namespace ScriptRunner.UI.Controllers
     {
         private readonly IPackageRetriever _scriptRetriever;
         private readonly IPackageExecutor _scriptRunner;
+        private readonly INugetRepo _nugetRepo;
         private readonly ILogger<ScriptController> _logger;
 
-        public ScriptController(IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, ILogger<ScriptController> logger) 
+        public ScriptController(IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, INugetRepo nugetRepo, ILogger<ScriptController> logger) 
         {
             _scriptRetriever = scriptRetriever;
             _scriptRunner = scriptRunner;
+            _nugetRepo = nugetRepo;
             _logger = logger;
         }
 
@@ -30,6 +33,39 @@ namespace ScriptRunner.UI.Controllers
                 return Json(scripts);
             }
             catch(Exception ex)
+            {
+                _logger?.LogError(ex, "Unknown error");
+                return Json(null);
+            }
+        }
+
+        public class PackageModel
+        {
+            public string System { get; set; }
+            public string Title{ get; set; }
+
+            public string Id { get; set; }
+            public string Version { get; set; }
+            public DateTime? CreationTime { get; set; }
+
+            public PackageModel(IPackageSearchMetadata s)
+            {
+                Version = s.Identity.Version.OriginalVersion;
+                Title = s.Title;
+                Id = s.Identity.Id;
+            }
+        }
+
+        [HttpGet("/api/[controller]/remote")]
+        public async Task<IActionResult> GetRemoteScriptsAsync()
+        {
+            try
+            {                
+                //todo - create a ScriptVM to remove some properties
+                var scripts = await _nugetRepo.ListScriptsAsync();
+                return Json(new { data = scripts });
+            }
+            catch (Exception ex)
             {
                 _logger?.LogError(ex, "Unknown error");
                 return Json(null);

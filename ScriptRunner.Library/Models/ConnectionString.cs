@@ -8,8 +8,12 @@
 
         public static string GetConnectionFromFilePath(string filePath)
         {
-            var parts = filePath.Split(Path.DirectorySeparatorChar);
-            return new ConnectionString { Server = parts[1], Database = parts[2] }.TrustedConnection;
+            var parts = Path.GetDirectoryName(filePath)
+                            .Split(Path.DirectorySeparatorChar);
+            if(parts.Length > 1)
+                return new ConnectionString { Server = parts[^2], Database = parts[^1] }.TrustedConnection;
+
+            return null;
         }
     }
 }

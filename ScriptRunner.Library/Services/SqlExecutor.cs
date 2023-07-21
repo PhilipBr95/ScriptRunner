@@ -25,14 +25,14 @@ namespace ScriptRunner.Library.Services
             {
                 var results = new List<DataTable>();
                 var messages = new List<string>();
-
-                using var conn = new SqlConnection(sqlScript.ConnectionString);
-                conn.InfoMessage += (sender, e) => messages.Add(e.Message);
-
-                await conn.OpenAsync();
+                                
                 var sql = TagHelper.PopulateTags(sqlScript.Script, @params);
 
-                _logger?.LogInformation($"Running: {sqlScript.Filename} - {sql}");
+                _logger?.LogInformation($"Running: {sqlScript.Filename} at [{sqlScript.ConnectionString}] - {sql}");
+
+                using var conn = new SqlConnection(sqlScript.ConnectionString);
+                await conn.OpenAsync();
+                conn.InfoMessage += (sender, e) => messages.Add(e.Message);
 
                 var command = new SqlCommand(sql, conn);
 

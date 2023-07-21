@@ -10,6 +10,7 @@ using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
+using System.IO.Enumeration;
 using System.Text;
 
 namespace ScriptRunner.Library.Repos
@@ -43,6 +44,7 @@ namespace ScriptRunner.Library.Repos
 
             foreach (var file in files)
             {
+                _logger?.LogInformation($"Found Nuget Package {file}");
                 parsedScripts.Add(GenerateScript(file));
             }
 
@@ -150,7 +152,7 @@ namespace ScriptRunner.Library.Repos
 
                     foreach (IPackageSearchMetadata result in results)
                     {
-                        if (result.Tags.Contains(_repoSettings.Tags))
+                        if (result.Tags.Contains(_repoSettings.Tag))
                         {
                             var filename = Path.Combine(_repoSettings.NugetFolder, $"{result.Identity.Id}.{result.Identity.Version}.nupkg");
 
@@ -202,27 +204,36 @@ namespace ScriptRunner.Library.Repos
             return GenerateScript(package, importedDate);
         }
 
-        private Package GenerateScript(PackageArchiveReader package, DateTime? importedDate = null)
+        private Package GenerateScript(PackageArchiveReader packageArchiveReader, DateTime? importedDate = null)
         {
-            var nuspec = package.NuspecReader;
+            var nuspec = packageArchiveReader.NuspecReader;
             
-            var json = StreamToString(package.GetStream("config.json"));
-            var nugetPackage = JsonConvert.DeserializeObject<NugetPackage>(json);
+            var json = StreamToString(packageArchiveReader.GetStream("config.json"));
+            var package = JsonConvert.DeserializeObject<SqlPackage>(json);
             
-            nugetPackage.Id = nuspec.GetId();
-            nugetPackage.Version = nuspec.GetVersion().OriginalVersion;
-            nugetPackage.ImportedDate = importedDate;
+            package.Id = nuspec.GetId();
+            package.Version = nuspec.GetVersion().OriginalVersion;
+            package.ImportedDate = importedDate;
 
             var scripts = new List<SimpleScript>();
 
-            foreach (var file in nugetPackage.Files)
-            {
-                scripts.Add(StreamToScript(file, package.GetStream(GetFilename(file))));
+            var extensions = new string[] { "*.sql", "*.ps1" };
+            var scriptFiles = packageArchiveReader.GetFiles()
+                                                  .Where(filename => extensions.Any(pattern => FileSystemName.MatchesSimpleExpression(pattern, filename)));
+
+            foreach (var file in scriptFiles)
+            {            
+                var script = StreamToScript(file, packageArchiveReader.GetStream(GetFilename(file)));
+
+                if (script is SqlScript sqlPackage && string.IsNullOrWhiteSpace(sqlPackage.ConnectionString))
+                    sqlPackage.ConnectionString = package.ConnectionString;
+
+                scripts.Add(script);
             }
 
-            nugetPackage.Scripts = scripts;
+            package.Scripts = scripts;
 
-            return nugetPackage;
+            return package;
         }
 
         private static string GetFilename(string file)
@@ -250,7 +261,7 @@ namespace ScriptRunner.Library.Repos
             switch (Path.GetExtension(filename).ToLower())
             {
                 case ".sql":
-                    return new SqlScript { Filename = filename, Script = text, ConnectionString = Models.ConnectionString.GetConnectionFromFilePath(filename) };
+                    return new SqlScript { Filename = filename, Script = text, ConnectionString = ConnectionString.GetConnectionFromFilePath(filename) };
                 case ".ps1":
                     return new PowershellScript { Filename = filename, Script = text };
                 default:

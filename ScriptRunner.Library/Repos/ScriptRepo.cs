@@ -5,6 +5,7 @@ using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Settings;
 using System.IO.Enumeration;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ScriptRunner.Library.Repos
 {
@@ -30,23 +31,19 @@ namespace ScriptRunner.Library.Repos
         {
             var parsedScripts = new List<Package>();
 
-            var extensions = new string[] { "*.sql", "*.ps1" };
-            var files = Directory.EnumerateFiles(_repoSettings.ScriptFolder, "*.*", SearchOption.AllDirectories)
-                                 .Where(filename => extensions.Any(pattern => FileSystemName.MatchesSimpleExpression(pattern, filename)));
-
+            var files = Directory.EnumerateFiles(_repoSettings.ScriptFolder, "config.json", SearchOption.AllDirectories);
             foreach (var file in files)
             {
+                _logger?.LogInformation($"Found Script folder {Path.GetDirectoryName(file)}");
+
                 try
-                {
-                    var configFile = Path.Combine(Path.GetDirectoryName(file), $"{Path.GetFileNameWithoutExtension(file)}.config");
-                    var config = await File.ReadAllTextAsync(configFile);
-                    
-                    Package sqlPackage = await LoadPackage(file, config);
+                {                                        
+                    Package sqlPackage = await LoadPackage(file);
                     parsedScripts.Add(sqlPackage);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Error loading {file}");
+                    _logger?.LogError(ex, $"Error loading {file}");
                 }
             }
 
@@ -54,30 +51,41 @@ namespace ScriptRunner.Library.Repos
             return parsedScripts;
         }
 
-        private static async Task<Package> LoadPackage(string filename, string config)
+        private static async Task<Package> LoadPackage(string configFile)
         {
-            return FileSystemName.MatchesSimpleExpression("*.sql", filename) ? await LoadSqlPackageAsync(filename, config)
-                                                                             : await LoadPowershellPackageAsync(filename, config);
-        }
+            var config = await File.ReadAllTextAsync(configFile);
+            var package = JsonConvert.DeserializeObject<SqlPackage>(config);
+            package.ImportedDate ??= new FileInfo(configFile).CreationTime;
 
-        private static async Task<Package> LoadPowershellPackageAsync(string filename, string config)
-        {
-            var package = JsonConvert.DeserializeObject<Package>(config);
-            var text = await File.ReadAllTextAsync(filename);
+            var extensions = new string[] { "*.sql", "*.ps1" };
+            var scriptFiles = Directory.EnumerateFiles(Path.GetDirectoryName(configFile), "*.*", SearchOption.AllDirectories)
+                                        .Where(filename => extensions.Any(pattern => FileSystemName.MatchesSimpleExpression(pattern, filename)));
 
-            package.ImportedDate ??= new FileInfo(filename).CreationTime;
-            package.Scripts = new PowershellScript[] { new PowershellScript { Filename = filename, Script = text } };
+            var scripts = new List<SimpleScript>();
+
+            //Add all the scripts
+            foreach (var scriptFile in scriptFiles)
+            {
+                var scriptText = await File.ReadAllTextAsync(scriptFile);
+
+                if (FileSystemName.MatchesSimpleExpression("*.sql", scriptFile))
+                {
+                    var connectString = package.ConnectionString;
+
+                    //Do we need to override the default
+                    if (Path.GetDirectoryName(configFile) != Path.GetDirectoryName(scriptFile))
+                        connectString = ConnectionString.GetConnectionFromFilePath(scriptFile) ?? connectString;
+
+                    scripts.Add(new SqlScript { Filename = scriptFile, Script = scriptText, ConnectionString = connectString });
+                }
+                else
+                {
+                    scripts.Add(new PowershellScript { Filename = scriptFile, Script = scriptText });
+                }
+            }
+
+            package.Scripts = scripts;
             return package;
-        }
-
-        private static async Task<Package> LoadSqlPackageAsync(string filename, string config)
-        {
-            var sqlPackage = JsonConvert.DeserializeObject<SqlPackage>(config);
-            var text = await File.ReadAllTextAsync(filename);
-
-            sqlPackage.ImportedDate ??= new FileInfo(filename).CreationTime;
-            sqlPackage.Scripts = new SimpleScript[] { new SqlScript { Filename = filename, Script = text, ConnectionString = sqlPackage.ConnectionString } };
-            return sqlPackage;
         }
     }
 }

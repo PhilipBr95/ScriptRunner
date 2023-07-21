@@ -21,7 +21,7 @@ namespace ScriptRunner.UI.Pages
         public string NugetFolder => _repoSettings.NugetFolder;
         public string ScriptFolder => _repoSettings.ScriptFolder;
         public string GitRepo => _repoSettings.GitRepo;
-        public string Tags => _repoSettings.Tags;
+        public string Tags => _repoSettings.Tag;
 
         public AdminModel(IPackageRetriever scriptRetriever, IOptions<RepoSettings> options, ILogger<AdminModel> logger)
         {

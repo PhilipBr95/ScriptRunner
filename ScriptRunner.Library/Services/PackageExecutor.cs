@@ -38,7 +38,7 @@ namespace ScriptRunner.Library.Services
                                 
                 var scriptResults = new List<ScriptResults>();
 
-                foreach (var script in package.Scripts)
+                foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))
                 {
                     switch (script)
                     {

@@ -141,6 +141,7 @@ function showResults(packageResult) {
 
     let showMessages = false;
     let showResults = false;
+    let tableCount = 0;
 
     packageResult.scriptResults.forEach(function (obj, x) {
         if (obj.messages != null && obj.messages.length > 0) {
@@ -152,19 +153,20 @@ function showResults(packageResult) {
             });
             
             $('#resultsMessages').append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);
-
             $('#resultsMessages').parent().removeClass('hidden');
+
             showMessages = true;
         }
 
         obj.dataTables.forEach(function (obj, y) {
-            let i = x + y;
-            let id = `resultsTable${i}`
+            let id = `resultsTable${tableCount}`
             $('#resultsTables').append(`<table id='${id}' class="display" style="width:100%"></table>`);
             showResultsTable(id, obj);
 
             $('#resultsTables').parent().removeClass('hidden');
+
             showResults = true;
+            tableCount++;
         });
     });
 

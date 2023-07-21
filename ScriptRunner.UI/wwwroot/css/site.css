@@ -143,3 +143,21 @@ dd {
 .remote-checkbox {
     margin-left: 8px;
 }
+
+.container-table {
+    display: table;
+}
+
+.container-table > .row {
+    display: table-row;
+}
+
+.container-table > .row > * {
+    display: table-cell;
+    padding: 5px;
+    white-space: nowrap;
+}
+
+.col-table {
+    width: 50px;
+}

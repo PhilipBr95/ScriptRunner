@@ -1,0 +1,60 @@
+﻿@page
+@model ScriptRunner.UI.Pages.DocsModel
+@{
+    ViewData["Title"] = "Documentation";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <div>Scripts are stored in Packages.  Packages can contain multiple SQL/PowerShell script files (.sql and .ps1 extensions).</div>
+    <div>Packages are either self contained 'Nuget Packages' or Folders.</div>
+</p>
+
+<h2>Nuget Packages</h2>
+
+<p>
+    <div>Nuget Packages are normally pushed to a remote repo [<strong>@Model.GitRepo</strong>] and then imported into ScriptRunner via the Admin page.</div>
+    <div>The Nuget Package must have the Tag <strong>@Model.Tag</strong> and contain a config.json and the actual scripts.</div>
+</p>
+
+<div>Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config.json:
+    <pre><code>
+    {
+        "System": "MyApp",
+        "Description": "Fixes the member's Name",
+        "ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
+        "Title": "Fix Member's Name",
+        "Tags":["Member", "Name"],
+        "Params": [
+            { "Name": "MemberNumber", "Type": "number" },
+            { "Name": "Name", "Type": "text", "Required": false }
+        ]
+    }
+    </code></pre>
+</div>
+<p>
+    <div class="container-table">
+        <div class="row">
+            <div class="col-table"><strong>ConnectionString</strong></div>
+            <div class="col-auto">
+                <div>Optional and only required for SQL scripts. If not provided, then the folder structure will be used to create the ConnectionString.</div>
+                <div>If both are provided, then the folder sturcture will override the ConnectionString.</div>
+                <div>The folder structure for the ConectionString is xxx\yyy\zzz\<em>Server</em>\<em>Database</em>\Script.sql</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-table"><strong>Params</strong></div>
+            <div class="col-auto">
+                <div>Parameters must be populated by the user (unless optional - <strong>"Required": false</strong>) before execution.</div>
+                <div>Params can be referenced in the script files via their name surrounded by curly brackets, eg {Name}</div>
+            </div>
+        </div>
+    </div>
+</p>
+
+<h2>Script Packages (Folders)</h2>
+<p>
+    <div>Script Packages need to be placed in <strong>@Model.ScriptFolder</strong>.</div>
+    <div>Each subfolder is the same as a 'Nuget Package', so needs to contain a config.json (as above) and scripts.</div>
+</p>

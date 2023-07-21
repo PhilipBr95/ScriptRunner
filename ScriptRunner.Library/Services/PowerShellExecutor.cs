@@ -25,17 +25,17 @@ namespace ScriptRunner.Library.Services
         {
             try
             {
+                var script = TagHelper.PopulateTags(powershellScript.Script, @params);
+
                 var powershell = PowerShell.Create();
-                powershell.AddScript(TagHelper.PopulateTags(powershellScript.Script, @params));
+                powershell.AddScript(script);
                 powershell.AddParameters(@params.Select(s => new { s.Name, s.Value })
                                                 .ToDictionary(k => k.Name));
 
+                _logger?.LogInformation($"Running: {powershellScript.Filename} - {script}");
+
                 Collection<PSObject> results = powershell.Invoke();                
                 IEnumerable<string> currentProps = new List<string>();
-
-                //  var dd = results[0].Members["PSStandardMembers"] as PSMemberSet;
-                //  var ddd = dd.GetType().GetMembers();
-                //  var dddd = dd.GetType().GetProperties();
 
                 DataTable table = null;
                 var dataTables = new List<DataTable>();
@@ -66,7 +66,7 @@ namespace ScriptRunner.Library.Services
 
                 var messages = powershell.Streams.Information.Select(s => s.MessageData.ToString())
                                                              .ToArray();
-                //var dataTable = new DataTable { Ro }
+
                 return new ScriptResults { DataTables = dataTables, Messages = messages };
             }
             catch (Exception ex)

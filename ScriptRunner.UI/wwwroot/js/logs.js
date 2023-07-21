@@ -1,7 +1,7 @@
 ﻿
 $(document).ready(function () {
     
-    var table = $('#logs').DataTable({
+    var table = $('#logs').DataTable({        
         "rowId": 'id',
         ajax: { url: "/api/log", dataSrc: "" },
         "columns": [

@@ -18,7 +18,7 @@ namespace ScriptRunner.UI.Services
 
         public async Task LogActivityAsync<T>(Activity<T> activity)
         {
-            _logger?.LogInformation($"Activity Executed {JsonConvert.SerializeObject(activity)}");
+            //_logger?.LogInformation($"Activity Executed {JsonConvert.SerializeObject(activity)}");
 
             await Task.CompletedTask;
         }

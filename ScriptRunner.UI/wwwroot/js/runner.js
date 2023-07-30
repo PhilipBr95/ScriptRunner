@@ -1,4 +1,5 @@
-﻿var scripts;
+﻿
+var scripts;
 var selectedScript;
 
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
@@ -75,10 +76,11 @@ function showScriptDetails(script) {
         let value = urlParams.get(el.name.toLowerCase()) ?? el.value ?? '';
 
         html = html.replace(/{Name}/g, el.name);
-        html = html.replace(/{Type}/g, el.type);
+        html = html.replace(/{Type}/g, el.htmlType);
         html = html.replace(/{Value}/g, value);
         html = html.replace(/{required}/g, el.required ? 'required' : '');
-
+        html = html.replace(/{Tooltip}/g, el.tooltip ?? '');
+        html = html.replace(/{tooltipVisible}/g, (el.tooltip ?? '').length > 0 ? '' : 'hidden' );
         params.append(html);
     });
 
@@ -92,6 +94,7 @@ function showScriptDetails(script) {
         navigator.clipboard.writeText(generateUrl(script));
         return false;
     });     
+
 }
 
 function generateUrl(script) {

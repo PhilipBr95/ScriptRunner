@@ -3,7 +3,7 @@ using ScriptRunner.Library.Models.Scripts;
 
 namespace ScriptRunner.Library.Models
 {
-    [DebuggerDisplay("{UniqueId}")]
+	[DebuggerDisplay("{UniqueId}")]
     public class Package
     {
         public string System { get; set; }
@@ -25,14 +25,5 @@ namespace ScriptRunner.Library.Models
                 param.Value = script.Params.Single(s => s.Name == param.Name && s.Type == param.Type).Value;
             }
         }
-    }
-
-    [DebuggerDisplay("{Name}={Value}")]
-    public class Param
-    {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Value { get; set; }
-        public bool Required { get; set; } = true;
     }
 }

@@ -8,7 +8,6 @@
 
 <br />
 
-
 <form method="post" action="/api/Script" id="form">
 @Html.AntiForgeryToken()
 
@@ -77,10 +76,13 @@
     <div id="paramTemplate" style="visibility:hidden">
         <div class="row withGap">
             <div class="col-1">
-                <label>{Name}</label>
+                <label for="{Name}">{Name}</label>
             </div>
-            <div class="col-lg">
-                <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="valueinputs" {required} />
+                <div class="col-lg">
+                    <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="valueinputs" {required} />
+                    <div class="mytooltip {tooltipVisible}">?
+                        <span class="tooltiptext">{Tooltip}</span>
+                    </div>
             </div>
         </div>
     </div>
@@ -105,11 +107,15 @@
         </div>
     </div>
 </div>
+
 </form>
 
 @section Scripts {
     <script src="~/lib/moment.js/moment.js"></script>
-    <script src="~/js/runner.js" asp-append-version="true"></script>
+    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
+    
+    <script src="~/lib/popperjs/core/dist/umd/popper.js"></script>
+    <script src="~/lib/popperjs/core/dist/umd/popper.min.js"></script>
 
     <script src="~/lib/datatables.net/jquery.datatables.js"></script>
     <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>

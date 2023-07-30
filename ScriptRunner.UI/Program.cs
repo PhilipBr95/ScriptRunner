@@ -88,7 +88,8 @@ namespace ScriptRunner.UI
                 RequestPath = "/Files",
                 ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>
                 {
-                    {".nupkg", "application/zip"}
+                    {".nupkg", "application/zip"},
+                    {".md", "text/markdown"}
                 })
             });
 

@@ -3,6 +3,8 @@ using NuGet.Protocol.Core.Types;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
+using System.Linq;
+using System.Management.Automation;
 
 namespace ScriptRunner.UI.Controllers
 {
@@ -29,8 +31,11 @@ namespace ScriptRunner.UI.Controllers
             try
             {
                 //todo - create a ScriptVM to remove some properties
-                var scripts = await _scriptRetriever.GetPackagesAsync();
-                return Json(scripts);
+                var packages = await _scriptRetriever.GetPackagesAsync();
+				return Json(packages);
+
+				//var packageVMs = packages.Select(s => new PackageModel(s));
+				//return Json(packageVMs);
             }
             catch(Exception ex)
             {
@@ -46,15 +51,21 @@ namespace ScriptRunner.UI.Controllers
 
             public string Id { get; set; }
             public string Version { get; set; }
-            public DateTime? CreationTime { get; set; }
+            public DateTime? ImportedDate { get; set; }
 
-            public PackageModel(IPackageSearchMetadata s)
-            {
-                Version = s.Identity.Version.OriginalVersion;
-                Title = s.Title;
-                Id = s.Identity.Id;
-            }
-        }
+            //public PackageModel(IPackageSearchMetadata s)
+            //{
+            //    Version = s.Identity.Version.OriginalVersion;
+            //    Title = s.Title;
+            //    Id = s.Identity.Id;
+            //}
+
+			//public PackageModel(Package s)
+			//{
+            //    System = s.System;
+            //    Title = s.titl
+			//}
+		}
 
         [HttpGet("/api/[controller]/remote")]
         public async Task<IActionResult> GetRemoteScriptsAsync()
@@ -84,6 +95,7 @@ namespace ScriptRunner.UI.Controllers
 
                 var currentUser = HttpContext.User.Identity.Name;
                 var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
+
                 return Ok(result);
             }
             catch(Exception ex)

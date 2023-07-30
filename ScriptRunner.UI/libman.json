@@ -17,5 +17,11 @@
       "library": "moment.js@2.29.4",
       "destination": "wwwroot/lib/moment.js/"
     }
+,
+{
+  "provider": "unpkg",
+  "library": "md-block@0.0.1",
+  "destination": "wwwroot/lib/md-block/"
+}
 ]
 }

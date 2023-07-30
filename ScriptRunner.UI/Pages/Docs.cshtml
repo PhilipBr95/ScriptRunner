@@ -9,19 +9,28 @@
 
 <script>
 
-	window.onload = function() {
+
+	function populateContent() {
 		let gitRepo = '@Model.GitRepo';
 		let tag = '@Model.Tag';
 		let scriptFolder = String.raw`@Model.ScriptFolder`;
 
 		let str = document.getElementById("markdown");
 		var inner = str.innerHTML;
-
+		
+		if (inner.length < 100) {
+			setTimeout(populateContent, 1000);
+		}
+		
 		var inner = inner.replace(/@@Model.GitRepo/gi, gitRepo);
 		var inner = inner.replace(/@@Model.Tag/gi, tag);
 		var inner = inner.replace(/@@Model.ScriptFolder/gi, scriptFolder);
-		
+
 		str.innerHTML = inner;
+	}
+
+	window.onload = function() {
+		populateContent();
 	}
 </script>
 

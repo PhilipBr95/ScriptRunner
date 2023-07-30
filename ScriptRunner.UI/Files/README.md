@@ -22,7 +22,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
         "Tags":["Member", "Name"],
         "Params": [
             { "Name": "MemberNumber", "Type": "number" },
-            { "Name": "Name", "Type": "text", "Required": false, "Description": "Their new Name" }
+            { "Name": "Name", "Type": "text", "Required": false, "Tooltip": "Their new Name" }
         ]
     }
  ```
@@ -32,7 +32,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 | Property   | Description|
 | ---------- | ---------- |
 |ConnectionString|Optional and only required for SQL scripts. If not provided, then the folder structure will be used to create the ConnectionString. <br />If both are provided, then the folder sturcture will override the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`
-|Params|Params must be populated by the user (unless optional - `"Required": false`) before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<br /> Check <a href="https://www.w3schools.com/html/html_form_input_types.asp">Input Types</a> to see possible input types<br />Keep the `Name` short and simple.  Use the optional `Description` property to add detail
+|Params|Params must be populated by the user (unless optional - `"Required": false`) before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<br /> Check <a href="https://www.w3schools.com/html/html_form_input_types.asp">Input Types</a> to see possible input types<br />Keep the `Name` short and simple.  Use the optional `Tooltip` property to add detail
 
 <br />
 

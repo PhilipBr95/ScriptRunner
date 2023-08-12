@@ -7,5 +7,6 @@
         public string GitRepo { get; set; }
         public string Tag { get; set; }
         public int SearchTake { get; set; } = 9999;
+        public string TemporaryScriptFolder { get; set; }
     }
 }

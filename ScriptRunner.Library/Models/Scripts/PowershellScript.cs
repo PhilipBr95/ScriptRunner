@@ -2,5 +2,9 @@
 {
     public class PowershellScript : SimpleScript
     {
+        public PowershellScript()
+        {
+            ScriptType = nameof(PowershellScript);
+        }
     }
 }

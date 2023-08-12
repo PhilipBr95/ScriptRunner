@@ -53,7 +53,7 @@ $(document).ready(function () {
             { "data": "success", "title": "Success" },
             { "data": "actionedBy", "title": "Actioned By" },
             {
-                "data": "createdDate", "title": "Created Date", "type": "datetime", render: function (data, type, row) {
+                "data": "createdDate", "sType": "date-uk", "title": "Created Date", "type": "datetime", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);
                     return dt.format('DD/MM/YYYY HH:mm:ss');
                 }

@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="row withGap">
-                <div class="col-1 label">
+            <div class="col-1 label">
                 <label>Local ScriptFolder</label>
             </div>
             <div class="col-lg">
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="row withGap">
-                <div class="col-1 label">
+            <div class="col-1 label">
                 <label>Remote Git Repo</label>
             </div>
             <div class="col-lg">
@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="row withGap">
-                <div class="col-1 label">
+            <div class="col-1 label">
                 <label>Git Repo Tags</label>
             </div>
             <div class="col-lg">
@@ -45,7 +45,7 @@
         </div>
         <br />
         <div class="row withGap">
-                <div class="col-1 label">
+            <div class="col-1 label">
                 <label>Local Packages</label>
             </div>
             <div class="col-lg tableDiv">
@@ -57,8 +57,14 @@
             <div class="col-1 label">
                 <label></label>
             </div>
-            <div class="col-lg">
-                <input id="reload" type="submit" value="Reload local scripts" asp-page-handler="Reload" />             
+            <div class="col-lg" >
+                <div style="display:inline-block">
+                    <input id="reload" type="submit" class="btn btn-primary" value="Reload Local Scripts" asp-page-handler="Reload" />
+
+                    <span class="btn btn-primary btn-file" id="uploadFile2">
+                        Upload ScriptRunner File <input id="uploadFile" type="file" value="Select ScriptRunner script" accept=".sql" />
+                    </span>
+                </div>
             </div>
         </div>
         <br />
@@ -76,21 +82,54 @@
                 <label></label>
             </div>
             <div class="col-lg">                
-                <input id="remote-sync" type="submit" value="Import Selected Packages" asp-page-handler="Sync" disabled />
+                <input id="remote-sync" type="submit" class="btn btn-primary" value="Import Selected Packages" asp-page-handler="Sync" disabled />
             </div>
         </div>
 
     </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">ScriptRunner Script Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="newScript">
+                    <dl>
+                        <dt class="new-dt">Id</dt>
+                        <dd><input type="text" id="new-id" class="new-input" /></dd>
+                        <dt class="new-dt">System</dt>
+                        <dd><input type="text" id="new-system" class="new-input" /></dd>
+                        <dt class="new-dt">Title</dt>
+                        <dd><input type="text" id="new-title" class="new-input" /></dd>
+                        <dt class="new-dt">Description</dt>
+                        <dd><input type="text" id="new-description" class="new-input" /></dd>
+                        <dt class="new-dt">ConnectionString</dt>
+                        <dd><input type="text" id="new-connectionString" class="new-input" /></dd>
+                        <dt class="new-dt">Script</dt>
+                        <dd><textarea id="new-script" class="new-input new-input-textarea"></textarea></dd>
+                        <dt class="new-dt">Params</dt>
+                        <dd>
+                            <dl id="new-params" class="new-params-dl">
+                            </dl>
+                        </dd>
+                    </dl>
+                    <div id="new-filename"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="new-import">Import Script</button>
+                    <label for="importAndRun">Run After Import</label>
+                    <input type="checkbox" id="runAfterImport" />
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
-
 @section Scripts {
-    <script src="~/lib/moment.js/moment.js"></script>
     <script src="~/js/admin.js" asp-append-version="true"></script>
-        
-    <script src="~/lib/datatables.net/jquery.datatables.js"></script>
-    <script src="~/lib/datatables.net/jquery.datatables.min.js"></script>
-
-    <link href="~/lib/datatables.net-dt/css/jquery.datatables.css" rel="stylesheet" />
-    <link href="~/lib/datatables.net-dt/css/jquery.datatables.min.css" rel="stylesheet" />
 }

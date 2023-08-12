@@ -51,24 +51,25 @@ namespace ScriptRunner.Library.Repos
         }
 
         private void BackupRepo()
-        {
-            if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
-            {
-                //Create a daily backup
-                var regex = new Regex("^.*{([\\w]+)}");
-                var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
-
-                if (File.Exists(dailyBackup) == false)
-                {
-                    //Back it up
-                    File.Copy(_historySettings.Filename, dailyBackup, true);
-                }
-            }
-
+        {            
             if (string.IsNullOrWhiteSpace(_historySettings.Filename) == false)
             {
                 if (File.Exists(_historySettings.Filename))
                 {
+                    if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
+                    {
+                        //Create a daily backup
+                        var regex = new Regex("^.*{([\\w]+)}");
+                        var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
+
+                        //Once a day backup
+                        if (File.Exists(dailyBackup) == false)
+                        {
+                            //Back it up
+                            File.Copy(_historySettings.Filename, dailyBackup, true);
+                        }
+                    }
+
                     //Back it up
                     if (File.Exists(_historySettings.Filename))
                         File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);

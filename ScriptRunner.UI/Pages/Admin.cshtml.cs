@@ -37,12 +37,32 @@ namespace ScriptRunner.UI.Pages
             
             _scriptRetriever.ClearPackageCache();
         }
+
         public async Task OnPostSyncAsync(string[] selectedIds)
         {
             var currentUser = HttpContext.User.Identity.Name;
             _logger?.LogInformation($"{currentUser} - Importing PackageIds: {string.Join(",", selectedIds)}");
 
             await _scriptRetriever.ImportPackagesAsync(currentUser, selectedIds);
+        }
+
+        [Route("/Admin/UploadFile")]
+        [HttpPost]
+        public async Task OnPostUploadFile()
+        {
+
+            _logger?.LogInformation($"sss");
+            //if (formFile == null)
+            //    return;
+
+            //var currentUser = HttpContext.User.Identity.Name;
+            //_logger?.LogInformation($"{currentUser} - Importing ScriptRunner file: {formFile.FileName}");
+
+            //var filePath = "";
+            //using (var stream = System.IO.File.Create(filePath))
+            //{
+            //    await formFile.CopyToAsync(stream);
+            //}
         }
     }
 }

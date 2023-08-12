@@ -3,7 +3,7 @@
 ScriptRunner allows DevOps to quickly deploy scripts to live for users to manually run.  
 
 Scripts are stored in Packages; Packages can contain multiple SQL/PowerShell script files (.sql and .ps1 extensions).  
-Packages are either self contained `Nuget Packages`, `Folders` or specially formatted `script files`.
+Packages are either self contained `Nuget Packages`, `Folders` or specially formatted `ScriptRunner files`.
 
 ## Nuget Packages
 
@@ -40,3 +40,34 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 
 Script Packages need to be placed in <strong>@Model.ScriptFolder</strong>.  
 Each subfolder is the same as a 'Nuget Package', so needs to contain a config.json (as above) and scripts.
+
+## ScriptRunner Files
+
+ScriptRunner files are SQL files with the config as comments.  
+Example ScriptRunner file below (.srunner)
+```sql
+/*
+{	
+	"Id": "Package1",
+	"Version": "1.0.0",
+	"System": "MyApp", 
+	"Description": "Random SQL file", 
+	"ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
+	"Title": "Random SQL .package file", 
+	"Tags":["Member", "Name"], 
+
+	//Params are optional
+	"Params": [
+		{ "Name": "MemberNumber", "Type": "number", "Value": "1000", "Tooltip": "The MemberNumber" }, 
+		{ "Name": "MemberName", "Type": "text", "Required": true, "Value": "Smith", "Tooltip": "Their new Name" },
+		{ "Name": "MemberDOB", "Type": "datetime", "Required": false, "Value": "01/01/2000" }
+	]
+}
+*/
+
+DECLARE @MemberNumber@ int = 1000 
+DECLARE @MemberName@ varchar(255) = 'Smith' 
+DECLARE @MemberDOB@ datetime = '01/01/2000'
+
+select Concat('Hello ', @MemberName@, ' (', @MemberNumber@, ') You''re DOB is ', @MemberDOB@)
+```

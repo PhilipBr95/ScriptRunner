@@ -47,6 +47,23 @@ namespace ScriptRunner.Library.Repos
                 }
             }
 
+            files = Directory.EnumerateFiles(_repoSettings.ScriptFolder, "*.srunner", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                _logger?.LogInformation($"Found Script folder {Path.GetDirectoryName(file)}");
+
+                try
+                {
+                    var json = File.ReadAllText(file);
+                    Package sqlPackage = JsonConvert.DeserializeObject<Package>(json);
+                    parsedScripts.Add(sqlPackage);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, $"Error loading {file}");
+                }
+            }
+
             _logger?.LogInformation($"{parsedScripts.Count()} Local script packages found");
             return parsedScripts;
         }
@@ -87,5 +104,27 @@ namespace ScriptRunner.Library.Repos
             package.Scripts = scripts;
             return package;
         }
+
+        public async Task<string> ImportPackageAsync(Package package)
+        {
+            try
+            {
+                package.ImportedDate = DateTime.Now;
+
+                var json = JsonConvert.SerializeObject(package, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                var filename = Path.Combine(_repoSettings.ScriptFolder, $"{package.System}_{package.Id}_{package.Version}.srunner");
+
+                if (File.Exists(filename))
+                    throw new Exception($"File already exists {filename}");
+
+                await File.WriteAllTextAsync(filename, json);
+                return filename;
+            }
+            catch(Exception ex) {
+                _logger?.LogError(ex, $"Error Importing {package.UniqueId}");
+                throw;
+            }
+        }
+
     }
 }

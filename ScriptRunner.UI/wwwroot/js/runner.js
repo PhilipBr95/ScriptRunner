@@ -5,7 +5,7 @@ var selectedScript;
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
 
-    let systems = [... new Set(scripts.map(obj => obj.system))];
+    let systems = [... new Set(scripts.data.map(obj => obj.system))];
 
     let el = $('#systems');
     populateDropDown(el, systems.map(obj => ({ id: obj, value: obj })))
@@ -13,13 +13,13 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
     el.on("change", function () {
         showScriptDetails(null)
 
-        let items = scripts.filter(e => e.system == this.value)
+        let items = scripts.data.filter(e => e.system == this.value)
 
         let el = $('#scripts');
         populateDropDown(el, items.map(obj => ({ id: obj.id, value: obj.title })))
 
         el.on("change", function () {
-            let script = scripts.find(e => e.id == this.value)
+            let script = scripts.data.find(e => e.id == this.value)
             showScriptDetails(script);
         });
     });
@@ -28,7 +28,7 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
     const scriptId = urlParams.get('ScriptId');
 
     if (scriptId != null) {
-        let script = scripts.find(e => e.id == scriptId)
+        let script = scripts.data.find(e => e.id == scriptId)
 
         showScriptDetails(script)
     }
@@ -128,10 +128,6 @@ function updateParamValues() {
         var param = selectedScript.params.find(f => f.name == obj.id);
 
         if (param != null) {
-            if (param.optional == false && obj.value == null) {
-
-            }
-
             param.value = obj.value;
         }            
     });

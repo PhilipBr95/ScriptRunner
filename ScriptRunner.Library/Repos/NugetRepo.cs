@@ -268,5 +268,10 @@ namespace ScriptRunner.Library.Repos
                     throw new ArgumentOutOfRangeException($"Unknown filetype for {filename}");
             }
         }
+
+        public Task<string> ImportPackageAsync(Package package)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

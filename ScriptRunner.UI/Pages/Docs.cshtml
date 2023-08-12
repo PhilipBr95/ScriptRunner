@@ -17,6 +17,7 @@
 		let str = document.getElementById("markdown");
 		var inner = str.innerHTML;
 		
+		//Annoyingly sometimes the DOM isn't ready
 		if (inner.length < 100) {
 			setTimeout(populateContent, 1000);
 		}

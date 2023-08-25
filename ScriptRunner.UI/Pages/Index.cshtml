@@ -94,7 +94,7 @@
             <div class="col-1">
                 <label>Results</label>
             </div>
-            <div class="col-lg tableDiv" id="resultsTables">
+            <div class="col-lg tableDiv" name="resultsTables">
             </div>
         </div>
 
@@ -102,7 +102,7 @@
             <div class="col-1">
                 <label>Messages</label>
             </div>
-            <div class="col-lg" id="resultsMessages">
+            <div class="col-lg" name="resultsMessages">
             </div>
         </div>
     </div>
@@ -111,6 +111,7 @@
 </form>
 
 @section Scripts {
-    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>    
+    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
+    <script src="~/js/results.js" asp-append-version="true"></script>
 }
 

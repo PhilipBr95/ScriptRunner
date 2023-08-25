@@ -12,8 +12,27 @@
 
     <table id='history' class="display" style="width:100%">
     </table>
+
+    <div id="results" class="hidden resultsTemplate">
+        <div class="row withGap">
+            <div class="col-1">
+                <label>Results</label>
+            </div>
+            <div class="col-lg tableDiv" name="resultsTables">
+            </div>
+        </div>
+
+        <div class="row withBigGap">
+            <div class="col-1">
+                <label>Messages</label>
+            </div>
+            <div class="col-lg" name="resultsMessages">
+            </div>
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <script src="~/js/history.js" asp-append-version="true"></script>
+    <script src="~/js/results.js" asp-append-version="true"></script>
 }

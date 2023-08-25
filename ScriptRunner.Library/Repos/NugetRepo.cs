@@ -173,7 +173,7 @@ namespace ScriptRunner.Library.Repos
                                     if (success)
                                     {
                                         var package = new PackageArchiveReader(packageStream);
-                                        packages.Add(GenerateScript(package));
+                                        packages.Add(GenerateScript(filename, package));
                                     }
 
                                     await packageStream.FlushAsync();
@@ -201,10 +201,10 @@ namespace ScriptRunner.Library.Repos
         {
             var importedDate = new FileInfo(filename).CreationTime;
             var package = new PackageArchiveReader(filename);
-            return GenerateScript(package, importedDate);
+            return GenerateScript(filename, package, importedDate);
         }
 
-        private Package GenerateScript(PackageArchiveReader packageArchiveReader, DateTime? importedDate = null)
+        private Package GenerateScript(string filename, PackageArchiveReader packageArchiveReader, DateTime? importedDate = null)
         {
             var nuspec = packageArchiveReader.NuspecReader;
             
@@ -214,6 +214,7 @@ namespace ScriptRunner.Library.Repos
             package.Id = nuspec.GetId();
             package.Version = nuspec.GetVersion().OriginalVersion;
             package.ImportedDate = importedDate;
+            package.Filename = filename;
 
             var scripts = new List<SimpleScript>();
 

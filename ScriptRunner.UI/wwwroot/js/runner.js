@@ -133,71 +133,6 @@ function updateParamValues() {
     });
 }
 
-function showResults(packageResult) {
-    $('#results').removeClass('hidden');
-    $('#resultsTables').html('');
-    $('#resultsMessages').html('');
-
-    let showMessages = false;
-    let showResults = false;
-    let tableCount = 0;
-
-    packageResult.scriptResults.forEach(function (obj, x) {
-        if (obj.messages != null && obj.messages.length > 0) {
-            let id = `resultsMessage${x}`
-
-            let messages = '';
-            obj.messages.forEach(function (obj, x) {
-                messages += `<div>${obj}</div>`;
-            });
-            
-            $('#resultsMessages').append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);
-            $('#resultsMessages').parent().removeClass('hidden');
-
-            showMessages = true;
-        }
-
-        obj.dataTables.forEach(function (obj, y) {
-            let id = `resultsTable${tableCount}`
-            $('#resultsTables').append(`<table id='${id}' class="display" style="width:100%"></table>`);
-            showResultsTable(id, obj);
-
-            $('#resultsTables').parent().removeClass('hidden');
-
-            showResults = true;
-            tableCount++;
-        });
-    });
-
-    if (showMessages == false) {
-        $('#resultsMessages').parent().addClass('hidden');
-    }
-
-    if (showResults == false) {
-        $('#resultsTables').parent().addClass('hidden');
-    }
-}
-
-function showResultsTable(id, dataTable) {
-    var columns = [];
-    let columnNames = Object.keys(dataTable[0]);
-
-    for (var i in columnNames) {
-        columns.push({
-            data: columnNames[i],
-            title: columnNames[i].toUpperCase()
-        });
-    }
-
-    $(`#${id}`).DataTable({
-        paging: false,
-        fixedHeader: true,
-        searching: false,
-        data: dataTable,
-        columns: columns
-    });
-}
-
 $('#execute').on("click", function (e) {    
     if ($("#form")[0].checkValidity() == false) {
         $("#form")[0].reportValidity()
@@ -213,7 +148,8 @@ $('#execute').on("click", function (e) {
     $.ajax({
         url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
     }).done(function (response) {
-        showResults(response);
+        var $results = $('#results');
+        showResults($results, response, true);
         $('#execute').attr("disabled", false);
     }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(jqXHR.responseText);

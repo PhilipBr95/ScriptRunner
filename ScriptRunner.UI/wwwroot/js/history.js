@@ -10,11 +10,20 @@
         html += `<div><dt>${obj.name}</dt><dd>${obj.value}</dd></div>`
     });
 
-    return `<dl><dd class="paramLabel">Parameters</dd>${html}</dl>`;
+    return `<div><dl><dd class="paramLabel">Parameters</dd>${html}</dl><a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;
 }
 
 $(document).ready(function () {
-    
+
+    $('#history').on('click', '.showResults', function (e) {
+        var $results = $(this).parent().find('.resultsTemplate');
+        $results.removeClass('hidden');
+
+        $(this).addClass('hidden');
+
+        return false;
+    })
+
     $('#history').on('requestChild.dt', function (e, row) {
         row.child(format(row.data())).show();
     })
@@ -99,7 +108,15 @@ $(document).ready(function () {
                 }
                 else {
                     // Open this row
-                    row.child(format(row.data())).show();
+                    var $child = $(format(row.data()));
+                    row.child($child).show();
+
+                    var newId = $('#results').length + 1;
+                    //var $results = $($('#results')[0].outerHTML)
+                    var $results = $('#results').clone().appendTo($child).prop('id', 'results' + newId);
+                    //$child.append($results);
+
+                    showResults($results, row.data().data, false)
 
                     tr.addClass('shown');
 

@@ -28,30 +28,35 @@ namespace ScriptRunner.Library.Services
         {
             string scriptFilename = string.Empty;
             bool success = true;
+            var scriptResults = new List<ScriptResults>();
 
             if (string.IsNullOrWhiteSpace(actionedBy))
                 throw new Exception($"Unknown user running {package.UniqueId}");
 
             try
             {                
-                _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");
-                                
-                var scriptResults = new List<ScriptResults>();
+                _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");                                            
 
                 foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))
                 {
                     switch (script)
                     {
                         case SqlScript sqlScript:
-                            scriptResults.Add(await _sqlRunner.ExecuteAsync(sqlScript, package.Params));
+                            {
+                                var results = await _sqlRunner.ExecuteAsync(sqlScript, package.Params);
+                                scriptResults.Add(results);
+                            }
                             break;
                         case PowershellScript powershellScript:
-                            scriptResults.Add(await _powerShellRunner.ExecuteAsync(powershellScript, package.Params));
+                            {
+                                var results = await _powerShellRunner.ExecuteAsync(powershellScript, package.Params);
+                                scriptResults.Add(results);
+                            }
                             break;
                     }
                 }
 
-                return new PackageResult { ScriptResults = scriptResults };
+                return new PackageResult { Results = scriptResults };
             }
             catch (Exception ex)
             {
@@ -62,6 +67,7 @@ namespace ScriptRunner.Library.Services
             }
             finally
             {
+                package.SetResults(scriptResults);
                 await LogActivity(package, actionedBy, success);
             }
         }

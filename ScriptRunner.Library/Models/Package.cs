@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ScriptRunner.Library.Models.Scripts;
@@ -8,6 +9,7 @@ namespace ScriptRunner.Library.Models
 	[DebuggerDisplay("{UniqueId}")]
     public class Package
     {
+        public string Filename { get; set; }
         public string System { get; set; }
         public string Description { get; set; }
         [JsonConverter(typeof(SimpleScriptJsonConverter))]
@@ -19,6 +21,7 @@ namespace ScriptRunner.Library.Models
         public DateTime? ImportedDate { get; set; }
         public Param[] Params { get; set; }
         public string UniqueId => $"{Id} - {Version}";
+        public IEnumerable<ScriptResults>? Results { get; set; } = null;
 
         public void PopulateParams(Package script)
         {
@@ -26,6 +29,11 @@ namespace ScriptRunner.Library.Models
             {
                 param.Value = script.Params.Single(s => s.Name == param.Name && s.Type == param.Type).Value;
             }
+        }
+
+        internal void SetResults(IEnumerable<ScriptResults> results)
+        {
+            Results = results;
         }
     }
 
@@ -52,8 +60,9 @@ namespace ScriptRunner.Library.Models
                 JObject jObject = JObject.Load(reader);
 
                 var scriptType = jObject.Property("ScriptType", StringComparison.OrdinalIgnoreCase);
+                var scriptTypeValue = scriptType.Value.Value<string>();
 
-                switch (scriptType.ToString())
+                switch (scriptTypeValue)
                 {
                     case "SqlScript":
                         scripts.Add(jObject.ToObject<SqlScript>());
@@ -61,6 +70,8 @@ namespace ScriptRunner.Library.Models
                     case "PowershellScript":
                         scripts.Add(jObject.ToObject<PowershellScript>());
                         break;
+                    default:
+                        throw new ArgumentException($"Unknown ScriptType: {scriptTypeValue}");
                 }
             }
 

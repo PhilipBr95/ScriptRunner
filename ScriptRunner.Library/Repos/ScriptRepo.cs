@@ -38,8 +38,8 @@ namespace ScriptRunner.Library.Repos
 
                 try
                 {                                        
-                    Package sqlPackage = await LoadPackage(file);
-                    parsedScripts.Add(sqlPackage);
+                    Package package = await LoadPackage(file);
+                    parsedScripts.Add(package);
                 }
                 catch (Exception ex)
                 {
@@ -55,8 +55,10 @@ namespace ScriptRunner.Library.Repos
                 try
                 {
                     var json = File.ReadAllText(file);
-                    Package sqlPackage = JsonConvert.DeserializeObject<Package>(json);
-                    parsedScripts.Add(sqlPackage);
+                    Package package = JsonConvert.DeserializeObject<Package>(json);
+                    package.Filename = file;
+
+                    parsedScripts.Add(package);
                 }
                 catch (Exception ex)
                 {
@@ -72,7 +74,9 @@ namespace ScriptRunner.Library.Repos
         {
             var config = await File.ReadAllTextAsync(configFile);
             var package = JsonConvert.DeserializeObject<SqlPackage>(config);
+
             package.ImportedDate ??= new FileInfo(configFile).CreationTime;
+            package.Filename = configFile;
 
             var extensions = new string[] { "*.sql", "*.ps1" };
             var scriptFiles = Directory.EnumerateFiles(Path.GetDirectoryName(configFile), "*.*", SearchOption.AllDirectories)
@@ -102,6 +106,7 @@ namespace ScriptRunner.Library.Repos
             }
 
             package.Scripts = scripts;
+            
             return package;
         }
 

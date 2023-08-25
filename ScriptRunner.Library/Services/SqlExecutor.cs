@@ -28,7 +28,7 @@ namespace ScriptRunner.Library.Services
                                 
                 var sql = TagHelper.PopulateTags(sqlScript.Script, @params);
 
-                _logger?.LogInformation($"Running: {sqlScript.Filename} at [{sqlScript.ConnectionString}] - {sql}");
+                _logger?.LogInformation($"Running: {sqlScript.Filename} with [{sqlScript.ConnectionString}] - {sql}");
 
                 using var conn = new SqlConnection(sqlScript.ConnectionString);
                 await conn.OpenAsync();

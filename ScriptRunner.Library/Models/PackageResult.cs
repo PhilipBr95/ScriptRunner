@@ -4,6 +4,6 @@ namespace ScriptRunner.Library.Models
 {
     public class PackageResult
     {
-        public IEnumerable<ScriptResults> ScriptResults { get; set; }
+        public IEnumerable<ScriptResults> Results { get; set; }
     }
 }

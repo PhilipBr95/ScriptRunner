@@ -22,7 +22,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
         "Tags":["Member", "Name"],
         "Params": [
             { "Name": "MemberNumber", "Type": "number" },
-            { "Name": "Name", "Type": "text", "Required": false, "Tooltip": "Their new Name" }
+            { "Name": "Name", "Type": "text", "Required": false, "Tooltip": "Their new Name" },
 			{ "Name": "DataFile", "Type": "file", "Value": ".csv" }
         ]
     }

@@ -50,7 +50,7 @@ namespace ScriptRunner.Library.Repos
             files = Directory.EnumerateFiles(_repoSettings.ScriptFolder, "*.srunner", SearchOption.AllDirectories);
             foreach (var file in files)
             {
-                _logger?.LogInformation($"Found Script folder {Path.GetDirectoryName(file)}");
+                _logger?.LogInformation($"Found ScriptRunner file {file}");
 
                 try
                 {

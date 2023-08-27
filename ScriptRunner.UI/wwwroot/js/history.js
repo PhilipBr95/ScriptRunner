@@ -7,7 +7,13 @@
         return;
 
     var ss = params.forEach(function (obj, x) {
-        html += `<div><dt>${obj.name}</dt><dd>${obj.value}</dd></div>`
+        let value = obj.value;
+
+        if (obj.type == "file") {
+            value = "File Content"
+        }
+
+        html += `<div><dt>${obj.name}</dt><dd>${value}</dd></div>`
     });
 
     return `<div><dl><dd class="paramLabel">Parameters</dd>${html}</dl><a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;

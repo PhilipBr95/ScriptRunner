@@ -11,7 +11,7 @@ namespace ScriptRunner.Library.Helpers
             foreach(var param in @params)
             {
                 var regex = new Regex($"{{{param.Name}}}");
-                scriptText = regex.Replace(scriptText, param.Value);
+                scriptText = regex.Replace(scriptText, param.Value ?? string.Empty);
             }
 
             return scriptText;

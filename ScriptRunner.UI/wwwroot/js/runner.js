@@ -76,12 +76,24 @@ function showScriptDetails(script) {
         let value = urlParams.get(el.name.toLowerCase()) ?? el.value ?? '';
 
         html = html.replace(/{Name}/g, el.name);
-        html = html.replace(/{Type}/g, el.htmlType);
-        html = html.replace(/{Value}/g, value);
-        html = html.replace(/{required}/g, el.required ? 'required' : '');
+        html = html.replace(/{Type}/g, el.htmlType);                
         html = html.replace(/{Tooltip}/g, el.tooltip ?? '');
-        html = html.replace(/{tooltipVisible}/g, (el.tooltip ?? '').length > 0 ? '' : 'hidden' );
-        params.append(html);
+        html = html.replace(/{tooltipVisible}/g, (el.tooltip ?? '').length > 0 ? '' : 'hidden');
+
+        let $html = $($.parseHTML(html))
+        let $input = $html.find('input');
+
+        if (el.required) {
+            $input.attr('required', true)
+        }
+        
+        if (el.htmlType == "file") {
+            $input.attr('accept',el.value)
+        } else {
+            $input.attr('value', el.value)
+        }
+
+        params.append($html);
     });
 
     $("[required]").after("<span class='required'>*</span>");
@@ -122,39 +134,63 @@ function populateDropDown(el, items) {
     el.append(options);
 }
 
-function updateParamValues() {
+async function updateParamValues() {
     var values = $('.valueinputs');
-    values.each(function (i, obj) {
-        var param = selectedScript.params.find(f => f.name == obj.id);
+
+    for (let i = 0; i < values.length; i++) {
+        let value = values[i];
+        let param = selectedScript.params.find(f => f.name == value.id);        
 
         if (param != null) {
-            param.value = obj.value;
-        }            
+            if (param.type == "file") {
+                let file = new FileReader();
+
+                file.readAsDataURL(value.files[0])
+                await new Promise(resolve => file.onload = () => resolve())
+                
+                param.value = file.result.substring(file.result.indexOf(',')+1)
+
+            } else {
+                param.value = value.value;
+            }
+        }
+    };
+
+
+    return values;    
+}
+
+function resolveAfter2Seconds() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve('2 seconds');
+        }, 2000);
     });
 }
 
-$('#execute').on("click", function (e) {    
+$('#execute').on("click", async function (e) {    
     if ($("#form")[0].checkValidity() == false) {
         $("#form")[0].reportValidity()
         return;
     }
 
-    updateParamValues();
+    updateParamValues().then(() => {
 
-    $('#execute').attr("disabled", true);
-    $('*').css('cursor', 'wait');
+        $('#execute').attr("disabled", true);
+        $('*').css('cursor', 'wait');
 
-    var jsonData = JSON.stringify(selectedScript);
-    $.ajax({
-        url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
-    }).done(function (response) {
-        var $results = $('#results');
-        showResults($results, response, true);
-        $('#execute').attr("disabled", false);
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(jqXHR.responseText);
-        $('#execute').attr("disabled", false);
-    }).always(function () {
-        $('*').css('cursor', '');
+        var jsonData = JSON.stringify(selectedScript);
+        $.ajax({
+            url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
+        }).done(function (response) {
+            var $results = $('#results');
+            showResults($results, response, true);
+            $('#execute').attr("disabled", false);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+            $('#execute').attr("disabled", false);
+        }).always(function () {
+            $('*').css('cursor', '');
+        });
     });
 });

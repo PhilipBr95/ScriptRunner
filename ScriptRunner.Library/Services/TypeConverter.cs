@@ -16,7 +16,8 @@
                 "datetime-local" or "datetime" => "datetime-local",
                 "text" or "string" or "varchar" => "text",
                 "number" or "int" => "number",
-                _ => throw new KeyNotFoundException($"Unknown type {_type}"),
+                "file" => "file",
+                _ => "text"
             };
         }
     }

@@ -143,13 +143,14 @@ async function updateParamValues() {
 
         if (param != null) {
             if (param.type == "file") {
-                let file = new FileReader();
+                if (value.files.length > 0) {
+                    let file = new FileReader();
 
-                file.readAsDataURL(value.files[0])
-                await new Promise(resolve => file.onload = () => resolve())
-                
-                param.value = file.result.substring(file.result.indexOf(',')+1)
+                    file.readAsDataURL(value.files[0])
+                    await new Promise(resolve => file.onload = () => resolve())
 
+                    param.value = file.result.substring(file.result.indexOf(',') + 1)
+                }
             } else {
                 param.value = value.value;
             }

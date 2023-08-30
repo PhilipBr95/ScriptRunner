@@ -20,7 +20,9 @@ namespace ScriptRunner.Library.Models
         public string Version { get; set; }
         public DateTime? ImportedDate { get; set; }
         public Param[] Params { get; set; }
-        public string UniqueId => $"{Id} - {Version}";
+        public string[]? AllowedGroupsAD { get; set; }
+
+		public string UniqueId => $"{Id} - {Version}";
         public IEnumerable<ScriptResults>? Results { get; set; } = null;
 
         public void PopulateParams(Package script)

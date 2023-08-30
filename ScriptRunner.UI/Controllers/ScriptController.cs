@@ -8,8 +8,11 @@ using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
+using ScriptRunner.UI.Extensions;
+using ScriptRunner.UI.Settings;
 using System.Linq;
 using System.Management.Automation;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 
 namespace ScriptRunner.UI.Controllers
@@ -23,15 +26,17 @@ namespace ScriptRunner.UI.Controllers
         private readonly INugetRepo _nugetRepo;
         private readonly IScriptRepo _scriptRepo;
         private readonly RepoSettings _repoSettings;
+        private readonly WebSettings _webSettings;
         private readonly ILogger<ScriptController> _logger;
 
-        public ScriptController(IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, INugetRepo nugetRepo, IScriptRepo scriptRepo, IOptions<RepoSettings> options, ILogger<ScriptController> logger) 
+        public ScriptController(IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, INugetRepo nugetRepo, IScriptRepo scriptRepo, IOptions<RepoSettings> options, IOptions<WebSettings> webSettings, ILogger<ScriptController> logger) 
         {
             _scriptRetriever = scriptRetriever;
             _scriptRunner = scriptRunner;
             _nugetRepo = nugetRepo;
             _scriptRepo = scriptRepo;
             _repoSettings = options.Value;
+            _webSettings = webSettings.Value;
             _logger = logger;
         }
 
@@ -42,10 +47,9 @@ namespace ScriptRunner.UI.Controllers
             {
                 //todo - create a ScriptVM to remove some properties
                 var packages = await _scriptRetriever.GetPackagesAsync();
-				return Json(new { data = packages });
+                packages = packages.Where(w => IsAllowed(w.AllowedGroupsAD));
 
-				//var packageVMs = packages.Select(s => new PackageModel(s));
-				//return Json(packageVMs);
+				return Json(new { data = packages });
             }
             catch(Exception ex)
             {
@@ -102,20 +106,38 @@ namespace ScriptRunner.UI.Controllers
                 //Play it safe and get the Script again :-)
                 var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
                 repoScript.PopulateParams(script);
+                
+                if (IsAllowed(repoScript.AllowedGroupsAD))
+                {
+					var currentUser = HttpContext.User.Identity.Name;
+					var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
 
-                var currentUser = HttpContext.User.Identity.Name;
-                var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
-
-                return Ok(result);
+                    return Ok(result);
+                }
+                else
+                {
+                    return Unauthorized($"You are not allowed to execute the script {script.UniqueId}");
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger?.LogError(ex, $"Unknown error with {script.UniqueId}");
                 throw;
             }
         }
 
-        [HttpPost("/api/Script/ImportScript")]
+		private bool IsAllowed(string[]? allowedGroupsAD)
+		{
+			var groups = HttpContext.User.Identity.Groups();
+			if (groups.Any(a => a == _webSettings.AdminAD) || groups.Where(w => allowedGroupsAD.Contains(w)).Any())
+			{
+                return true;
+			}
+
+            return false;
+		}
+
+		[HttpPost("/api/Script/ImportScript")]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> ImportScript(Package package)
         {

@@ -47,11 +47,13 @@ namespace ScriptRunner.UI
 
             //builder.Services.AddOptions<RepoSettings>();
             builder.Services.Configure<RepoSettings>(builder.Configuration.GetSection(nameof(RepoSettings)));
+            builder.Services.Configure<HistorySettings>(builder.Configuration.GetSection(nameof(HistorySettings)));
+            builder.Services.Configure<WebSettings>(builder.Configuration.GetSection(nameof(WebSettings)));
+
             builder.Services.AddTransient<INugetRepo, NugetRepo>();
             builder.Services.AddTransient<IScriptRepo, ScriptRepo>();
             builder.Services.AddTransient<IHistoryRepo, JsonHistoryRepo>();
 
-            builder.Services.Configure<HistorySettings>(builder.Configuration.GetSection(nameof(HistorySettings)));
             builder.Services.AddTransient<IHistoryService, HistoryService>();
 
             builder.Services.AddTransient<ITransactionService, TransactionService>();

@@ -73,3 +73,6 @@ DECLARE @MemberDOB@ datetime = '01/01/2000'
 
 select Concat('Hello ', @MemberName@, ' (', @MemberNumber@, ') You''re DOB is ', @MemberDOB@)
 ```
+
+## Security
+Access to the Admin page can be restricted via `appsettings` and access to the scripts are restricted by the `AllowedGroupsAD` list.

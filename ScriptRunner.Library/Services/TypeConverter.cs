@@ -17,6 +17,8 @@
                 "text" or "string" or "varchar" => "text",
                 "number" or "int" => "number",
                 "file" => "file",
+                "checkbox" => "checkbox",
+                "combo" or "select" => "select",
                 _ => "text"
             };
         }

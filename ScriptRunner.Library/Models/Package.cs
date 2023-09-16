@@ -25,12 +25,15 @@ namespace ScriptRunner.Library.Models
 		public string UniqueId => $"{Id} - {Version}";
         public IEnumerable<ScriptResults>? Results { get; set; } = null;
 
-        public void PopulateParams(Package script)
+        public Package CloneWithParams(Package script)
         {
-            foreach(var param in Params)
+            var newScript = JsonConvert.DeserializeObject<Package>(JsonConvert.SerializeObject(script));
+            foreach(var param in newScript.Params)
             {
                 param.Value = script.Params.Single(s => s.Name == param.Name && s.Type == param.Type).Value;
             }
+
+            return newScript;
         }
 
         internal void SetResults(IEnumerable<ScriptResults> results)

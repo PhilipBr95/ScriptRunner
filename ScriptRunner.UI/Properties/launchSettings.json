@@ -3,7 +3,7 @@
     "ScriptRunner.UI": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "?ScriptId=Powershell1&MemberNo=12&Name=",
+      "launchUrl": "?ScriptId=Powershell11",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

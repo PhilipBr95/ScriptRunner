@@ -99,13 +99,14 @@ namespace ScriptRunner.UI.Controllers
 
         [HttpPost]
         [IgnoreAntiforgeryToken]
+        [DisableRequestSizeLimit]
         public async Task<IActionResult> RunScript(Package script)
         {
             try
             {
                 //Play it safe and get the Script again :-)
                 var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
-                repoScript.PopulateParams(script);
+                repoScript = repoScript.CloneWithParams(script);
                 
                 if (IsAllowed(repoScript.AllowedGroupsAD))
                 {

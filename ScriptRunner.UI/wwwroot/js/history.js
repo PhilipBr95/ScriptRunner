@@ -142,9 +142,9 @@ function generateUrl(script) {
     
         script.data.params.forEach(el => {
             let value = $(`#${el.name}`).val();
-            url += `&${el.name}=${el.value}`;
+            url += `&${el.name}=${encodeURIComponent(el.value)}`;
         });
 
-        return encodeURI(url);
+        return url;
     }
 }

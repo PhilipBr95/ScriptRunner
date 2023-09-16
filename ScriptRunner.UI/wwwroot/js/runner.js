@@ -38,7 +38,7 @@ function showScriptDetails(script) {
     selectedScript = script;
 
     let params = $('#Params');
-    params.html('');
+    params.empty();
 
     if (script == null) {
         $('#description').text('');
@@ -68,62 +68,161 @@ function showScriptDetails(script) {
         selectedScript = script;
     }
 
-    let paramTemplate = $('#paramTemplate').html();
-    let urlParams = new URLSearchParams(window.location.search.toLowerCase());
-    
+    const urlParams = new URLSearchParams(window.location.search);
+    const newParams = new URLSearchParams();
+    for (const [name, value] of urlParams) {
+        newParams.append(name.toLowerCase(), value);
+    }
+
+    let dataTransfers = new Object();
+
     script.params.forEach(el => {
-        let html = paramTemplate;
-        let value = urlParams.get(el.name.toLowerCase()) ?? el.value ?? '';
+        let $input;
+        let $html;
 
-        html = html.replace(/{Name}/g, el.name);
-        html = html.replace(/{Type}/g, el.htmlType);                
-        html = html.replace(/{Tooltip}/g, el.tooltip ?? '');
-        html = html.replace(/{tooltipVisible}/g, (el.tooltip ?? '').length > 0 ? '' : 'hidden');
+        let value = newParams.get(el.name.toLowerCase()) ?? el.value ?? '';
 
-        let $html = $($.parseHTML(html))
-        let $input = $html.find('input');
+        if (el.htmlType == "select") {
+            let options = `<option value=""></option>`;
+
+            for (const [key, value] of Object.entries(el.data)) {
+                let selected = value == 'true' ? 'selected' : '';
+                options += `<option value="${key}" ${selected}>${key}</option>`;
+            }
+
+            let html = getParamTemplateHtml(el);
+            html = html.replace(/{Options}/g, options);
+
+            $html = $($.parseHTML(html))
+            $input = $html.find('input');
+
+        } else if (el.htmlType == "file") {            
+            if (value?.length > 0) {
+                let file = convertBase64ToFile(value, el.data['FileType']);
+
+                if (file != null) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    dataTransfers[el.name] = dataTransfer;
+
+                    el.tooltip = `Original file provided from previous run`
+                }
+            }
+
+            let html = getParamTemplateHtml(el);
+            $html = $($.parseHTML(html))
+            $input = $html.find('input');
+
+            if ('FileType' in el.data) { 
+                $input.attr('accept', el.data['FileType']);
+            }            
+        } else {
+            let html = getParamTemplateHtml(el);
+            $html = $($.parseHTML(html));
+            $input = $html.find('input');
+
+            if (el.htmlType == "checkbox") {
+
+                if (value == 'true') {
+                    $input.attr('checked', true)
+                }
+            }
+
+            $input.attr('value', value)
+        }
 
         if (el.required) {
             $input.attr('required', true)
-        }
-        
-        if (el.htmlType == "file") {
-            $input.attr('accept',el.value)
-        } else {
-            $input.attr('value', el.value)
+            $input.parent().addClass('required', true)
         }
 
         params.append($html);
     });
 
-    $("[required]").after("<span class='required'>*</span>");
+    let $input2 = $('#form').find(':input');
+    for (var key in dataTransfers) {
+        var value = dataTransfers[key];
+
+        let $file = $('#form').find(`#${key}`);
+        $file.files = value.files;
+    }
+
+    const fileInput = document.querySelector('input[type="file"]');
+    fileInput.files = dataTransfers['Name']?.files
 
     let $copyEl = $("#copyScript");
-    $copyEl.on("mouseenter", function () {
-        $copyEl.attr("href", generateUrl(script))
+    $copyEl.on("mouseenter", async function () {
+        let href = await generateUrl(script);
+        $copyEl.attr("href", href)
     });
-    $copyEl.on("click", function () {
-        navigator.clipboard.writeText(generateUrl(script));
+    $copyEl.on("click", async function (event) {
+        navigator.clipboard.writeText(await generateUrl(script));
+
+        $.toast({
+            type: 'success',
+            autoDismiss: true,
+            message: 'URL Copied!'
+        });
+
+        event.preventDefault();
         return false;
     });     
 
 }
 
-function generateUrl(script) {
-    let url = window.location.href.split('?')[0];
+function getParamTemplateHtml(el) {
+    let html = getParamTemplate(el.htmlType);
 
+    html = html.replace(/{Name}/g, el.name);
+    html = html.replace(/{Type}/g, el.htmlType);
+    html = html.replace(/{Tooltip}/g, el.tooltip ?? '');
+    html = html.replace(/{tooltipVisible}/g, (el.tooltip ?? '').length > 0 ? '' : 'hidden');
+    
+    return html;
+}
+
+function getParamTemplate(htmlType) {
+
+    let templateName;
+
+    switch (htmlType) {
+        case 'file':
+            templateName = '#paramTemplate-File';
+            break;
+        case 'checkbox':
+            templateName = '#paramTemplate-Checkbox';
+            break;
+        case 'select':
+            templateName = '#paramTemplate-Select';
+            break;
+        default:
+            templateName = '#paramTemplate'
+            break;
+    }
+
+    return $(templateName).html();
+}
+
+async function generateUrl(script) {
+    let url = window.location.href.split('?')[0];
     url += `?ScriptId=${script.id}`;
 
-    script.params.forEach(el => {
-        let value = $(`#${el.name}`).val();
-        url += `&${el.name}=${value}`;
+    await updateParamValues().then(() => {
+
+        for (let i = 0; i < script.params.length; i++) {
+            let param = script.params[i];
+
+            if (param.value != null) { 
+                url += `&${param.name}=${encodeURIComponent(param.value)}`;
+            }
+        }       
     });
 
-    return encodeURI(url);
+    return url;
 }
 
 function populateDropDown(el, items) {
-    el.html('');
+    el.empty();
 
     let options = '';
     options += '<option value="Select"></option>';
@@ -142,24 +241,53 @@ async function updateParamValues() {
         let param = selectedScript.params.find(f => f.name == value.id);        
 
         if (param != null) {
-            if (param.type == "file") {
-                if (value.files.length > 0) {
-                    let file = new FileReader();
-
-                    file.readAsDataURL(value.files[0])
-                    await new Promise(resolve => file.onload = () => resolve())
-
-                    param.value = file.result.substring(file.result.indexOf(',') + 1)
-                }
-            } else {
-                param.value = value.value;
-            }
+            await populateParamValue(param, value);
         }
     };
 
-
     return values;    
 }
+
+async function populateParamValue(param, value) {
+
+    if (param.type == "select") {
+        param.value = value.checked;
+    } else if (param.type == "checkbox") {
+        param.value = value.checked;
+    } else if (param.type == "file") {
+        if (value.files.length > 0) {
+            let file = new FileReader();
+
+            file.readAsDataURL(value.files[0])
+            await new Promise(resolve => file.onload = () => resolve())
+
+            param.value = file.result;
+            param.data['FileName'] = value.files[0].name
+        }
+    } else {
+        param.value = value.value;
+    }
+}
+
+function convertBase64ToFile(image, filetype) {
+    try {
+        const byteString = atob(image.split(',')[1]);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i += 1) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        const newBlob = new File([ab], `PreviousFile${filetype}`, {
+            type: 'image/png',
+        });
+        return newBlob;
+    }
+    catch (err) {
+        console.error(err);
+    }
+
+    return null;
+};
 
 function resolveAfter2Seconds() {
     return new Promise(resolve => {
@@ -186,7 +314,11 @@ $('#execute').on("click", async function (e) {
         }).done(function (response) {
             var $results = $('#results');
             showResults($results, response, true);
-            $('#execute').attr("disabled", false);
+
+            const $execute = $('#execute');
+            
+            $execute.attr("disabled", false);
+            $execute[0].scrollIntoView();
         }).fail(function (jqXHR, textStatus, errorThrown) {
             alert(jqXHR.responseText);
             $('#execute').attr("disabled", false);

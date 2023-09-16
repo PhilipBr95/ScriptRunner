@@ -35,7 +35,7 @@ body {
 }
 
 .withGap {
-    margin-top: 2px
+    margin-top: 2px;
 }
 .withBigGap {
     margin-top: 8px
@@ -46,7 +46,8 @@ body {
 }
 
 .dropdown {
-    min-width: 250px
+    min-width: 250px;
+    width: auto;
 }
 
 ::placeholder {
@@ -62,14 +63,10 @@ body {
     margin-left: 15px
 }
 
-.required {
-    position: absolute;
-    margin-left: -12px;
-    margin-top: -5px;
-    color: #FB0000;
-    font-size: 20px;
+.input-group.required .form-label:after {
+    content: " *";
+    color: red;
 }
-
 
 table.dataTable td.details-control {
     padding: 0 0 0 10px;
@@ -162,12 +159,19 @@ dd {
     width: 50px;
 }
 
+.input-group-checkbox input[type=checkbox] {
+    border-radius: 3px !important;
+}
 
+.input-group-checkbox .mytooltip {
+    padding-left: 8px;
+}
 
 .mytooltip {
     position: relative;
     display: inline-block;
     cursor: help;
+    font-weight: bold;
 }
 
 .mytooltip .tooltiptext {
@@ -177,7 +181,7 @@ dd {
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 5px;
     position: absolute;
     z-index: 1;
     bottom: 125%;
@@ -185,6 +189,7 @@ dd {
     margin-left: -150px;
     opacity: 0;
     transition: opacity 0.3s;
+    font-weight: normal;
 }
 
 .mytooltip .tooltiptext::after {
@@ -287,4 +292,22 @@ dd {
 
 .new-input-textarea {
     min-height: 100px;
+}
+
+/*input[type='file'] {
+    color: transparent;
+    width: 100px;
+}
+*/
+.valueinputs {
+    width: auto;
+}
+
+.resultsMessages {
+    width: 500px;
+    word-wrap:break-word;
+}
+
+.paramTemplate {
+    display: none;
 }

@@ -33,7 +33,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 | Property   | Description|
 | ---------- | ---------- |
 |ConnectionString|Optional and only required for SQL scripts. If not provided, then the folder structure will be used to create the ConnectionString. <br />If both are provided, then the folder sturcture will override the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`
-|Params|Params must be populated by the user (unless optional - `"Required": false`) before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<br /><strong>Allowed types:</strong> text/string/varchar, number/int, datetime and file - The file will be presented to the script as base64.<br />Keep the `Name` short and simple.  Use the optional `Tooltip` property to add detail
+|Params|Params must be populated by the user (unless optional - `"Required": false`) before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<br /><strong>Allowed types:</strong> text/string/varchar, number/int, checkbox, 5datetime and file - The file will be presented to the script as base64.<br />Keep the `Name` short and simple.  Use the optional `Tooltip` property to add detail
 
 <br />
 

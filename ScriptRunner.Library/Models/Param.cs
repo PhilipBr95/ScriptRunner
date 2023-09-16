@@ -15,5 +15,6 @@ namespace ScriptRunner.Library.Models
         public bool Required { get; set; } = true;
         public string HtmlType => new Services.TypeConverter(Type).ConvertToHtml();
         public string? Tooltip { get; set; }
+        public IDictionary<string,string>? Data { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
@@ -22,14 +23,13 @@ namespace ScriptRunner.UI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var webSettings = builder.Configuration.GetSection(nameof(WebSettings)).Get<WebSettings>();
 
             builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
                             .AddNegotiate();
 
             builder.Services.AddAuthorization(options =>
-            {                
-                var webSettings = builder.Configuration.GetSection(nameof(WebSettings)).Get<WebSettings>();
-
+            {                               
                 options.AddPolicy("AdminOnly", policy => policy.Requirements.Add(new CheckADGroupRequirement(webSettings.AdminAD)));
                 options.FallbackPolicy = options.DefaultPolicy;
             });
@@ -71,6 +71,12 @@ namespace ScriptRunner.UI
 
             builder.Services.AddControllersWithViews()
                             .AddNewtonsoftJson();
+
+            builder.Services.Configure<KestrelServerOptions>(options =>
+            {                
+                options.Limits.MaxRequestLineSize = webSettings.MaxRequestLineSize;
+                options.Limits.MaxRequestBufferSize = webSettings.MaxRequestLineSize;
+            });
 
             var app = builder.Build();
 

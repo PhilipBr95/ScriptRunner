@@ -9,109 +9,145 @@
 <br />
 
 <form method="post" action="/api/Script" id="form">
-@Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
 
-<div class="container">
-    <div class="row withGap">
-        <div class="col-2">
-                <label class="row-label">System</label>
-        </div>
-        <div class="col-lg">
-            <select id="systems" class="dropdown"></select>
-        </div>
-    </div>
-    <div class="row withGap">
-        <div class="col-2">
-                <label class="row-label">Script</label>
-        </div>
-        <div class="col-lg">
-            <select id="scripts" class="dropdown"></select>
-        </div>
-    </div>
-    <div class="row withGap">
-        <div class="col-2">
-                <label class="row-label">Description</label>
-        </div>
-        <div class="col-lg">
-            <label id="description"></label>
-        </div>
-    </div>
-    <div class="row withGap">
-        <div class="col-2">
-                <label class="row-label">Tags</label>
-        </div>
-        <div class="col-lg">
-            <label id="tags"></label>
-        </div>
-    </div>
-    <div class="row withGap">
-        <div class="col-2">
-                <label class="row-label">Version</label>
-        </div>
-        <div class="col-lg">
-            <label id="version"></label>
-        </div>
-    </div>
-    <div class="row withGap">
-        <div class="col-2">
-            <label class="row-label">Params</label>
-        </div>
-        <div class="col-lg">
-            <div id="Params">
+    <div class="container">
+        <div style="width:50%">
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="systems" class="form-label">System</label>
+                </div>
+                <div class="col-9">
+                    <select id="systems" class="form-select dropdown"></select>
+                </div>
             </div>
-        </div>
-    </div>
-    <br />
-    <div class="row withGap">
-        <div class="col-2">            
-        </div>
-        <div class="col-lg">
-            <div>
-                <input id="execute" type="button" value="Execute" class="btn btn-primary hidden" />
-                <a href="todo" id="copyScript" class="hidden padded">Copy Script</a>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="scripts" class="form-label">Script</label>
+                </div>
+                <div class="col-9">
+                    <select id="scripts" class="form-select dropdown"></select>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div id="paramTemplate" style="visibility:hidden">
-        <div class="row withGap">
-            <div class="col-2">
-                    <label for="{Name}" class="row-label">{Name}</label>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="description" class="form-label">Description</label>
+                </div>
+                <div class="col-9">
+                    <label id="description" class="form-label"></label>
+                </div>
             </div>
-                <div class="col-lg">
-                    <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="valueinputs" />
-                    <div class="mytooltip {tooltipVisible}">?
-                        <span class="tooltiptext">{Tooltip}</span>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="tags" class="form-label">Tags</label>
+                </div>
+                <div class="col-9">
+                    <label id="tags" class="form-label"></label>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="version" class="form-label">Version</label>
+                </div>
+                <div class="col-9">
+                    <label id="version" class="form-label"></label>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="Params" class="form-label">Params</label>
+                </div>
+                <div class="col-9">
+                    <div id="Params">
                     </div>
+                </div>
+            </div>
+            <br />
+            <div class="row withGap mb-2">
+                <div class="col-3">
+                </div>
+                <div class="col-9">
+                    <div>
+                        <input id="execute" type="button" value="Execute" class="btn btn-primary hidden" />
+                        <a href="todo" id="copyScript" class="hidden padded">Copy Script</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr width="50%" style="margin: auto;margin-bottom:30px" />
+
+        <div id="results" class="hidden">
+            <div class="row withGap">
+                <div class="col-1">
+                    <label>Results</label>
+                </div>
+                <div class="col-lg tableDiv" name="resultsTables">
+                </div>
+            </div>
+
+            <div class="row withBigGap">
+                <div class="col-1">
+                    <label>Messages</label>
+                </div>
+                <div class="col-lg resultsMessages" name="resultsMessages">
+                </div>
+            </div>
+        </div>
+
+        <div id="toasts"></div>
+    </div>
+
+
+    <div id="paramTemplate" class="paramTemplate">
+        <div class="input-group mb-2">
+
+            <label for="{Name}" class="form-label col-4">{Name}</label>
+            <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />
+            <div class="input-group-append mytooltip {tooltipVisible} m-2">
+                ? <span class="tooltiptext">{Tooltip}</span>
             </div>
         </div>
     </div>
 
-    <hr width="50%" style="margin: auto;margin-bottom:30px" />
+    <div id="paramTemplate-File" class="paramTemplate">
+        <div class="input-group mb-2">
 
-    <div id="results" class="hidden">
-        <div class="row withGap">
-            <div class="col-1">
-                <label>Results</label>
-            </div>
-            <div class="col-lg tableDiv" name="resultsTables">
-            </div>
-        </div>
-
-        <div class="row withBigGap">
-            <div class="col-1">
-                <label>Messages</label>
-            </div>
-            <div class="col-lg" name="resultsMessages">
+            <label for="{Name}" class="form-label col-4">{Name}</label>
+            <input type="file" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />            
+            <div class="input-group-append mytooltip {tooltipVisible} m-2">
+                ? <span class="tooltiptext">{Tooltip}</span>
             </div>
         </div>
     </div>
-</div>
 
+    <div id="paramTemplate-Checkbox" class="paramTemplate">
+        <div class="input-group input-group-checkbox mb-2">
+            <label class="form-label col-4" for="{Name}">{Name}</label>
+            <input class="form-check-input" type="checkbox" value="" id="{Name}">
+            <div class="input-group-append mytooltip {tooltipVisible}">
+                ? <span class="tooltiptext">{Tooltip}</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="paramTemplate-Select" class="paramTemplate">
+        <div class="input-group mb-2">
+            <label class="form-label col-4" for="{Name}">{Name}</label>
+            <select name="{Name}" id="{Name}" class="form-select valueinputs">
+                {Options}
+            </select>
+            <div class="input-group-append mytooltip {tooltipVisible} m-2">
+                ? <span class="tooltiptext">{Tooltip}</span>
+            </div>
+        </div>
+    </div>
 </form>
 
 @section Scripts {
     <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/js/results.js" asp-append-version="true"></script>
+    <script src="~/js/toast.js" asp-append-version="true" type="module"></script>
+
 }
 

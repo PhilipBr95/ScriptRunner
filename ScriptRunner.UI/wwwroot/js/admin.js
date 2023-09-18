@@ -15,7 +15,10 @@ $(function () {
                     return `<a href='/?ScriptId=${data}'>${data}</a>`;
                 }
             },
-            { "data": "version", "title": "Version" },
+            {
+                "data": "version", "title": "Version", render: function (data, type, row) {
+                    return `<div class="mytooltip">${data}<span class="tooltiptext">${row.filename}</span></div>`;
+                } },
             {
                 "data": "importedDate", "sType": "date-uk", "title": "Imported Date", "type": "datetime", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);

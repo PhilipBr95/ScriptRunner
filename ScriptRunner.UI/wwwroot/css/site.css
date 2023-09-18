@@ -176,7 +176,7 @@ dd {
 
 .mytooltip .tooltiptext {
     visibility: hidden;
-    width: 300px;
+    width: 400px;
     background-color: #555;
     color: #fff;
     text-align: center;
@@ -186,10 +186,11 @@ dd {
     z-index: 1;
     bottom: 125%;
     left: 50%;
-    margin-left: -150px;
+    margin-left: -200px;
     opacity: 0;
     transition: opacity 0.3s;
     font-weight: normal;
+    word-wrap: break-word;
 }
 
 .mytooltip .tooltiptext::after {

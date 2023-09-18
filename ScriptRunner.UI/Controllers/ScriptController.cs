@@ -47,7 +47,7 @@ namespace ScriptRunner.UI.Controllers
             {
                 //todo - create a ScriptVM to remove some properties
                 var packages = await _scriptRetriever.GetPackagesAsync();
-                packages = packages.Where(w => IsAllowed(w.AllowedGroupsAD));
+                packages = packages.Where(w => IsAllowed(w.AllowedADGroups));
 
 				return Json(new { data = packages });
             }
@@ -108,7 +108,7 @@ namespace ScriptRunner.UI.Controllers
                 var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
                 repoScript = repoScript.CloneWithParams(script);
                 
-                if (IsAllowed(repoScript.AllowedGroupsAD))
+                if (IsAllowed(repoScript.AllowedADGroups))
                 {
 					var currentUser = HttpContext.User.Identity.Name;
 					var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);

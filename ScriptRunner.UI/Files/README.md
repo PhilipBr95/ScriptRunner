@@ -33,7 +33,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 
 | Property   | Description|
 | ---------- | ---------- |
-|`AllowedGroupsAD`|An array of AD groups allowed to run the script|
+|`AllowedADGroups`|An array of AD groups allowed to run the script|
 |`ConnectionString`|(Optional) - Only required for SQL scripts. If not provided, then the folder structure will be used to create the ConnectionString. <br />If both are provided, then the folder sturcture will override the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`|
 |`Params`|Params must be populated by the user (unless optional - `"Required": false`) before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<br /><br /><strong>Param Properties:</strong><table><tbody><tr><td>`Type`</td><td>`text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table>
 
@@ -75,4 +75,4 @@ select Concat('Hello ', @MemberName@, ' (', @MemberNumber@, ') You''re DOB is ',
 ```
 
 ## Security
-Access to the Admin page can be restricted via `appsettings` and access to the scripts are restricted by the `AllowedGroupsAD` list.
+Access to the Admin page can be restricted via `appsettings` and access to the scripts are restricted by the `AllowedADGroups` property per script.

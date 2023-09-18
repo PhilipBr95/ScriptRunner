@@ -294,20 +294,20 @@ dd {
     min-height: 100px;
 }
 
-/*input[type='file'] {
-    color: transparent;
-    width: 100px;
-}
-*/
 .valueinputs {
     width: auto;
 }
 
 .resultsMessages {
     width: 500px;
-    word-wrap:break-word;
+    word-wrap: break-word;
 }
 
 .paramTemplate {
     display: none;
+}
+
+.logs {
+    width: 100px;
+    word-wrap: break-word;
 }

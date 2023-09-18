@@ -152,11 +152,13 @@ function showScriptDetails(script) {
 
     let $copyEl = $("#copyScript");
     $copyEl.on("mouseenter", async function () {
-        let href = await generateUrl(script);
-        $copyEl.attr("href", href)
+        if ($copyEl.attr("href") == '') { 
+            let href = await generateUrl(script);
+            $copyEl.attr("href", href)
+        }
     });
     $copyEl.on("click", async function (event) {
-        navigator.clipboard.writeText(await generateUrl(script));
+        navigator.clipboard.writeText($copyEl.attr("href"));
 
         $.toast({
             type: 'success',

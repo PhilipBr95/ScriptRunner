@@ -130,7 +130,7 @@ namespace ScriptRunner.UI.Controllers
 		private bool IsAllowed(string[]? allowedGroupsAD)
 		{
 			var groups = HttpContext.User.Identity.Groups();
-			if (groups.Any(a => a == _webSettings.AdminAD) || groups.Where(w => allowedGroupsAD.Contains(w)).Any())
+			if (groups.Any(a => allowedGroupsAD == null || a == _webSettings.AdminAD) || groups.Where(w => allowedGroupsAD.Contains(w) == true).Any())
 			{
                 return true;
 			}

@@ -13,7 +13,8 @@
         {
             return _type switch
             {
-                "datetime-local" or "datetime" => "datetime-local",
+                "date" => "date",
+                "datetime-local" => "datetime-local",
                 "text" or "string" or "varchar" => "text",
                 "number" or "int" => "number",
                 "file" => "file",

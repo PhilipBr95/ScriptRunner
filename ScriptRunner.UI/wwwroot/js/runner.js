@@ -1,6 +1,7 @@
 ﻿
 var scripts;
 var selectedScript;
+var dynamicFunctions = [];
 
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
@@ -40,20 +41,25 @@ function showScriptDetails(script) {
     let params = $('#Params');
     params.empty();
 
+    $('#results').addClass('hidden');
+
     if (script == null) {
         $('#description').text('');
         $('#tags').text('');
         $('#version').text('');
 
         $('#execute').addClass('hidden');
-        $('#copyScript').addClass('hidden');
-
-        $('#results').addClass('hidden');
+        $('#copyScript').addClass('hidden');        
 
         return;
     } else {
-        $('#systems').val(script.system).change();
-        $('#scripts').val(script.id);
+        if ($('#systems').val() != script.system) {
+            $('#systems').val(script.system).change();
+        }
+
+        if ($('#scripts').val() != script.id) {
+            $('#scripts').val(script.id);
+        }
 
         $('#description').text(script.description);
         $('#tags').text(script.tags);
@@ -158,17 +164,124 @@ function showScriptDetails(script) {
         }
     });
     $copyEl.on("click", async function (event) {
-        navigator.clipboard.writeText($copyEl.attr("href"));
-
-        $.toast({
-            type: 'success',
-            autoDismiss: true,
-            message: 'URL Copied!'
-        });
+        window.copyText($copyEl.attr("href"), 'URL Copied!');
 
         event.preventDefault();
         return false;
     });     
+
+    addOptions(script);
+}
+
+window.copyText = function copyText(textToCopy, message) {
+    navigator.clipboard.writeText(textToCopy);
+
+    $.toast({
+        type: 'success',
+        autoDismiss: true,
+        message: message
+    });
+}
+
+function addOptions(script) {
+    //Remove the old styles
+    $("head [id^=customStyles]").remove();
+
+    //Remove the old functions
+    if (dynamicFunctions?.length > 0) {
+        dynamicFunctions.forEach(jQuery => {
+            $(jQuery.parent).off(jQuery.event, jQuery.selector, jQuery.func);
+        });
+    }
+
+    //Default Results then Messages
+    let layout = "HRM";
+
+    if (script.options != null) {
+        let options = script.options;
+
+        //Styles
+        if (options.css?.length > 0) {
+            for (let i = 0; i < options.css.length; i++) {
+                let css = options.css[i];
+            
+                $(`<style id='customStyles${i}' type='text/css'>${css}</style>\n`).appendTo('head');
+            }            
+        }
+
+        //Functions
+        if (options.jQuery?.length > 0) {           
+            for (let i = 0; i < options.jQuery.length; i++) {
+                let jQuery = options.jQuery[i];
+
+                jQuery.func = new Function('evt', jQuery.function);
+                $(jQuery.parent).on(jQuery.event, jQuery.selector, { script: script }, jQuery.func);
+
+                dynamicFunctions.push(jQuery);
+            }            
+        }
+
+        if (options.layout != null) {
+            layout = options.layout;
+        }
+    }
+
+    let showMessagesLabel = true;
+    let showResultsLabel = true;
+    let showHeaders = false;
+
+    //Figure out what to hide
+    for (let letter of layout) {
+        switch (letter) {
+            case "m":
+                showMessagesLabel = false;
+                break;
+            case "M":
+                showMessagesLabel = true;
+                break;
+            case "r":
+                showResultsLabel = false;
+                break;
+            case "R":
+                showResultsLabel = true;
+                break;    
+            case "h":
+            case "H":
+                showHeaders = true;
+                break;
+        }
+    }
+
+    let $messagesLabel = $('#messagesDiv > div > label:first-child');
+    let $resultsLabel = $('#resultsDiv > div > label:first-child');
+
+    if (showMessagesLabel) {
+        $messagesLabel.removeClass('hidden');
+    } else {
+        $messagesLabel.addClass('hidden');
+    }
+
+    if (showResultsLabel) {
+        $resultsLabel.removeClass('hidden');
+    } else {
+        $resultsLabel.addClass('hidden');
+    }
+
+    if (!showHeaders) {
+        //$('#results').find('thead').css({ "display": "none" });
+        $(`<style id='customStyles_thead' type='text/css'>thead { display: none }</style>\n`).appendTo('head');
+    }
+
+    //Remove the H
+    layout = layout.replace(/H/ig, '');
+
+    //Change the order
+    if (layout.toUpperCase() == "MR") {
+        $('#messagesDiv').prependTo($('#results'));
+    } else {
+        $('#messagesDiv').appendTo($('#results'))
+    }
+
 
 }
 
@@ -291,14 +404,6 @@ function convertBase64ToFile(image, filetype) {
     return null;
 };
 
-function resolveAfter2Seconds() {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve('2 seconds');
-        }, 2000);
-    });
-}
-
 $('#execute').on("click", async function (e) {    
     if ($("#form")[0].checkValidity() == false) {
         $("#form")[0].reportValidity()
@@ -315,7 +420,7 @@ $('#execute').on("click", async function (e) {
             url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
         }).done(function (response) {
             var $results = $('#results');
-            showResults($results, response, true);
+            showResults(selectedScript, $results, response, true);
 
             const $execute = $('#execute');
             

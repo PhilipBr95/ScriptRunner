@@ -8,14 +8,14 @@
 
 <br />
 
-<form method="post" action="/api/Script" id="form">
+<form method="post" action="/api/Script" id="form" autocomplete="off">
     @Html.AntiForgeryToken()
 
     <div class="container">
         <div style="width:50%">
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="systems" class="form-label">System</label>
+                    <label for="systems" class="form-label label">System</label>
                 </div>
                 <div class="col-9">
                     <select id="systems" class="form-select dropdown"></select>
@@ -23,7 +23,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="scripts" class="form-label">Script</label>
+                    <label for="scripts" class="form-label label">Script</label>
                 </div>
                 <div class="col-9">
                     <select id="scripts" class="form-select dropdown"></select>
@@ -31,7 +31,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="description" class="form-label">Description</label>
+                    <label for="description" class="form-label label">Description</label>
                 </div>
                 <div class="col-9">
                     <label id="description" class="form-label"></label>
@@ -39,7 +39,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="tags" class="form-label">Tags</label>
+                    <label for="tags" class="form-label label">Tags</label>
                 </div>
                 <div class="col-9">
                     <label id="tags" class="form-label"></label>
@@ -47,7 +47,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="version" class="form-label">Version</label>
+                    <label for="version" class="form-label label">Version</label>
                 </div>
                 <div class="col-9">
                     <label id="version" class="form-label"></label>
@@ -55,7 +55,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-3">
-                    <label for="Params" class="form-label">Params</label>
+                    <label for="Params" class="form-label label">Params</label>
                 </div>
                 <div class="col-9">
                     <div id="Params">
@@ -75,10 +75,10 @@
             </div>
         </div>
 
-        <hr width="50%" style="margin: auto;margin-bottom:30px" />
+        <hr width="50%" class="splitter" />
 
         <div id="results" class="hidden">
-            <div class="row withGap">
+            <div id="resultsDiv" class="row withGap">
                 <div class="col-1">
                     <label>Results</label>
                 </div>
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <div class="row withBigGap">
+            <div id="messagesDiv" class="row withBigGap">
                 <div class="col-1">
                     <label>Messages</label>
                 </div>
@@ -99,10 +99,11 @@
     </div>
 
 
+
     <div id="paramTemplate" class="paramTemplate">
         <div class="input-group mb-2">
 
-            <label for="{Name}" class="form-label col-4">{Name}</label>
+            <label for="{Name}" class="form-label col-4 input-label">{Name}</label>
             <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />
             <div class="input-group-append mytooltip {tooltipVisible} m-2">
                 ? <span class="tooltiptext">{Tooltip}</span>
@@ -113,7 +114,7 @@
     <div id="paramTemplate-File" class="paramTemplate">
         <div class="input-group mb-2">
 
-            <label for="{Name}" class="form-label col-4">{Name}</label>
+            <label for="{Name}" class="form-label col-4 input-label">{Name}</label>
             <input type="file" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />            
             <div class="input-group-append mytooltip {tooltipVisible} m-2">
                 ? <span class="tooltiptext">{Tooltip}</span>
@@ -123,7 +124,7 @@
 
     <div id="paramTemplate-Checkbox" class="paramTemplate">
         <div class="input-group input-group-checkbox mb-2">
-            <label class="form-label col-4" for="{Name}">{Name}</label>
+            <label class="form-label col-4 input-label" for="{Name}">{Name}</label>
             <input class="form-check-input" type="checkbox" value="" id="{Name}">
             <div class="input-group-append mytooltip {tooltipVisible}">
                 ? <span class="tooltiptext">{Tooltip}</span>
@@ -133,7 +134,7 @@
 
     <div id="paramTemplate-Select" class="paramTemplate">
         <div class="input-group mb-2">
-            <label class="form-label col-4" for="{Name}">{Name}</label>
+            <label class="form-label col-4 input-label" for="{Name}">{Name}</label>
             <select name="{Name}" id="{Name}" class="form-select valueinputs">
                 {Options}
             </select>
@@ -148,6 +149,5 @@
     <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/js/results.js" asp-append-version="true"></script>
     <script src="~/js/toast.js" asp-append-version="true" type="module"></script>
-
 }
 

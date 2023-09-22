@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ScriptRunner.Library.Models.Scripts;
@@ -24,6 +25,7 @@ namespace ScriptRunner.Library.Models
 
 		public string UniqueId => $"{Id} - {Version}";
         public IEnumerable<ScriptResults>? Results { get; set; } = null;
+        public Options? Options { get; set; }
 
         public Package CloneWithParams(Package script)
         {

@@ -51,29 +51,45 @@ namespace ScriptRunner.Library.Repos
         }
 
         private void BackupRepo()
-        {            
-            if (string.IsNullOrWhiteSpace(_historySettings.Filename) == false)
+        {
+            try
             {
-                if (File.Exists(_historySettings.Filename))
+                if (string.IsNullOrWhiteSpace(_historySettings.Filename) == false)
                 {
-                    if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
-                    {
-                        //Create a daily backup
-                        var regex = new Regex("^.*{([\\w]+)}");
-                        var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
-
-                        //Once a day backup
-                        if (File.Exists(dailyBackup) == false)
-                        {
-                            //Back it up
-                            File.Copy(_historySettings.Filename, dailyBackup, true);
-                        }
-                    }
-
-                    //Back it up
                     if (File.Exists(_historySettings.Filename))
-                        File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);
+                    {
+                        if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
+                        {
+                            //Create a daily backup
+                            var regex = new Regex("^.*{([\\w]+)}");
+                            var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
+
+                            //Once a day backup
+                            if (File.Exists(dailyBackup) == false)
+                            {
+                                //Back it up
+                                File.Copy(_historySettings.Filename, dailyBackup, true);
+
+                                //Get rid of really old backups
+                                var backupToDelete = Directory.GetFiles(_historySettings.Folder, Path.GetExtension(_historySettings.Filename))
+                                                              .Select(s => new FileInfo(s))
+                                                              .Where(w => w.CreationTime.AddDays(_historySettings.MaxBackupAgeInDays) < DateTime.Now)
+                                                              .ToList();
+
+                                backupToDelete.ForEach(w => w.Delete());
+                            }
+                        }
+
+                        //Back it up
+                        if (File.Exists(_historySettings.Filename))
+                            File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);
+                    }
                 }
+            }
+            catch(Exception ex) 
+            {
+                _logger.LogError($"Error backing up history - {ex}");
+                throw;
             }
         }
 
@@ -91,7 +107,12 @@ namespace ScriptRunner.Library.Repos
                 if (string.IsNullOrWhiteSpace(json))
                     return new List<Activity<T>>();
 
-                return JsonConvert.DeserializeObject<IList<Activity<T>>>(json);
+                return JsonConvert.DeserializeObject<IList<Activity<T>>>(json, new JsonSerializerSettings { Error = (sender, errorArgs) => 
+                {
+                    _logger.LogError($"Unhandled Deserialision Error in {nameof(LoadActivitiesAsync)} - {errorArgs.ErrorContext.Error.Message}");
+                    errorArgs.ErrorContext.Handled = true;
+                }  
+                })!;
             }
             catch (Exception ex)
             {                

@@ -38,7 +38,8 @@ body {
     margin-top: 2px;
 }
 .withBigGap {
-    margin-top: 8px
+    margin-top: 8px;
+    margin-bottom: 10px
 }
 
 .tableDiv {
@@ -61,6 +62,16 @@ body {
 
 .padded {
     margin-left: 15px
+}
+
+h1 {
+    color: #1E3A4C;
+}
+
+.splitter {
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .input-group.required .form-label:after {
@@ -269,6 +280,7 @@ dd {
 
 .label {
     font-weight: bolder;
+    color: #1E3A4C;
 }
 
 .btn-file {

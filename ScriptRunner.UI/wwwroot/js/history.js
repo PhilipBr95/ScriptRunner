@@ -16,7 +16,7 @@
         html += `<div><dt>${obj.name}</dt><dd>${value}</dd></div>`
     });
 
-    return `<div><dl><dd class="paramLabel">Parameters</dd>${html}</dl><a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;
+    return `<div><dl><dd class="paramLabel label">Parameters</dd>${html}</dl><a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;
 }
 
 $(document).ready(function () {
@@ -118,11 +118,9 @@ $(document).ready(function () {
                     row.child($child).show();
 
                     var newId = $('#results').length + 1;
-                    //var $results = $($('#results')[0].outerHTML)
                     var $results = $('#results').clone().appendTo($child).prop('id', 'results' + newId);
-                    //$child.append($results);
-
-                    showResults($results, row.data().data, false)
+                    
+                    showResults(null, $results, row.data().data, false)
 
                     tr.addClass('shown');
 

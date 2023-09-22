@@ -1,6 +1,7 @@
-﻿function showResults($results, packageResult, showResults) {    
+﻿function showResults(script, $results, packageResult, showResults) {    
     $resultsTables = $results.find('div[name="resultsTables"]')
     $resultsMessages = $results.find('div[name="resultsMessages"]')
+    let dd = script;
 
     if (showResults == true) {
         $results.removeClass('hidden');
@@ -13,7 +14,9 @@
     let showTables = false;
     let tableCount = 0;
 
-    packageResult.results.forEach(function (obj, x) {
+    for (let x = 0; x < packageResult.results.length; x++) {
+        let obj = packageResult.results[x];
+
         if (obj.messages != null && obj.messages.length > 0) {
             let id = `resultsMessage${x}`
 
@@ -31,14 +34,15 @@
         obj.dataTables.forEach(function (obj, y) {
             let id = `resultsTable${tableCount}`
             $resultsTables.append(`<table id='${id}' class="display" style="width:100%"></table>`);
-            showResultsTable(id, obj);
+
+            showResultsTable(id, obj, script?.options?.dataTableDom);
 
             $resultsTables.parent().removeClass('hidden');
 
             showTables = true;
             tableCount++;
         });
-    });
+    }
 
     if (showMessages == false) {
         $resultsMessages.parent().addClass('hidden');
@@ -49,7 +53,7 @@
     }
 }
 
-function showResultsTable(id, dataTable) {
+function showResultsTable(id, dataTable, dom) {
     var columns = [];
     let columnNames = Object.keys(dataTable[0]);
 
@@ -60,11 +64,17 @@ function showResultsTable(id, dataTable) {
         });
     }
 
-    $(`#${id}`).DataTable({
+    let setup = {
         paging: false,
         fixedHeader: true,
         searching: false,
         data: dataTable,
         columns: columns
-    });
+    };
+
+    if (dom != null) {
+        setup.dom = dom;
+    }
+
+    $(`#${id}`).DataTable(setup);
 }

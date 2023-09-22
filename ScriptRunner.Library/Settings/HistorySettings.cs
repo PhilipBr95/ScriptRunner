@@ -6,5 +6,6 @@
         public string Filename => Path.Combine(Folder, "History.json");
         public string BackupFilename => Path.Combine(Folder, "History.Backup.json");
         public string DailyBackupFilename => Path.Combine(Folder, "History.{yyyyMMdd}.json");
+        public double MaxBackupAgeInDays { get; set; } = 100;
     }
 }

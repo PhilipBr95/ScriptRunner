@@ -34,7 +34,12 @@ namespace ScriptRunner.Library.Repos
               
                 activities.Add(activitity);
 
-                BackupRepo();
+                if (BackupRepo())
+                {
+                    //Remove old items
+                    activities = activities.Where(w => DateTime.Now.Subtract(w.CreatedDate).TotalDays < _historySettings.MaxHistoryDaysOld)
+                                           .ToList();
+                }
 
                 var json = JsonConvert.SerializeObject(activities, Formatting.Indented);
                 await File.WriteAllTextAsync(_historySettings.Filename, json);
@@ -50,7 +55,7 @@ namespace ScriptRunner.Library.Repos
             }
         }
 
-        private void BackupRepo()
+        private bool BackupRepo()
         {
             try
             {
@@ -61,8 +66,7 @@ namespace ScriptRunner.Library.Repos
                         if (string.IsNullOrWhiteSpace(_historySettings.DailyBackupFilename) == false)
                         {
                             //Create a daily backup
-                            var regex = new Regex("^.*{([\\w]+)}");
-                            var dailyBackup = regex.Replace(_historySettings.DailyBackupFilename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
+                            string dailyBackup = CreateDatedFile(_historySettings.DailyBackupFilename);
 
                             //Once a day backup
                             if (File.Exists(dailyBackup) == false)
@@ -80,9 +84,27 @@ namespace ScriptRunner.Library.Repos
                             }
                         }
 
+                        if (string.IsNullOrWhiteSpace(_historySettings.MonthlyBackupFilename) == false)
+                        {
+                            //Create a monthly backup
+                            string monthlyBackup = CreateDatedFile(_historySettings.MonthlyBackupFilename);
+
+                            if (Directory.Exists(Path.GetDirectoryName(monthlyBackup)) == false)
+                                Directory.CreateDirectory(Path.GetDirectoryName(monthlyBackup)!);
+
+                            //Once a month backup
+                            if (File.Exists(monthlyBackup) == false)
+                            {
+                                //Back it up
+                                File.Copy(_historySettings.Filename, monthlyBackup, true);
+                            }
+                        }
+
                         //Back it up
                         if (File.Exists(_historySettings.Filename))
                             File.Move(_historySettings.Filename, $"{_historySettings.BackupFilename}", true);
+
+                        return true;
                     }
                 }
             }
@@ -91,6 +113,15 @@ namespace ScriptRunner.Library.Repos
                 _logger.LogError($"Error backing up history - {ex}");
                 throw;
             }
+
+            return false;
+        }
+
+        private string CreateDatedFile(string filename)
+        {
+            var regex = new Regex("^.*{([\\w]+)}");
+            var dailyBackup = regex.Replace(filename, (s) => s.Value.Replace($"{{{s.Groups[1].Value}}}", DateTime.Now.ToString(s.Groups[1].Value)));
+            return dailyBackup;
         }
 
         public async Task<IList<Activity<T>>> LoadActivitiesAsync<T>()

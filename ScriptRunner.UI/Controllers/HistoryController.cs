@@ -23,7 +23,7 @@ namespace ScriptRunner.UI.Controllers
 
         public async Task<IActionResult> GetHistoryAsync()
         {            
-            var transactions = (await _historyService.GetActivitiesAsync<Package>())
+            var transactions = (await _historyService.GetActivitiesAsync<Package>())                                                     
                                                      .OrderByDescending(o => o.CreatedDate)
                                                      .Take(_webSettings.MaxHistoryItems);
             return Json(transactions);

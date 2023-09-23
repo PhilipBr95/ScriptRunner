@@ -80,8 +80,23 @@ $(document).ready(function () {
 
                     if (row.data != null) {
                         var htmlDetail = '';
-                        row.data.params.forEach(function (item) {
-                            htmlDetail += item.value + '|';
+
+                        row.data.params.forEach(function (param) {
+                            if (param.htmlType != "file" && param.value != null) {
+                                htmlDetail += param.value + '|';
+                            }
+                        });
+
+                        row.data.results.forEach(function (result) {
+                            result.dataTables.forEach(function (dataTable) {
+                                dataTable.forEach(function (row) {
+                                    htmlDetail += Object.values(row) + '|';
+                                });
+                            });
+
+                            result.messages.forEach(function (message) {
+                                htmlDetail += message + '|';
+                            });
                         });
 
                         return type === 'display' ? htmlDetail : htmlDetail;

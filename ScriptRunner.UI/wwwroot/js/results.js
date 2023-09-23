@@ -65,6 +65,9 @@ function showResultsTable(id, dataTable, dom) {
     }
 
     let setup = {
+        //Not sure why we need to reinitialise, but hey
+        retrieve: true,
+
         paging: false,
         fixedHeader: true,
         searching: false,
@@ -76,5 +79,5 @@ function showResultsTable(id, dataTable, dom) {
         setup.dom = dom;
     }
 
-    $(`#${id}`).DataTable(setup);
+    $(`#${id}`).DataTable(setup);    
 }

@@ -120,7 +120,7 @@ namespace ScriptRunner.Library.Repos
                 var filename = Path.Combine(_repoSettings.ScriptFolder, $"{package.System}_{package.Id}_{package.Version}.srunner");
 
                 if (File.Exists(filename))
-                    throw new Exception($"File already exists {filename}");
+                    throw new Exception($"The Package already exists - {filename}");
 
                 await File.WriteAllTextAsync(filename, json);
                 return filename;

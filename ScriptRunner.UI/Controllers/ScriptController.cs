@@ -165,6 +165,8 @@ namespace ScriptRunner.UI.Controllers
             try
             {
                 var file = HttpContext.Request.Form.Files.FirstOrDefault();
+                filename = file.FileName;
+
                 string sql = string.Empty;
 
                 using (var reader = new StreamReader(file.OpenReadStream()))
@@ -182,23 +184,17 @@ namespace ScriptRunner.UI.Controllers
 
                 sql = sql.Trim();
 
-                var dd = Regex.Matches(sql, "DECLARE[\\s]+@([\\w]+)[\\s]+");
-                var sqlParams = dd.Select(s => s.Groups[1].Value);
-
                 var package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(json);
+                if (package == null || string.IsNullOrWhiteSpace(package.Id))
+                    throw new Exception($"The file is invalid - Failed to find Package json");
 
-                if (package == null)
-                    throw new Exception($"Failed to find Package json");
-
-                //Check params match
-                if (sqlParams.Any(s => package.Params.Select(s => s.Name).Contains(s) == false))
-                    throw new Exception($"Parameter mismatch - Check the params against the script");
+                var parameterisedSql = SqlScript.Parameterise(sql, package.Params);              
 
                 var jObject = JObject.Parse(json);
                 if (jObject.TryGetValue(nameof(SqlScript.ConnectionString), StringComparison.OrdinalIgnoreCase, out JToken? connToken))
                 {
-                    package.Scripts = new List<SqlScript> { new SqlScript { Filename = filename, Script = sql, ConnectionString = connToken.ToString() } };
-                    return Json(package);
+                    package.Scripts = new List<SqlScript> { new SqlScript { Filename = filename, Script = parameterisedSql, ConnectionString = connToken.ToString() } };
+                    return Json(new { package, originalSql = sql });
                 }
                 else
                     throw new Exception($"Missing {nameof(SqlScript.ConnectionString)} property");

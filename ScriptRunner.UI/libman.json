@@ -3,17 +3,14 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "provider": "cdnjs",
       "library": "datatables.net@2.1.1",
       "destination": "wwwroot/lib/datatables.net/"
     },
     {
-      "provider": "cdnjs",
       "library": "datatables.net-dt@2.1.1",
       "destination": "wwwroot/lib/datatables.net-dt/"
     },
     {
-      "provider": "cdnjs",
       "library": "moment.js@2.29.4",
       "destination": "wwwroot/lib/moment.js/"
     },
@@ -32,13 +29,17 @@
         "sorting/anti-the.min.js",
         "sorting/anti-the.min.mjs",
         "sorting/anti-the.mjs",
-
         "dataRender/datetime.d.ts",
         "dataRender/datetime.js",
         "dataRender/datetime.min.js",
         "dataRender/datetime.min.mjs",
         "dataRender/datetime.mjs"
       ]
+    },
+    {
+      "provider": "jsdelivr",
+      "library": "highlight-within-textarea@2.0.5",
+      "destination": "wwwroot/lib/highlight-within-textarea/"
     }
   ]
 }

@@ -305,7 +305,11 @@ dd {
 
 .new-input-textarea {
     min-height: 100px;
+    width: 100%;
+    border: none;
+    outline: none;
 }
+
 
 .valueinputs {
     width: auto;
@@ -323,4 +327,13 @@ dd {
 .logs {
     width: 100px;
     word-wrap: break-word;
+}
+
+.blue {
+    background-color: #a3daff;
+}
+
+.hwt-content mark {
+    border-radius: 3px;
+    background-color: #a3daff;
 }

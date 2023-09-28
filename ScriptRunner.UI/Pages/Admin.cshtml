@@ -7,7 +7,7 @@
 
 <br />
 
-<form method="post" action="/Admin" id="form">
+<form method="post" action="/Admin" id="form" autocomplete="off">
 @Html.AntiForgeryToken()
 
     <div class="container">
@@ -62,7 +62,7 @@
                     <input id="reload" type="submit" class="btn btn-primary" value="Reload Local Scripts" asp-page-handler="Reload" />
 
                     <span class="btn btn-primary btn-file" id="uploadFile2">
-                        Upload ScriptRunner File <input id="uploadFile" type="file" value="Select ScriptRunner script" accept=".sql" />
+                        Import SQL File <input id="uploadFile" type="file" value="Select SQL script" accept=".sql" />
                     </span>
                 </div>
             </div>
@@ -91,14 +91,16 @@
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">ScriptRunner Script Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="newScript">
-                    <dl>
+                    <input type="hidden" id="new-filename" />
+
+                    <dl>                        
                         <dt class="new-dt">Id</dt>
                         <dd><input type="text" id="new-id" class="new-input" /></dd>
                         <dt class="new-dt">System</dt>
@@ -131,5 +133,6 @@
 </form>
 
 @section Scripts {
-    <script src="~/js/admin.js" asp-append-version="true"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>    
+    <script src="~/lib/highlight-within-textarea/jquery.highlight-within-textarea.js"></script>
 }

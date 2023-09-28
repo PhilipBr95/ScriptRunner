@@ -87,12 +87,12 @@ $(function () {
         try {
             $.ajax({
                 url: "/api/Script/CreateScriptRunnerScript", type: 'POST', contentType: false, processData: false, data: formData
-            }).done(function (package) {
+            }).done(function (payload) {
                 //Store for later
-                uploadedPackage = package;
+                uploadedPackage = payload.package;
 
                 let $modal = $("#exampleModal");
-                populateForm($modal, package);
+                populateForm($modal, payload);
 
                 $('#new-import').attr("disabled", false);
                 $('#new-filename').text('');
@@ -105,12 +105,15 @@ $(function () {
             console.error('Error:', error);
         }
 
+        //Wipe it, so the user can reselect the same file
+        this.value = null;
+
         return false;
     });
 
     $('#new-import').on('click', function () {
         let $modal = $("#exampleModal");
-        populateScript($modal);
+        populatePackage($modal);
 
         var jsonData = JSON.stringify(uploadedPackage);
         $.ajax({
@@ -141,8 +144,9 @@ $(function () {
 
 });
 
-function populateScript($modal) {
-    
+function populatePackage($modal) {
+
+    uploadedPackage.filename = $modal.find("#new-filename").val();
     uploadedPackage.id = $modal.find("#new-id").val();
     uploadedPackage.system = $modal.find("#new-system").val();
     uploadedPackage.title = $modal.find("#new-title").val();
@@ -164,13 +168,20 @@ function populateScript($modal) {
     });
 }
 
-function populateForm($modal, package) {
+function populateForm($modal, payload) {
+    let package = payload.package;
+
+    let originalSql = payload.originalSql;
+    let sql = package.scripts[0].script;
+
+    $modal.find("#new-filename").val(package.filename);
     $modal.find("#new-id").val(package.id);
     $modal.find("#new-system").val(package.system);
     $modal.find("#new-title").val(package.title);
     $modal.find("#new-description").val(package.description);
     $modal.find("#new-connectionString").val(package.scripts[0].connectionString);
-    $modal.find("#new-script").val(package.scripts[0].script);
+
+    populateScript();
     
     let $params = $modal.find("#new-params");
     $params.html('');
@@ -189,4 +200,68 @@ function populateForm($modal, package) {
                                         `
         $params.append(html);
     });
+
+    function populateScript() {
+        let $script = $modal.find("#new-script");
+
+        //Populate and highlight the script
+        let lines = sql.split("\n");
+        let originalLines = originalSql.split("\n");
+        let differences = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            let originalLine = originalLines[i];
+
+            //Does this line look different to the original (due to Params)
+            let linePos = findFirstDiffPos(line, originalLine);
+            if (linePos != -1) {
+                differences.push({ regex: new RegExp(`${escapeRegex(line.substring(0, linePos))}(${escapeRegex(line.substring(linePos))})`, 'gi') });
+            }
+        }
+
+        //Populate the textarea and apply styling
+        $script.val(sql);
+        $script.highlightWithinTextarea({
+            highlight: getRanges
+        });
+
+        function getRanges(input) {
+            let ranges = [];
+            let match;
+
+            differences.forEach(diff => {
+                while (match = diff.regex.exec(input), match !== null) {
+                    if (match[1]) {
+                        let groupStartIndex = match.index + match[0].indexOf(match[1]);
+                        let groupEndIndex = groupStartIndex + match[1].length;
+                        ranges.push([groupStartIndex, groupEndIndex]);
+                    } else {
+                        ranges.push([match.index, match.index + match[0].length]);
+                    }
+
+                    if (!diff.regex.global) {
+                        // non-global regexes do not increase lastIndex, causing an infinite loop,
+                        // but we can just break manually after the first match
+                        break;
+                    }
+                }
+            });
+
+            return ranges;
+        }
+
+        function findFirstDiffPos(a, b) {
+            var longerLength = Math.max(a.length, b.length);
+            for (var i = 0; i < longerLength; i++) {
+                if (a[i] !== b[i]) return i;
+            }
+
+            return -1;
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+        }
+    }
 }

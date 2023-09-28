@@ -41,7 +41,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 | ---------- | ---------- |
 |`AllowedADGroups`|An array of AD groups allowed to run the script|
 |`ConnectionString`|(Optional) - Only required for SQL scripts. If it isn't provided, then the folder structure will be used to create the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`|
-|`Params`|Params must be populated by the user (unless optional - `"Required": false`), before execution.<br />Reference them by surrounding their name with curley brackets in the script files, eg `{Name}`<table><tbody><tr><td>`Type`</td><td>Allowed Types: `text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table>|
+|`Params`|Params must be populated by the user (unless optional - `"Required": false`), before execution.<br /><mark>Reference them by surrounding their name with curley brackets in Powershell files</mark>, eg, `{Name}` <mark>and the @ symbol in SQL files</mark>, eg, `@Name@`<table><tbody><tr><td>`Type`</td><td>Allowed Types: `text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table>|
 |`Options`|Options allow you to customise the UX<br /><table><tbody><tr><td>`Layout`</td><td>(Optional) - The layout of the Messages and Results<br />eg, `HRm` means Show the Results(with Headers) first and then the Messages (lowercase, meaning "without the label")</td></tr><tr><td>`DataTableDom`</td><td>(Optional) - The DataTable DOM to use</td></tr><tr><td>`Css`</td><td>(Optional) - A list of CSS's to apply</td></tr><tr><td>`JQuery`</td><td>(Optional) - A list of JQuery functions</td></tr></tbody></table>|
 
 ## Folders
@@ -51,9 +51,11 @@ Each subfolder is the same as a 'Nuget Package', so needs to contain a `config.j
 
 ## ScriptRunner Files
 
-`ScriptRunner` files are SQL files with the config as comments.  Either create them and copy them to <strong>@Model.ScriptFolder</strong> or upload `.sql` files via the Admin page and it will create the `ScriptRunner` file.
+`ScriptRunner` files are SQL files with the config as comments.  Either create them and copy them to <strong>@Model.ScriptFolder</strong> or upload `.sql` files via the Admin page and it will convert them into `ScriptRunner` files.
 
-Example ScriptRunner file below (`.srunner`)
+Example `.sql` file below which can be converted into a `.srunner` file.  
+Note the syntax: **@ symbol at the end** of the variable - These variables will be replaced by the parameter values.
+
 ```sql
 /*
 {	
@@ -77,6 +79,9 @@ Example ScriptRunner file below (`.srunner`)
 DECLARE @MemberNumber@ int = 1000 
 DECLARE @MemberName@ varchar(255) = 'Smith' 
 DECLARE @MemberDOB@ datetime = '01/01/2000'
+
+--Use this structure if you need to reference the variable
+DECLARE @MemberNumberVariable int = @MemberNumber@
 
 select Concat('Hello ', @MemberName@, ' (', @MemberNumber@, ') You''re DOB is ', @MemberDOB@)
 ```

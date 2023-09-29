@@ -14,8 +14,12 @@ namespace ScriptRunner.Library.Models.Scripts
 
         public static string Parameterise(string sql, Param[] @params)
         {
+            var declareCounter = 0;
+
             var updatedSql = Regex.Replace(sql, "DECLARE[\\s]+@([\\w]+)@.+", (match) =>
             {
+                declareCounter++;
+
                 var declareSql = match.Value;
                 var tokens = TSQLTokenizer.ParseTokens(declareSql);
 
@@ -23,6 +27,9 @@ namespace ScriptRunner.Library.Models.Scripts
                 var param = @params.FirstOrDefault(f => f.Name.Equals(varName, StringComparison.OrdinalIgnoreCase));
 
                 if (param == null)
+                    throw new ArgumentException($"Variable {varName} was not found in Param list");
+
+                if(tokens.Count() > 0 && @params.Count() > 0)
                     throw new ArgumentException($"Variable {varName} was not found in Param list");
 
                 var paramValue = $"'{{{param.Name}}}'";
@@ -34,6 +41,9 @@ namespace ScriptRunner.Library.Models.Scripts
 
                 return $"{declareSql[0..end]} {paramValue} --Previously {declareSql[end..].Trim()}";
             });
+
+            if(declareCounter != @params.Count())
+                throw new ArgumentException($"Parameter count({declareCounter}) does not match the script Variable count({@params.Count()})");
 
             return updatedSql;
         }

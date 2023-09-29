@@ -28,15 +28,12 @@ namespace ScriptRunner.Library.Models.Scripts
 
                 if (param == null)
                     throw new ArgumentException($"Variable {varName} was not found in Param list");
-
-                if(tokens.Count() > 0 && @params.Count() > 0)
-                    throw new ArgumentException($"Variable {varName} was not found in Param list");
-
+               
                 var paramValue = $"'{{{param.Name}}}'";
-                int end = sql.Length;
+                int end = declareSql.Length;
 
                 //Check for an existing value
-                if (tokens[^2].Type == TSQL.Tokens.TSQLTokenType.Operator && tokens[^2].Text == "=")
+                if (tokens.Count() > 3 && tokens[^2].Type == TSQL.Tokens.TSQLTokenType.Operator && tokens[^2].Text == "=")
                     end = tokens[^2].BeginPosition + 1;
 
                 return $"{declareSql[0..end]} {paramValue} --Previously {declareSql[end..].Trim()}";

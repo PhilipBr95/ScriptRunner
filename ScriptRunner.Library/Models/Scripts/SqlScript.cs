@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 using TSQL;
 
 namespace ScriptRunner.Library.Models.Scripts
@@ -29,14 +30,18 @@ namespace ScriptRunner.Library.Models.Scripts
                 if (param == null)
                     throw new ArgumentException($"Variable {varName} was not found in Param list");
                
-                var paramValue = $"'{{{param.Name}}}'";
+                var paramName = $"'{{{param.Name}}}'";
                 int end = declareSql.Length;
 
-                //Check for an existing value
-                if (tokens.Count() > 3 && tokens[^2].Type == TSQL.Tokens.TSQLTokenType.Operator && tokens[^2].Text == "=")
-                    end = tokens[^2].BeginPosition + 1;
+                if(tokens.Count < 3)
+                    throw new ArgumentException($"DECLARE statement looks wrong - {declareSql}");
 
-                return $"{declareSql[0..end]} {paramValue} --Previously {declareSql[end..].Trim()}";
+                //We only want the first 3 tokens
+                end = tokens[2].EndPosition + 1;
+
+                var previously = tokens.Count == 3 ? string.Empty : $" --Previously {declareSql[end..].Trim()}";
+
+                return $"{declareSql[0..end]} = {paramName}{previously}";
             });
 
             if(declareCounter != @params.Count())

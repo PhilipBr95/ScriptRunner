@@ -337,3 +337,7 @@ dd {
     border-radius: 3px;
     background-color: #a3daff;
 }
+
+.hwt-container {
+    width: 100%;
+}

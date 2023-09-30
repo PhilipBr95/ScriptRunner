@@ -44,7 +44,7 @@ namespace ScriptRunner.Library.Models.Scripts
                 return $"{declareSql[0..end]} = {paramName}{previously}";
             });
 
-            if(declareCounter != @params.Count())
+            if(declareCounter > @params.Count())
                 throw new ArgumentException($"Parameter count({declareCounter}) does not match the script Variable count({@params.Count()})");
 
             return updatedSql;

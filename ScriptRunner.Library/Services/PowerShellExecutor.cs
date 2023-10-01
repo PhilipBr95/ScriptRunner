@@ -29,8 +29,11 @@ namespace ScriptRunner.Library.Services
 
                 var powershell = PowerShell.Create();
                 powershell.AddScript(script);
-                powershell.AddParameters(@params.Select(s => new { s.Name, s.Value })
-                                                .ToDictionary(k => k.Name));
+
+
+                if(@params != null && @params.Count() > 0)
+                    powershell.AddParameters(@params.Select(s => new { s.Name, s.Value })
+                                                    .ToDictionary(k => k.Name));
 
                 _logger?.LogInformation($"Running: {powershellScript.Filename} - {script}");
 

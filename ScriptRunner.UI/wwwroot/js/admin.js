@@ -153,7 +153,7 @@ function populatePackage($modal) {
     uploadedPackage.description = $modal.find("#new-description").val();
     uploadedPackage.connectionString = $modal.find("#new-connectionString").val();
 
-    uploadedPackage.params.forEach(param => {
+    uploadedPackage.params?.forEach(param => {
         let id = `#new-params-${param.name}`
         let idTooltip = `#new-params-${param.name}-tooltip`
 
@@ -189,7 +189,7 @@ function populateForm($modal, payload) {
     let background_dt = '';
     let background_dd = '';
 
-    package.params.forEach(el => {
+    package.params?.forEach(el => {
         background_dt = (background_dt == '') ? 'new-dt-params-alt' : '';
         background_dd = (background_dd == '') ? 'new-dd-params-alt' : '';
 

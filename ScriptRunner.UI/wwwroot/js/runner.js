@@ -38,8 +38,8 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
 function showScriptDetails(script) {
     selectedScript = script;
 
-    let params = $('#Params');
-    params.empty();
+    let $params = $('#Params');
+    $params.empty();
 
     $('#results').addClass('hidden');
 
@@ -62,7 +62,13 @@ function showScriptDetails(script) {
         }
 
         $('#description').text(script.description);
-        $('#tags').text(script.tags);
+
+        if (script.tags?.length > 0) {
+            $('#tags').text(script.tags);
+            $('#tags').parent().parent().removeClass('hidden');
+        } else {
+            $('#tags').parent().parent().addClass('hidden');
+        }        
 
         let importedDate = new moment(script.importedDate, moment.ISO_8601);
 
@@ -82,68 +88,74 @@ function showScriptDetails(script) {
 
     let dataTransfers = new Object();
 
-    script.params.forEach(el => {
-        let $input;
-        let $html;
+    if (script.params?.length > 0) {
+        $params.parent().parent().removeClass('hidden');
 
-        let value = newParams.get(el.name.toLowerCase()) ?? el.value ?? '';
+        script.params.forEach(el => {
+            let $input;
+            let $html;
 
-        if (el.htmlType == "select") {
-            let options = `<option value=""></option>`;
+            let value = newParams.get(el.name.toLowerCase()) ?? el.value ?? '';
 
-            for (const [key, value] of Object.entries(el.data)) {
-                let selected = value == 'true' ? 'selected' : '';
-                options += `<option value="${key}" ${selected}>${key}</option>`;
-            }
+            if (el.htmlType == "select") {
+                let options = `<option value=""></option>`;
 
-            let html = getParamTemplateHtml(el);
-            html = html.replace(/{Options}/g, options);
-
-            $html = $($.parseHTML(html))
-            $input = $html.find('input');
-
-        } else if (el.htmlType == "file") {            
-            if (value?.length > 0) {
-                let file = convertBase64ToFile(value, el.data['FileType']);
-
-                if (file != null) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    dataTransfers[el.name] = dataTransfer;
-
-                    el.tooltip = `Original file provided from previous run`
+                for (const [key, value] of Object.entries(el.data)) {
+                    let selected = value == 'true' ? 'selected' : '';
+                    options += `<option value="${key}" ${selected}>${key}</option>`;
                 }
-            }
 
-            let html = getParamTemplateHtml(el);
-            $html = $($.parseHTML(html))
-            $input = $html.find('input');
+                let html = getParamTemplateHtml(el);
+                html = html.replace(/{Options}/g, options);
 
-            if ('FileType' in el.data) { 
-                $input.attr('accept', el.data['FileType']);
-            }            
-        } else {
-            let html = getParamTemplateHtml(el);
-            $html = $($.parseHTML(html));
-            $input = $html.find('input');
+                $html = $($.parseHTML(html))
+                $input = $html.find('input');
 
-            if (el.htmlType == "checkbox") {
+            } else if (el.htmlType == "file") {
+                if (value?.length > 0) {
+                    let file = convertBase64ToFile(value, el.data['FileType']);
 
-                if (value == 'true') {
-                    $input.attr('checked', true)
+                    if (file != null) {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        dataTransfers[el.name] = dataTransfer;
+
+                        el.tooltip = `Original file provided from previous run`
+                    }
                 }
+
+                let html = getParamTemplateHtml(el);
+                $html = $($.parseHTML(html))
+                $input = $html.find('input');
+
+                if ('FileType' in el.data) {
+                    $input.attr('accept', el.data['FileType']);
+                }
+            } else {
+                let html = getParamTemplateHtml(el);
+                $html = $($.parseHTML(html));
+                $input = $html.find('input');
+
+                if (el.htmlType == "checkbox") {
+
+                    if (value == 'true') {
+                        $input.attr('checked', true)
+                    }
+                }
+
+                $input.attr('value', value)
             }
 
-            $input.attr('value', value)
-        }
+            if (el.required) {
+                $input.attr('required', true)
+                $input.parent().addClass('required', true)
+            }
 
-        if (el.required) {
-            $input.attr('required', true)
-            $input.parent().addClass('required', true)
-        }
-
-        params.append($html);
-    });
+            $params.append($html);
+        });
+    } else {
+        $params.parent().parent().addClass('hidden');
+    }
 
     let $input2 = $('#form').find(':input');
     for (var key in dataTransfers) {
@@ -324,7 +336,7 @@ async function generateUrl(script) {
 
     await updateParamValues().then(() => {
 
-        for (let i = 0; i < script.params.length; i++) {
+        for (let i = 0; i < script.params?.length; i++) {
             let param = script.params[i];
 
             if (param.value != null) { 
@@ -353,7 +365,7 @@ async function updateParamValues() {
 
     for (let i = 0; i < values.length; i++) {
         let value = values[i];
-        let param = selectedScript.params.find(f => f.name == value.id);        
+        let param = selectedScript.params?.find(f => f.name == value.id);        
 
         if (param != null) {
             await populateParamValue(param, value);

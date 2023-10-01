@@ -25,7 +25,7 @@ namespace ScriptRunner.Library.Models.Scripts
                 var tokens = TSQLTokenizer.ParseTokens(declareSql);
 
                 var varName = tokens[1].Text[1..^1];
-                var param = @params.FirstOrDefault(f => f.Name.Equals(varName, StringComparison.OrdinalIgnoreCase));
+                var param = @params?.FirstOrDefault(f => f.Name.Equals(varName, StringComparison.OrdinalIgnoreCase));
 
                 if (param == null)
                     throw new ArgumentException($"Variable {varName} was not found in Param list");
@@ -44,7 +44,7 @@ namespace ScriptRunner.Library.Models.Scripts
                 return $"{declareSql[0..end]} = {paramName}{previously}";
             });
 
-            if(declareCounter > @params.Count())
+            if(@params != null && declareCounter > @params.Count())
                 throw new ArgumentException($"Parameter count({declareCounter}) does not match the script Variable count({@params.Count()})");
 
             return updatedSql;

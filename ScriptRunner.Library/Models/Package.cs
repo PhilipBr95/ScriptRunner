@@ -15,12 +15,12 @@ namespace ScriptRunner.Library.Models
         public string Description { get; set; }
         [JsonConverter(typeof(SimpleScriptJsonConverter))]
         public IEnumerable<SimpleScript> Scripts { get; set; }
-        public IEnumerable<string> Tags { get; set; }
+        public IEnumerable<string>? Tags { get; set; }
         public string Title { get; set; }
         public string Id { get; set; }
         public string Version { get; set; }
         public DateTime? ImportedDate { get; set; }
-        public Param[] Params { get; set; }
+        public Param[]? Params { get; set; }
         public string[]? AllowedADGroups { get; set; }
 
 		public string UniqueId => $"{Id} - {Version}";
@@ -30,9 +30,13 @@ namespace ScriptRunner.Library.Models
         public Package CloneWithParams(Package script)
         {
             var newScript = JsonConvert.DeserializeObject<Package>(JsonConvert.SerializeObject(script));
-            foreach(var param in newScript.Params)
+
+            if (newScript.Params != null)
             {
-                param.Value = script.Params.Single(s => s.Name == param.Name && s.Type == param.Type).Value;
+                foreach (var param in newScript.Params)
+                {
+                    param.Value = script.Params.Single(s => s.Name == param.Name && s.Type == param.Type).Value;
+                }
             }
 
             return newScript;

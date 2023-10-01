@@ -8,6 +8,8 @@ namespace ScriptRunner.Library.Helpers
     {
         public static string PopulateTags(string scriptText, IEnumerable<Param> @params)
         {
+            if (@params == null) return scriptText;
+
             foreach(var param in @params)
             {
                 var regex = new Regex($"{{{param.Name}}}");

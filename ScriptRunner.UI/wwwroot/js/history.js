@@ -81,7 +81,7 @@ $(document).ready(function () {
                     if (row.data != null) {
                         var htmlDetail = '';
 
-                        row.data.params.forEach(function (param) {
+                        row.data.params?.forEach(function (param) {
                             if (param.htmlType != "file" && param.value != null) {
                                 htmlDetail += param.value + '|';
                             }
@@ -153,7 +153,7 @@ function generateUrl(script) {
     if (script.data != null) {
         let url = `/?ScriptId=${script.data.id}`;
     
-        script.data.params.forEach(el => {
+        script.data.params?.forEach(el => {
             let value = $(`#${el.name}`).val();
             url += `&${el.name}=${encodeURIComponent(el.value)}`;
         });

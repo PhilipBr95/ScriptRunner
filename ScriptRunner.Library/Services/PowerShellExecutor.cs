@@ -67,6 +67,12 @@ namespace ScriptRunner.Library.Services
                     table?.Rows?.Add(row);
                 }
 
+                var errors = powershell.Streams.Error.Select(s => s.Exception.ToString())
+                                                     .ToArray();
+
+                if (errors.Count() > 0)
+                    throw new Exception(errors.First());
+
                 var messages = powershell.Streams.Information.Select(s => s.MessageData.ToString())
                                                              .ToArray();
 

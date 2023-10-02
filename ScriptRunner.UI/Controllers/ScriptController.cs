@@ -123,7 +123,7 @@ namespace ScriptRunner.UI.Controllers
             catch (Exception ex)
             {
                 _logger?.LogError(ex, $"Unknown error with {script.UniqueId}");
-                throw;
+                return BadRequest(ex.Message);
             }
         }
 

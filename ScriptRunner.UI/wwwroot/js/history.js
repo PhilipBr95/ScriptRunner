@@ -88,13 +88,13 @@ $(document).ready(function () {
                         });
 
                         row.data.results.forEach(function (result) {
-                            result.dataTables.forEach(function (dataTable) {
+                            result.dataTables?.forEach(function (dataTable) {
                                 dataTable.forEach(function (row) {
                                     htmlDetail += Object.values(row) + '|';
                                 });
                             });
 
-                            result.messages.forEach(function (message) {
+                            result.messages?.forEach(function (message) {
                                 htmlDetail += message + '|';
                             });
                         });

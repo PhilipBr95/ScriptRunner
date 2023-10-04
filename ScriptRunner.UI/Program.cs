@@ -49,6 +49,7 @@ namespace ScriptRunner.UI
             builder.Services.Configure<RepoSettings>(builder.Configuration.GetSection(nameof(RepoSettings)));
             builder.Services.Configure<HistorySettings>(builder.Configuration.GetSection(nameof(HistorySettings)));
             builder.Services.Configure<WebSettings>(builder.Configuration.GetSection(nameof(WebSettings)));
+            builder.Services.Configure<PowershellSettings>(builder.Configuration.GetSection(nameof(PowershellSettings)));
 
             builder.Services.AddTransient<INugetRepo, NugetRepo>();
             builder.Services.AddTransient<IScriptRepo, ScriptRepo>();
@@ -60,7 +61,9 @@ namespace ScriptRunner.UI
             builder.Services.AddTransient<IPackageRetriever, PackageRetriever>();
             builder.Services.AddTransient<IPackageExecutor, PackageExecutor>();
             builder.Services.AddTransient<ISqlExecutor, SqlExecutor>();
-            builder.Services.AddTransient<IPowerShellExecutor, PowerShellExecutor>();
+            builder.Services.AddTransient<IPowerShellExecutorResolver, PowerShellExecutorResolver>();
+            builder.Services.AddTransient<IPowerShellExecutor, PowerShellCoreExecutor>();
+            builder.Services.AddTransient<IPowerShellExecutor, PowerShellProcessExecutor>();
             builder.Services.AddSingleton<IMemoryCache, MemoryCache>();
             
             builder.Services.AddSingleton<IAuthorizationHandler, CheckADGroupHandler>();

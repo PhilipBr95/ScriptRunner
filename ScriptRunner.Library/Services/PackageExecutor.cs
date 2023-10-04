@@ -9,16 +9,16 @@ namespace ScriptRunner.Library.Services
     public class PackageExecutor : IPackageExecutor
     {
         private readonly ISqlExecutor _sqlRunner;
-        private readonly IPowerShellExecutor _powerShellRunner;
+        private readonly IPowerShellExecutorResolver _powerShellExecutorResolver;
         private readonly ITransactionService _transactionService;
         private readonly IHistoryService _historyService;
         private readonly ILogger<IPackageExecutor> _logger;
 
-        public PackageExecutor(ISqlExecutor sqlRunner, IPowerShellExecutor powerShellRunner, ITransactionService transactionService, 
+        public PackageExecutor(ISqlExecutor sqlRunner, IPowerShellExecutorResolver powerShellExecutorResolver, ITransactionService transactionService, 
                                 IHistoryService historyService, ILogger<IPackageExecutor> logger)
         {
             _sqlRunner = sqlRunner;
-            _powerShellRunner = powerShellRunner;
+            _powerShellExecutorResolver = powerShellExecutorResolver;
             _transactionService = transactionService;
             _historyService = historyService;
             _logger = logger;
@@ -49,7 +49,8 @@ namespace ScriptRunner.Library.Services
                             break;
                         case PowershellScript powershellScript:
                             {
-                                var results = await _powerShellRunner.ExecuteAsync(powershellScript, package.Params);
+                                var executor = _powerShellExecutorResolver.Resolve(package.Options);
+                                var results = await executor.ExecuteAsync(powershellScript, package.Params, package.Options);
                                 scriptResults.Add(results);
                             }
                             break;

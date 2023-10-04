@@ -1,27 +1,23 @@
-﻿using Markdig.Extensions.Tables;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using NuGet.Common;
+﻿using Microsoft.Extensions.Logging;
 using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.Management.Automation;
 
 namespace ScriptRunner.Library.Services
 {
-    public class PowerShellExecutor : IPowerShellExecutor
+    public class PowerShellCoreExecutor : IPowerShellExecutor
     {
         private readonly ILogger<IPowerShellExecutor> _logger;
 
-        public PowerShellExecutor(ILogger<IPowerShellExecutor> logger)
+        public PowerShellCoreExecutor(ILogger<IPowerShellExecutor> logger)
         {
             _logger = logger;
         }
 
-        public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params)
+        public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params, Models.Options options)
         {
             try
             {
@@ -83,8 +79,6 @@ namespace ScriptRunner.Library.Services
                 _logger?.LogError(ex, $"Error running the Powershell {powershellScript.Filename}");
                 throw;
             }
-
-            return null;
         }
 
         private IEnumerable<string> GetProperties(PSObject result)
@@ -102,24 +96,6 @@ namespace ScriptRunner.Library.Services
                 props.Add(prop.Name);
             }
 
-            return props;
-        }
-
-        private static string[] GetDefaultKeyPropertySet(PSObject mshObj)
-        {
-            PSMemberSet standardNames = mshObj.Members["PSStandardMembers"] as PSMemberSet;
-            if (standardNames == null)
-            {
-                return null;
-            }
-            PSPropertySet defaultKeys = standardNames.Members["DefaultKeyPropertySet"] as PSPropertySet;
-
-            if (defaultKeys == null)
-            {
-                return null;
-            }
-            string[] props = new string[defaultKeys.ReferencedPropertyNames.Count];
-            defaultKeys.ReferencedPropertyNames.CopyTo(props, 0);
             return props;
         }
     }

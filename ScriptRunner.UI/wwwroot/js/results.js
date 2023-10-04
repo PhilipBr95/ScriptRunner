@@ -31,7 +31,7 @@
             showMessages = true;
         }
 
-        obj.dataTables.forEach(function (obj, y) {
+        obj.dataTables?.forEach(function (obj, y) {
             let id = `resultsTable${tableCount}`
             $resultsTables.append(`<table id='${id}' class="display" style="width:100%"></table>`);
 

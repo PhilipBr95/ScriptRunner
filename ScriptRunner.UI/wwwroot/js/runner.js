@@ -236,6 +236,9 @@ function addOptions(script) {
         if (options.layout != null) {
             layout = options.layout;
         }
+
+        $('#resultsLabel').text(options.resultsLabel ?? "Results");
+        $('#messagesLabel').text(options.messagesLabel ?? "Messages");
     }
 
     let showMessagesLabel = true;

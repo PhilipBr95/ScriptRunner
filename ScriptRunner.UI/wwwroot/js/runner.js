@@ -69,10 +69,8 @@ function showScriptDetails(script) {
         } else {
             $('#tags').parent().parent().addClass('hidden');
         }        
-
-        let importedDate = new moment(script.importedDate, moment.ISO_8601);
-
-        $('#version').text(`${script.version} (${importedDate.format('DD/MM/YYYY HH:mm')})`);
+        
+        $('#version').text(`${script.uniqueId}`);
 
         $('#execute').removeClass('hidden');
         $('#copyScript').removeClass('hidden');

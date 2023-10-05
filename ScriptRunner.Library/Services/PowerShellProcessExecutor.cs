@@ -27,7 +27,7 @@ namespace ScriptRunner.Library.Services
             try
             {
                 var script = TagHelper.PopulateTags(powershellScript.Script, @params);
-                var useTempFile = options?.GetSetting<bool>("Powershell.UseTemporaryFile") ?? _powershellSettings.UseTemporaryFile;
+                var useTempFile = options?.GetSetting<bool?>("Powershell.UseTemporaryFile") ?? _powershellSettings.UseTemporaryFile;
                 
                 if (useTempFile)
                 {
@@ -50,11 +50,11 @@ namespace ScriptRunner.Library.Services
 
                 var startInfo = new ProcessStartInfo()
                 {
-                    FileName = options?.GetSetting<string>("Powershell.Executable") ?? _powershellSettings.Executable,
-                    Arguments = (options?.GetSetting<string>("Powershell.ExecutableArguments") ?? _powershellSettings.ExecutableArguments) + psCommand,
-                    UseShellExecute = options?.GetSetting<bool>("Powershell.UseShellExecute") ?? _powershellSettings.UseShellExecute,
-                    RedirectStandardOutput = options?.GetSetting<bool>("Powershell.RedirectStandardOutput") ?? _powershellSettings.RedirectStandardOutput,
-                    RedirectStandardError = options?.GetSetting<bool>("Powershell.RedirectStandardError") ?? _powershellSettings.RedirectStandardError
+                    FileName = options?.GetSetting<string?>("Powershell.Executable") ?? _powershellSettings.Executable,
+                    Arguments = (options?.GetSetting<string?>("Powershell.ExecutableArguments") ?? _powershellSettings.ExecutableArguments) + psCommand,
+                    UseShellExecute = options?.GetSetting<bool?>("Powershell.UseShellExecute") ?? _powershellSettings.UseShellExecute,
+                    RedirectStandardOutput = options?.GetSetting<bool?>("Powershell.RedirectStandardOutput") ?? _powershellSettings.RedirectStandardOutput,
+                    RedirectStandardError = options?.GetSetting<bool?>("Powershell.RedirectStandardError") ?? _powershellSettings.RedirectStandardError
                 };
 
                 var proc = Process.Start(startInfo)!;

@@ -20,7 +20,7 @@ namespace ScriptRunner.Library.Services
 
         public IPowerShellExecutor Resolve(Models.Options? options)
         {
-            var executor = options?.GetSetting<string>("Executor") ?? _powershellSettings.DefaultExecutor;
+            var executor = options?.GetSetting<string?>("Executor") ?? _powershellSettings.DefaultExecutor;
 
             try
             {                               

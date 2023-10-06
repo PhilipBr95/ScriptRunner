@@ -341,3 +341,7 @@ dd {
 .hwt-container {
     width: 100%;
 }
+
+#Params {
+    margin-top: -4px;
+}

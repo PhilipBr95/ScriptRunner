@@ -3,10 +3,7 @@
     var params = row.data.params;
     var html = '';
 
-    if (params == null)
-        return;
-
-    var ss = params.forEach(function (obj, x) {
+    params?.forEach(function (obj, x) {
         let value = obj.value;
 
         if (obj.type == "file") {
@@ -16,7 +13,11 @@
         html += `<div><dt>${obj.name}</dt><dd>${value}</dd></div>`
     });
 
-    return `<div><dl><dd class="paramLabel label">Parameters</dd>${html}</dl><a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;
+    if (html != '') {
+        html = `<dl><dd class="paramLabel label">Parameters</dd>${html}</dl>`
+    }
+
+    return `<div>${html}<a href="" class="paramLabel showResults" name="showResults">Show Results</a></div>`;
 }
 
 $(document).ready(function () {
@@ -55,11 +56,7 @@ $(document).ready(function () {
                 "className": 'details-control',
                 "orderable": false,
                 "data": null,
-                "width": "0px", render: function (data, type, row) {
-
-                    if (data?.data?.params == null)
-                        return '';
-
+                "width": "0px", render: function (data, type, row) {                    
                     return '<a href="" class="showChild"><img class="showChildImg" width="16px" height="16px" src="../img/icons8-info.svg" title="View Parameters" /></a>'
                 }
             },

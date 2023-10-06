@@ -64,7 +64,7 @@ function showScriptDetails(script) {
         $('#description').text(script.description);
 
         if (script.tags?.length > 0) {
-            $('#tags').text(script.tags);
+            $('#tags').text(script.tags.join(', '));
             $('#tags').parent().parent().removeClass('hidden');
         } else {
             $('#tags').parent().parent().addClass('hidden');

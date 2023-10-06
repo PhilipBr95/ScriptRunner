@@ -60,7 +60,7 @@ function showResultsTable(id, dataTable, dom) {
     for (var i in columnNames) {
         columns.push({
             data: columnNames[i],
-            title: columnNames[i].toUpperCase()
+            title: columnNames[i]
         });
     }
 

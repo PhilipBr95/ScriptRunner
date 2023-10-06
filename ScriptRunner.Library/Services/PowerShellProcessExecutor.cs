@@ -31,6 +31,9 @@ namespace ScriptRunner.Library.Services
                 
                 if (useTempFile)
                 {
+                    if (!Directory.Exists(_powershellSettings.TempFolder))
+                        Directory.CreateDirectory(_powershellSettings.TempFolder);
+
                     tempFile = Path.Combine(_powershellSettings.TempFolder, $"{Path.GetRandomFileName()}.ps1");
                     File.WriteAllText(tempFile, script);
 
@@ -39,6 +42,7 @@ namespace ScriptRunner.Library.Services
                 else
                 {
                     //EncodedCommands don't appear to work with Redirects :-(
+                    _logger?.LogWarning("EncodedCommands don't appear to work with Redirects");
 
                     var psCommandBytes = System.Text.Encoding.Unicode.GetBytes(script);
                     var psCommandBase64 = Convert.ToBase64String(psCommandBytes);
@@ -46,7 +50,7 @@ namespace ScriptRunner.Library.Services
                     psCommand = $" -EncodedCommand {psCommandBase64}";
                 }
 
-                _logger?.LogInformation($"Running: {powershellScript.Filename} - {psCommand}");
+                _logger?.LogInformation($"Running: {powershellScript.Filename} {psCommand}");
 
                 var startInfo = new ProcessStartInfo()
                 {

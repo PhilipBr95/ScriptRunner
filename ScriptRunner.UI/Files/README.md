@@ -15,6 +15,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 
 ```json
     {
+        "Id": "MyApp-FixMemberName",
         "System": "MyApp",
         "Description": "Fixes the member's Name",
         "ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
@@ -37,12 +38,12 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 
  #### Config Properties
 
-| Property   | Description|
-| ---------- | ---------- |
-|`AllowedADGroups`|An array of AD groups allowed to run the script|
-|`ConnectionString`|(Optional) - Only required for SQL scripts. If it isn't provided, then the folder structure will be used to create the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`|
-|`Params`|Params must be populated by the user (unless optional - `"Required": false`), before execution.<br /><mark>Reference them by surrounding their name with curley brackets</mark>, eg, `{Name}`<table><tbody><tr><td>`Type`</td><td>Allowed Types: `text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table>|
-|`Options`|Options allow you to customise the UX<br /><table><tbody><tr><td>`Layout`</td><td>(Optional) - The layout of the Messages and Results<br />eg, `HRm` means Show the Results(with Headers) first and then the Messages (lowercase, meaning "without the label")</td></tr><tr><td>`DataTableDom`</td><td>(Optional) - The DataTable DOM to use</td></tr><tr><td>`Css`</td><td>(Optional) - A list of CSS's to apply</td></tr><tr><td>`JQuery`</td><td>(Optional) - A list of JQuery functions</td></tr></tbody></table>|
+| Property           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AllowedADGroups`  | An array of AD groups allowed to run the script                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `ConnectionString` | (Optional) - Only required for SQL scripts. If it isn't provided, then the folder structure will be used to create the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `Params`           | Params must be populated by the user (unless optional - `"Required": false`), before execution.<br /><mark>Reference them by surrounding their name with curley brackets</mark>, eg, `{Name}`<table><tbody><tr><td>`Type`</td><td>Allowed Types: `text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table> |
+| `Options`          | Options allow you to customise the UX<br /><table><tbody><tr><td>`Layout`</td><td>(Optional) - The layout of the Messages and Results<br />eg, `HRm` means Show the Results(with Headers) first and then the Messages (lowercase, meaning "without the label")</td></tr><tr><td>`DataTableDom`</td><td>(Optional) - The DataTable DOM to use</td></tr><tr><td>`Css`</td><td>(Optional) - A list of CSS's to apply</td></tr><tr><td>`JQuery`</td><td>(Optional) - A list of JQuery functions</td></tr></tbody></table>                                                                                                                                                                                                    |
 
 ## Folders
 
@@ -63,7 +64,6 @@ E.g.,
 ```sql
 /*
 {	
-	"Id": "Package1",
 	"Version": "1.0.0",
 	"System": "MyApp", 
 	"Description": "Random SQL file", 
@@ -97,7 +97,31 @@ DECLARE @MemberDOB@ datetime = '{MemberDOB}'
 select Concat('Hello ', @MemberName@, ' (', @MemberNumber@, ') You''re DOB is ', @MemberDOB@)
 ```
 
-Note: You may notice that we're passing strings into numerics - this is fine as the javascript will protect us against datatype mismatches and SQL can handle it.
+Note: 
+* You may notice that we're passing strings into numerics - this is fine as the javascript will protect us against datatype mismatches and SQL can handle it.
+* You can provide an "Id", but the system will generate one based on the Title, if you don't - **Recommended**
+
+## Powershell scripts 
+There are 2 ways to run Powershell scripts.  The default way uses the Powershell Core engine, which can't run old scripts.
+If ypu want to run older scripts, then you'll need to use the RunnSettings property under Options
+```json
+    {
+        ...
+        "Options": {
+            "RunSettings": { "Executor" : "PowerShellProcessExecutor" }
+        }
+    }
+```
+This setting changes the engine to use the `powershell.exe`.
+There are several other RunSettings you can tweak with when using `powershell.exe`:
+| Option                            | Description                                           |
+| --------------------------------- | ----------------------------------------------------- |
+| Powershell.Executable             | The app to run - `powershell.exe`                     |
+| Powershell.ExecutableArguments    | The args to pass in                                   |
+| Powershell.RedirectStandardOutput | Whether to capture output                             |
+| Powershell.RedirectStandardError  | Whether to capture errors                             |
+| Powershell.UseTemporaryFile       | Whether to use a temporary file, or encode the script |
+
 
 ## Security
 Access to the Admin page can be restricted via `appsettings` and access to the scripts are restricted by the `AllowedADGroups` property per script.

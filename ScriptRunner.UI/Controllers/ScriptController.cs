@@ -10,6 +10,7 @@ using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;
 using ScriptRunner.UI.Extensions;
 using ScriptRunner.UI.Settings;
+using System.Globalization;
 using System.Linq;
 using System.Management.Automation;
 using System.Security.Principal;
@@ -185,8 +186,23 @@ namespace ScriptRunner.UI.Controllers
                 sql = sql.Trim();
 
                 var package = Newtonsoft.Json.JsonConvert.DeserializeObject<Package>(json);
-                if (package == null || string.IsNullOrWhiteSpace(package.Id))
+                if (package == null || string.IsNullOrWhiteSpace(package.System))
                     throw new Exception($"The file is invalid - Failed to find Package json");
+
+                //Do we have a nice Id?
+                if(string.IsNullOrWhiteSpace(package.Id))
+                {
+                    //Convert the Title to an id
+                    var id = package.Title;
+
+                    //Remove unwanted chars
+                    id = Regex.Replace(id, "[^a-zA-Z0-9- ]", "");                   
+
+                    //TitleCase it
+                    id = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(id).Replace(" ", "");
+
+                    package.Id = $"{package.System}-{id}";
+                }
 
                 var parameterisedSql = SqlScript.Parameterise(sql, package.Params);              
 

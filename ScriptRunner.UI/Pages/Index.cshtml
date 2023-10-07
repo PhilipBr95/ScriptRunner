@@ -13,7 +13,7 @@
 
     <div class="container">
         <div style="width:50%">
-            <div class="row mb-2 align-items-center">
+            <div class="row mb-2 align-items-baseline">
                 <div class="col-3">
                     <label for="systems" class="form-label label">System</label>
                 </div>
@@ -21,7 +21,7 @@
                     <select id="systems" class="form-select dropdown"></select>
                 </div>
             </div>
-            <div class="row mb-2 align-items-center">
+            <div class="row mb-2 align-items-baseline">
                 <div class="col-3">
                     <label for="scripts" class="form-label label">Script</label>
                 </div>
@@ -29,7 +29,7 @@
                     <select id="scripts" class="form-select dropdown"></select>
                 </div>
             </div>
-            <div class="row mb-2 align-items-center">
+            <div class="row mb-2 align-items-baseline">
                 <div class="col-3">
                     <label for="description" class="form-label label">Description</label>
                 </div>
@@ -37,7 +37,7 @@
                     <label id="description" class="form-label"></label>
                 </div>
             </div>
-            <div class="row mb-2 align-items-center">
+            <div class="row mb-2 align-items-baseline">
                 <div class="col-3">
                     <label for="tags" class="form-label label">Tags</label>
                 </div>
@@ -45,7 +45,7 @@
                     <label id="tags" class="form-label"></label>
                 </div>
             </div>
-            <div class="row mb-2 align-items-center">
+            <div class="row mb-2 align-items-baseline">
                 <div class="col-3">
                     <label for="version" class="form-label label">Version</label>
                 </div>
@@ -101,7 +101,7 @@
 
 
     <div id="paramTemplate" class="paramTemplate">
-        <div class="input-group mb-2 align-items-center">
+        <div class="input-group mb-2 align-items-baseline">
 
             <label for="{Name}" class="form-label col-4 label">{Name}</label>
             <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />
@@ -112,7 +112,7 @@
     </div>
 
     <div id="paramTemplate-File" class="paramTemplate">
-        <div class="input-group mb-2 align-items-center">
+        <div class="input-group mb-2 align-items-baseline">
 
             <label for="{Name}" class="form-label col-4 label">{Name}</label>
             <input type="file" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs" />
@@ -123,7 +123,7 @@
     </div>
 
     <div id="paramTemplate-Checkbox" class="paramTemplate">
-        <div class="input-group input-group-checkbox mb-2 align-items-center">
+        <div class="input-group input-group-checkbox mb-2 align-items-baseline">
             <label class="form-label col-4 label" for="{Name}">{Name}</label>
             <input class="form-check-input" type="checkbox" value="" id="{Name}">
             <div class="input-group-append mytooltip {tooltipVisible}">
@@ -133,7 +133,7 @@
     </div>
 
     <div id="paramTemplate-Select" class="paramTemplate">
-        <div class="input-group mb-2 align-items-center">
+        <div class="input-group mb-2 align-items-baseline">
             <label class="form-label col-4 label" for="{Name}">{Name}</label>
             <select name="{Name}" id="{Name}" class="form-select valueinputs">
                 {Options}

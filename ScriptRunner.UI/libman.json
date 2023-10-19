@@ -15,11 +15,6 @@
       "destination": "wwwroot/lib/moment.js/"
     },
     {
-      "provider": "unpkg",
-      "library": "md-block@0.0.1",
-      "destination": "wwwroot/lib/md-block/"
-    },
-    {
       "provider": "jsdelivr",
       "library": "datatables.net-plugins@1.13.6",
       "destination": "wwwroot/lib/datatables.net-plugins/",
@@ -40,6 +35,11 @@
       "provider": "jsdelivr",
       "library": "highlight-within-textarea@2.0.5",
       "destination": "wwwroot/lib/highlight-within-textarea/"
-    }
-  ]
+    },
+  {
+    "provider": "cdnjs",
+    "library": "showdown@2.1.0",
+    "destination": "wwwroot/lib/showdown/"
+  }
+]
 }

@@ -7,8 +7,8 @@ Packages are either self contained `Nuget Packages`, `Folders` or specially form
 
 ## Nuget Packages
 
-`Nuget Packages` are normally pushed to a remote repo [<strong>@Model.GitRepo</strong>] and then imported into ScriptRunner via the Admin page.  
-The Nuget Package must have the Tag <strong>@Model.Tag</strong> and contain a config.json and the actual scripts.
+`Nuget Packages` are normally pushed to a remote repo [ **@Model.GitRepo** ] and then imported into ScriptRunner via the Admin page.  
+The Nuget Package must have the Tag **@Model.Tag** and contain a config.json and the actual scripts.
 
 
 Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config.json:
@@ -35,8 +35,8 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
         }
     }
  ```
-
- #### Config Properties
+ 
+#### Config Properties
 
 | Property           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -47,14 +47,13 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 
 ## Folders
 
-Script `Folder` Packages need to be placed in <strong>@Model.ScriptFolder</strong>.  
-Each subfolder is the same as a 'Nuget Package', so needs to contain a `config.json` (as above) and scripts.
+Script `Folder` Packages need to be placed in subfolders in **@Model.ScriptFolder**.  Each subfolder is the same as a 'Nuget Package' and needs to contain a `config.json` (as above) and scripts.
 
 ## ScriptRunner Files
 
-`ScriptRunner` files are SQL files with the config as comments.  Either create them and copy them to <strong>@Model.ScriptFolder</strong> or upload `.sql` files via the Admin page and it will convert them into `ScriptRunner` files.
+`ScriptRunner` files are SQL files with the config as comments.  Either create them and copy them to **@Model.ScriptFolder** or upload `.sql` files via the Admin page and it will convert them into `ScriptRunner` files.
 
-##### Importing SQL Files
+### Importing SQL Files
 
 `.sql` files **must** contain the config as a comment at the top of the file (See the example below).  
 The Import wizard on the Admin page will convert the `.sql` file into a `.srunner` file.  
@@ -114,6 +113,7 @@ If ypu want to run older scripts, then you'll need to use the RunnSettings prope
 ```
 This setting changes the engine to use the `powershell.exe`.
 There are several other RunSettings you can tweak with when using `powershell.exe`:
+
 | Option                            | Description                                           |
 | --------------------------------- | ----------------------------------------------------- |
 | Powershell.Executable             | The app to run - `powershell.exe`                     |

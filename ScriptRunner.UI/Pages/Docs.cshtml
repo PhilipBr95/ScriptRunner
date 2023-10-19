@@ -4,41 +4,25 @@
     ViewData["Title"] = "Documentation";
 }
 
-<md-block src="/files/readme.md" id="markdown"> 
-</md-block>
+<div id="markdown"></div>
 
 <script>
-
-	function populateContent() {
+	window.onload = function() {
 		let gitRepo = '@Model.GitRepo';
 		let tag = '@Model.Tag';
 		let scriptFolder = String.raw`@Model.ScriptFolder`;
 
-		let str = document.getElementById("markdown");
-		var inner = str.innerHTML;
-		
-		//Annoyingly sometimes the DOM isn't ready
-		if (inner.length < 100) {
-			setTimeout(populateContent, 1000);
-		}
-		
-		var inner = inner.replace(/@@Model.GitRepo/gi, gitRepo);
-		var inner = inner.replace(/@@Model.Tag/gi, tag);
-		var inner = inner.replace(/@@Model.ScriptFolder/gi, scriptFolder);
-
-		str.innerHTML = inner;
-	}
-
-	window.onload = function() {
-		populateContent();
+		populateContent(gitRepo, tag, scriptFolder);
 	}
 </script>
 
 @section Scripts {
-	<script src="~/lib/md-block/md-block.js" type="module"></script>
-	<script src="~/lib/md-block/prism.js" type="module"></script>
-	<script src="~/js/docs.js"></script>
+	@*<script src="~/lib/md-block/md-block.js" type="module"></script>
+	<script src="~/lib/md-block/md-override.js" type="module"></script>
+	<script src="~/lib/md-block/prism.js" type="module"></script>*@
+	<script src="~/lib/showdown/showdown.js"></script>
+	<script src="~/js/docs.js" asp-append-version="true"></script>
 
-	<link href="~/lib/md-block/prism.css" rel="stylesheet" />
+	@*<link href="~/lib/md-block/prism.css" rel="stylesheet" />*@
 	<link href="~/css/docs.css" rel="stylesheet" />
 }

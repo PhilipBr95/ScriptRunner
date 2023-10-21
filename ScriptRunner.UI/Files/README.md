@@ -102,7 +102,7 @@ Note:
 
 ## Powershell scripts 
 There are 2 ways to run Powershell scripts.  The default way uses the Powershell Core engine, which can't run old scripts.
-If ypu want to run older scripts, then you'll need to use the RunnSettings property under Options
+If ypu want to run older scripts, then you'll need to use the RunSettings property under Options
 ```json
     {
         ...

@@ -132,6 +132,9 @@ namespace ScriptRunner.UI.Controllers
 		{
 			var groups = HttpContext.User.Identity.Groups();
 
+			if (allowedGroupsAD != null)
+                _logger?.LogInformation($"IsAllowed {string.Join(";", allowedGroupsAD)} vs {string.Join(";", groups)}");
+			
 			if (allowedGroupsAD == null || groups.Where(w => allowedGroupsAD.Contains(w) == true).Any())
 			{
                 return true;

@@ -6,22 +6,33 @@ var dynamicFunctions = [];
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
 
-    let systems = [... new Set(scripts.data.map(obj => obj.system))];
-
-    let el = $('#systems');
-    populateDropDown(el, systems.map(obj => ({ id: obj, value: obj })))
+    let categories = [... new Set(scripts.data.map(obj => obj.category))];
+    let el = $('#categories');
+    populateDropDown(el, categories.map(obj => ({ id: obj, value: obj })))
 
     el.on("change", function () {
         showScriptDetails(null)
-
-        let items = scripts.data.filter(e => e.system == this.value)
+        let systems = [... new Set(scripts.data.filter(e => e.category == this.value).map(obj => obj.system))];
 
         let el = $('#scripts');
-        populateDropDown(el, items.map(obj => ({ id: obj.id, value: obj.title })))
+        el.empty();
+
+        el = $('#systems');
+        populateDropDown(el, systems.map(obj => ({ id: obj, value: obj })))
 
         el.on("change", function () {
-            let script = scripts.data.find(e => e.id == this.value)
-            showScriptDetails(script);
+            showScriptDetails(null)
+
+            let category = $('#categories').val();
+            let items = scripts.data.filter(e => e.category == category && e.system == this.value)
+
+            let el = $('#scripts');
+            populateDropDown(el, items.map(obj => ({ id: obj.id, value: obj.title })))
+
+            el.on("change", function () {
+                let script = scripts.data.find(e => e.id == this.value)
+                showScriptDetails(script);
+            });
         });
     });
 
@@ -53,6 +64,10 @@ function showScriptDetails(script) {
 
         return;
     } else {
+        if ($('#categories').val() != script.category) {
+            $('#categories').val(script.category).change();
+        }
+
         if ($('#systems').val() != script.system) {
             $('#systems').val(script.system).change();
         }
@@ -173,6 +188,8 @@ function showScriptDetails(script) {
             $copyEl.attr("href", href)
         }
     });
+
+    $copyEl.off("click");
     $copyEl.on("click", async function (event) {
         window.copyText($copyEl.attr("href"), 'URL Copied!');
 

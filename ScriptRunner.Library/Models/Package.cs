@@ -11,6 +11,7 @@ namespace ScriptRunner.Library.Models
     public class Package
     {
         public string Filename { get; set; }
+        public string Category { get; set; }
         public string System { get; set; }
         public string Description { get; set; }
         [JsonConverter(typeof(SimpleScriptJsonConverter))]

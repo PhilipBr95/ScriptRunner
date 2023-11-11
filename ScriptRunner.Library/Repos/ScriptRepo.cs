@@ -117,7 +117,13 @@ namespace ScriptRunner.Library.Repos
                 package.ImportedDate = DateTime.Now;
 
                 var json = JsonConvert.SerializeObject(package, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-                var filename = Path.Combine(_repoSettings.ScriptFolder, $"{package.System}_{package.Id}_{package.Version}.srunner");
+                
+                var category = package.Category ?? "All";
+                var folder = Path.Combine(_repoSettings.ScriptFolder, category);
+                var filename = Path.Combine(folder, $"{package.System}_{package.Id}_{package.Version}.srunner");
+
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
 
                 if (File.Exists(filename))
                     throw new Exception($"The Package already exists - {filename}");

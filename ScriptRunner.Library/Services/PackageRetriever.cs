@@ -20,11 +20,11 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
-        public async Task<Package> GetPackageAsync(string packageId, string version)
+        public async Task<Package> GetPackageOrDefaultAsync(string uniqueId)
         {
             var scripts = await GetPackagesAsync();
-            return scripts.Where(w => w.Id == packageId && w.Version == version)
-                               .Single();
+            return scripts.Where(w => w.UniqueId == uniqueId)
+                          .SingleOrDefault();
         }
 
         public async Task<IEnumerable<Package>> GetPackagesAsync()
@@ -33,6 +33,16 @@ namespace ScriptRunner.Library.Services
             {
                 var scripts = (await _scriptRepo.GetScriptsAsync()).ToList();
                 scripts.AddRange(await _nugetRepo.GetScriptsAsync());
+
+                //Find dups
+                var dups = scripts.GroupBy(g => g.UniqueId)
+                                  .Select(s => new { s.Key, Total = s.Count() })
+                                  .Where(w => w.Total > 1)
+                                  .Select(s => s.Key);
+
+                _logger?.LogError($"Duplicates found: {string.Join(",", dups)}");
+
+                scripts.RemoveAll(r => dups.Contains(r.UniqueId) == true);
 
                 return scripts;
             });

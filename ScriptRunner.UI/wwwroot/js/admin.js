@@ -148,6 +148,7 @@ function populatePackage($modal) {
 
     uploadedPackage.filename = $modal.find("#new-filename").val();
     uploadedPackage.id = $modal.find("#new-id").val();
+    uploadedPackage.category = $modal.find("#new-category").val();
     uploadedPackage.system = $modal.find("#new-system").val();
     uploadedPackage.title = $modal.find("#new-title").val();
     uploadedPackage.description = $modal.find("#new-description").val();
@@ -176,6 +177,7 @@ function populateForm($modal, payload) {
 
     $modal.find("#new-filename").val(package.filename);
     $modal.find("#new-id").val(package.id);
+    $modal.find("#new-category").val(package.category);
     $modal.find("#new-system").val(package.system);
     $modal.find("#new-title").val(package.title);
     $modal.find("#new-description").val(package.description);

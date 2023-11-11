@@ -106,7 +106,7 @@ namespace ScriptRunner.UI.Controllers
             try
             {
                 //Play it safe and get the Script again :-)
-                var repoScript = await _scriptRetriever.GetPackageAsync(script.Id, script.Version);
+                var repoScript = await _scriptRetriever.GetPackageOrDefaultAsync(script.UniqueId);
                 repoScript = repoScript.CloneWithParams(script);
                 
                 if (IsAllowed(repoScript.AllowedADGroups))
@@ -206,6 +206,14 @@ namespace ScriptRunner.UI.Controllers
                     id = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(id).Replace(" ", "");
 
                     package.Id = $"{package.System}-{id}";
+                }
+
+                //Check for dups
+                var repoScript = await _scriptRetriever.GetPackageOrDefaultAsync(package.UniqueId);
+                if(repoScript != null)
+                {
+                    _logger.LogError($"UniqueId: {package.UniqueId} already exists");
+                    throw new Exception($"Duplicate Script Id");
                 }
 
                 var parameterisedSql = SqlScript.Parameterise(sql, package.Params);              

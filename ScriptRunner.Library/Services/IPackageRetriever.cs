@@ -5,7 +5,7 @@ namespace ScriptRunner.Library.Services
     public interface IPackageRetriever
     {
         Task<IEnumerable<Package>> GetPackagesAsync();
-        Task<Package> GetPackageAsync(string packageId, string version);
+        Task<Package> GetPackageOrDefaultAsync(string uniqueId);
         void ClearPackageCache();
         Task ImportPackagesAsync(string user, string[] packageIds);
     }

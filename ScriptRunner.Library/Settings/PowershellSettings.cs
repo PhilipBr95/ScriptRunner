@@ -13,5 +13,6 @@ namespace ScriptRunner.Library.Settings
         public string NewLine { get; set; } = "\n";
         public bool UseTemporaryFile { get; set; } = true;
         public string TempFolder { get; set; } = "C:\\Nuget\\ScriptRunner\\Temp";
+        public bool DetectTables { get; set; } = true;
     }
 }

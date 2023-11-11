@@ -4,7 +4,9 @@ using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Settings;
+using System.Data;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace ScriptRunner.Library.Services
 {
@@ -76,7 +78,19 @@ namespace ScriptRunner.Library.Services
                 if(!string.IsNullOrWhiteSpace(error))
                     throw new Exception(error);
 
-                return new ScriptResults { Messages = output.Split(_powershellSettings.NewLine) };
+                var detectTables = options?.GetSetting<bool?>("Powershell.DetectTables") ?? _powershellSettings.DetectTables;
+
+                List<DataTable>? dataTables = null;
+                List<string>? messages = null;
+
+                var lines = output.Split(_powershellSettings.NewLine);
+
+                if (detectTables)
+                    (dataTables, messages) = FindTables(lines);
+                else
+                    messages = lines.ToList();
+
+                return new ScriptResults { DataTables = dataTables, Messages = messages };
             }
             catch(Exception ex)
             {
@@ -88,6 +102,90 @@ namespace ScriptRunner.Library.Services
                 if(!string.IsNullOrWhiteSpace(tempFile) && File.Exists(tempFile))
                     File.Delete(tempFile);
             }
+        }
+
+        private static (List<DataTable> dataTables, List<string> messages) FindTables(string[] lines)
+        {
+            var dataTables = new List<DataTable>();
+            var messages = new List<string>();
+
+            DataTable? table = null;
+            IEnumerable<Column>? cols = null;
+            var inTable = false;           
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                var chars = line.Replace(" ", string.Empty).Replace("\r", string.Empty).Distinct();
+
+                if (chars.Count() == 1 && chars.First() == '-')
+                {
+                    messages.RemoveAt(messages.Count - 1);
+
+                    inTable = true;
+
+                    table = new DataTable();
+                    dataTables.Add(table);
+
+                    var propLine = lines[i - 1];
+                    cols = GetColumns(propLine);
+
+                    foreach (var col in cols)
+                    {
+                        table.Columns.Add(col.ColumnName, typeof(string));
+                    }
+                }
+                else if (line == "\r")
+                {
+                    inTable = false;
+                }
+                else if (inTable)
+                {
+                    var row = new List<string>();
+
+                    foreach (var col in cols)
+                    {
+                        var value = line[col.StartPosition..col.EndPosition].Trim();
+                        row.Add(value);
+                    }
+
+                    table!.Rows.Add(row.ToArray());
+                }
+                else
+                {
+                    messages.Add(line);
+                }
+            }
+
+            return (dataTables, messages);
+        }
+
+        private static IEnumerable<Column> GetColumns(string propLine)
+        {
+            var columns = new List<Column>();
+            Column? col = null;
+            var start = 0;
+            var inColumn = false;
+
+            for (var i=0; i < propLine.Length; i++)
+            {
+                if (propLine[i] == ' ' && inColumn == false)
+                {
+                    inColumn = true;
+                    col = new Column { StartPosition = start, ColumnName = propLine[start..i] };
+                    columns.Add(col);
+
+                    start = i;
+                }            
+                else if (propLine[i] != ' ' && inColumn == true)
+                {
+                    col!.EndPosition = i;
+                    inColumn = false;
+                    start = i;
+                }
+            }
+
+            return columns;
         }
     }
 }

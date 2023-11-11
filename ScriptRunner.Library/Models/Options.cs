@@ -16,7 +16,14 @@ namespace ScriptRunner.Library.Models
         public T? GetSetting<T>(string key)
         {
             if (RunSettings?.ContainsKey(key) == true)
-                return (T) Convert.ChangeType(RunSettings[key], typeof(T));
+            {
+                var type = typeof(T);
+
+                if (type.IsGenericType)
+                    type = type.GetGenericArguments()[0];
+
+                return (T)Convert.ChangeType(RunSettings[key], type);
+            }
 
             return default;
         }

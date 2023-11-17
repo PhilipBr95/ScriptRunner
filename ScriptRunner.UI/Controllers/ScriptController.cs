@@ -108,11 +108,21 @@ namespace ScriptRunner.UI.Controllers
                 //Play it safe and get the Script again :-)
                 var repoScript = await _scriptRetriever.GetPackageOrDefaultAsync(script.UniqueId);
                 repoScript = repoScript.CloneWithParams(script);
-                
+
                 if (IsAllowed(repoScript.AllowedADGroups))
                 {
-					var currentUser = HttpContext.User.Identity.Name;
-					var result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
+                    PackageResult result = null;
+                    var currentUser = HttpContext.User.Identity.Name;
+
+                    if (script.RunAsUser)
+                    {
+                        if (HttpContext.User.Identity is not WindowsIdentity windowsId)
+                            throw new Exception("Authenticated user isn't a WindowsIdentity");
+
+                        result = await WindowsIdentity.RunImpersonatedAsync(windowsId.AccessToken, async () => 
+                                 await _scriptRunner.ExecuteAsync(repoScript, currentUser));
+                    }
+                    else result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
 
                     return Ok(result);
                 }

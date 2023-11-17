@@ -23,7 +23,7 @@ namespace ScriptRunner.Library.Models
         public DateTime? ImportedDate { get; set; }
         public Param[]? Params { get; set; }
         public string[]? AllowedADGroups { get; set; }
-
+        public bool RunAsUser { get; set; } = false;
 		public string UniqueId => $"{Category}.{System}: {Id} - {Version}";
         public IEnumerable<ScriptResults>? Results { get; set; } = null;
         public Options? Options { get; set; }

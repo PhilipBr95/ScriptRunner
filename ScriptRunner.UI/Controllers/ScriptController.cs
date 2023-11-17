@@ -223,7 +223,7 @@ namespace ScriptRunner.UI.Controllers
                 if(repoScript != null)
                 {
                     _logger.LogError($"UniqueId: {package.UniqueId} already exists");
-                    throw new Exception($"Duplicate Script Id");
+                    throw new Exception($"Duplicate Script Id - {package.UniqueId}");
                 }
 
                 var parameterisedSql = SqlScript.Parameterise(sql, package.Params);              

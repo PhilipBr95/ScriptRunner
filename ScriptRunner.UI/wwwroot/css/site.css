@@ -345,3 +345,19 @@ dd {
 #Params {
     margin-top: -7px;
 }
+
+.errorsFound {
+    background-color: #FF2626;
+    border-radius: 15px;
+    margin-top: 2px;
+    padding-top: 5px;
+}
+
+.logError {
+    background-color: #FF2626;
+    border-radius: 15px;
+}
+
+.logWrap {
+    word-break: break-all;
+}

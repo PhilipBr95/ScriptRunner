@@ -40,9 +40,12 @@ namespace ScriptRunner.Library.Services
                                   .Where(w => w.Total > 1)
                                   .Select(s => s.Key);
 
-                _logger?.LogError($"Duplicates found: {string.Join(",", dups)}");
+                if (dups.Count() > 0)
+                {
+                    _logger?.LogError($"Duplicate Packages found: {string.Join(",", dups)}");
 
-                scripts.RemoveAll(r => dups.Contains(r.UniqueId) == true);
+                    scripts.RemoveAll(r => dups.Contains(r.UniqueId) == true);
+                }
 
                 return scripts;
             });

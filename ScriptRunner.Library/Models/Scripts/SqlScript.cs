@@ -36,11 +36,26 @@ namespace ScriptRunner.Library.Models.Scripts
                 if(tokens.Count < 3)
                     throw new ArgumentException($"DECLARE statement looks wrong - {declareSql}");
 
-                //We only want the first 3 tokens
-                end = tokens[2].EndPosition + 1;
+                //Find the equals
+                var equals = tokens.Where(w => w.Type == TSQL.Tokens.TSQLTokenType.Operator && w.Text == "=")
+                                   .FirstOrDefault();
 
-                var previously = tokens.Count == 3 ? string.Empty : $" --Previously {declareSql[end..].Trim()}";
+                if(equals == null)
+                {
+                    if (tokens[^1].Type == TSQL.Tokens.TSQLTokenType.SingleLineComment)
+                        end = tokens[^2].EndPosition + 1;
+                    else
+                        end = tokens[^1].EndPosition + 1;
+                }
+                else
+                    end = equals.EndPosition - 1;
 
+
+                var previously = declareSql[end..].Trim();
+
+                if (previously.Length > 0)
+                    previously = $" --Previously {previously}";
+                
                 return $"{declareSql[0..end]} = {paramName}{previously}";
             });
 

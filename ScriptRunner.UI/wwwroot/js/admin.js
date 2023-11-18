@@ -218,6 +218,7 @@ function populateForm($modal, payload) {
             //Does this line look different to the original (due to Params)
             let linePos = findFirstDiffPos(line, originalLine);
             if (linePos != -1) {
+                console.info(`line ${i} - ${linePos} - ${line} vs ${originalLine}`);
                 differences.push({ regex: new RegExp(`${escapeRegex(line.substring(0, linePos))}(${escapeRegex(line.substring(linePos))})`, 'gi') });
             }
         }
@@ -256,7 +257,10 @@ function populateForm($modal, payload) {
         function findFirstDiffPos(a, b) {
             var longerLength = Math.max(a.length, b.length);
             for (var i = 0; i < longerLength; i++) {
-                if (a[i] !== b[i]) return i;
+                if (a[i] !== b[i]) {
+                    console.info(`Diff - "${a[i]}" vs "${b[i]}"`)
+                    return i;
+                }
             }
 
             return -1;

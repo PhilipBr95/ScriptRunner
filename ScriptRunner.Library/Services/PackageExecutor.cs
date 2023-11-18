@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using NuGet.Common;
+using NuGet.Packaging;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
 
@@ -37,20 +38,23 @@ namespace ScriptRunner.Library.Services
             {                
                 _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");                                            
 
+                var parameters = package.Params;
+                parameters.AddRange(new Param[] { new Param { Name = "ActionedBy", Value = actionedBy } });
+
                 foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))
                 {
                     switch (script)
                     {
                         case SqlScript sqlScript:
                             {
-                                var results = await _sqlRunner.ExecuteAsync(sqlScript, package.Params);
+                                var results = await _sqlRunner.ExecuteAsync(sqlScript, parameters);
                                 scriptResults.Add(results);
                             }
                             break;
                         case PowershellScript powershellScript:
                             {
                                 var executor = _powerShellExecutorResolver.Resolve(package.Options);
-                                var results = await executor.ExecuteAsync(powershellScript, package.Params, package.Options);
+                                var results = await executor.ExecuteAsync(powershellScript, parameters, package.Options);
                                 scriptResults.Add(results);
                             }
                             break;

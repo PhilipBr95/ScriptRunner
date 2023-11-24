@@ -159,6 +159,18 @@ namespace ScriptRunner.UI.Controllers
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(package.Category)) throw new Exception($"{nameof(package.Category)} must be populated");
+                if (string.IsNullOrWhiteSpace(package.System)) throw new Exception($"{nameof(package.System)} must be populated");
+                if (string.IsNullOrWhiteSpace(package.Title)) throw new Exception($"{nameof(package.Title)} must be populated");
+
+                //Check for dups
+                var repoScript = await _scriptRetriever.GetPackageOrDefaultAsync(package.UniqueId);
+                if (repoScript != null)
+                {
+                    _logger.LogError($"UniqueId: {package.UniqueId} already exists");
+                    throw new Exception($"Duplicate PackageId - {package.UniqueId}");
+                }
+
                 _logger?.LogInformation($"Importing {package.Id}");
 
                 var filename = await _scriptRepo.ImportPackageAsync(package);
@@ -223,7 +235,7 @@ namespace ScriptRunner.UI.Controllers
                 if(repoScript != null)
                 {
                     _logger.LogError($"UniqueId: {package.UniqueId} already exists");
-                    throw new Exception($"Duplicate Script Id - {package.UniqueId}");
+                    throw new Exception($"Duplicate PackageId - {package.UniqueId}");
                 }
 
                 var parameterisedSql = SqlScript.Parameterise(sql, package.Params);              

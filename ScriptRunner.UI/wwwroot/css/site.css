@@ -185,6 +185,8 @@ dd {
     font-weight: bold;
 }
 
+/*
+
 .mytooltip .tooltiptext {
     visibility: hidden;
     width: 400px;
@@ -224,7 +226,7 @@ dd {
     top: -5px;
     left: 125%;
 }
-
+*/
 #newScript dl {
     display: flex;
     flex-flow: row wrap;

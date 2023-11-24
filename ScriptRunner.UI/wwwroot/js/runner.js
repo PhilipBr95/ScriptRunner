@@ -2,6 +2,7 @@
 var scripts;
 var selectedScript;
 var dynamicFunctions = [];
+var tippyInstances = [];
 
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
@@ -58,6 +59,7 @@ function showScriptDetails(script) {
         $('#description').text('');
         $('#tags').text('');
         $('#version').text('');
+        $('#versionTooltip').text('');
 
         $('#execute').addClass('hidden');
         $('#copyScript').addClass('hidden');        
@@ -86,6 +88,8 @@ function showScriptDetails(script) {
         }        
         
         $('#version').text(`${script.uniqueId}`);
+        $('#versionTooltip').attr('data-tooltip', `${script.filename}`);
+        $('#versionTooltip').text('?');
 
         $('#execute').removeClass('hidden');
         $('#copyScript').removeClass('hidden');
@@ -123,7 +127,7 @@ function showScriptDetails(script) {
 
                 $html = $($.parseHTML(html))
                 $input = $html.find('input');
-
+                
             } else if (el.htmlType == "file") {
                 if (value?.length > 0) {
                     let file = convertBase64ToFile(value, el.data['FileType']);
@@ -197,7 +201,29 @@ function showScriptDetails(script) {
         return false;
     });     
 
+    let $versionTip = $('#versionTooltip');
+    $versionTip.off("click");
+    $versionTip.on("click", async function (event) {
+        window.copyText(selectedScript.filename, 'URL Copied!');
+
+        event.preventDefault();
+        return false;
+    });     
+
     addOptions(script);
+
+    tippyInstances.forEach(instance => {
+        instance.destroy();
+    });
+    tippyInstances.length = 0; // clear it
+
+    tippyInstances = tippy('.mytooltip', {
+        maxWidth: 600,
+        content(reference) {
+            const tooltip = reference.getAttribute('data-tooltip')
+            return tooltip
+        }
+    });
 }
 
 window.copyText = function copyText(textToCopy, message) {

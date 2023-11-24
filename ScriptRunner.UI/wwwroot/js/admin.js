@@ -206,6 +206,12 @@ function populateForm($modal, payload) {
     function populateScript() {
         let $script = $modal.find("#new-script");
 
+        tippy('#new-script', {
+            content: '<p><b>SQL Parameter Replacement</b></p><p>The source SQL has been modified and the Parameter substitutions have been added.</p><p>Please check you are happy with the SQL - The changes have been highlighted</p>',
+            allowHTML: true,
+            maxWidth: 600
+        });
+
         //Populate and highlight the script
         let lines = sql.split("\n");
         let originalLines = originalSql.split("\n");
@@ -218,7 +224,7 @@ function populateForm($modal, payload) {
             //Does this line look different to the original (due to Params)
             let linePos = findFirstDiffPos(line, originalLine);
             if (linePos != -1) {
-                console.info(`line ${i} - ${linePos} - ${line} vs ${originalLine}`);
+                //console.info(`line ${i} - ${linePos} - ${line} vs ${originalLine}`);
                 differences.push({ regex: new RegExp(`${escapeRegex(line.substring(0, linePos))}(${escapeRegex(line.substring(linePos))})`, 'gi') });
             }
         }

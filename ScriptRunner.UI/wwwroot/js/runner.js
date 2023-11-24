@@ -7,6 +7,9 @@ var tippyInstances = [];
 $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
     scripts = response;
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const scriptId = urlParams.get('ScriptId');
+
     let categories = [... new Set(scripts.data.map(obj => obj.category))];
     let el = $('#categories');
     populateDropDown(el, categories.map(obj => ({ id: obj, value: obj })))
@@ -35,14 +38,11 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
                 let script = scripts.data.find(e => e.id == this.value)
                 showScriptDetails(script);
             });
-            if (items.length == 1) { el.val(items[0].id).change(); }
+            if (items.length == 1 && scriptId == null) { el.val(items[0].id).change(); }
         });
-        if (items.length == 1) { el.val(items[0].id).change(); }
+        if (items.length == 1 && scriptId == null) { el.val(items[0].id).change(); }
 
     });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const scriptId = urlParams.get('ScriptId');
 
     if (scriptId != null) {
         let script = scripts.data.find(e => e.id == scriptId)
@@ -51,7 +51,7 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
     }
 });
 
-function showScriptDetails(script) {
+function showScriptDetails(script) {    
     selectedScript = script;
 
     let $params = $('#Params');

@@ -19,7 +19,8 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
         el.empty();
 
         el = $('#systems');
-        populateDropDown(el, systems.map(obj => ({ id: obj, value: obj })))
+        let items = systems.map(obj => ({ id: obj, value: obj }));
+        populateDropDown(el, items)
 
         el.on("change", function () {
             showScriptDetails(null)
@@ -34,7 +35,10 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
                 let script = scripts.data.find(e => e.id == this.value)
                 showScriptDetails(script);
             });
+            if (items.length == 1) { el.val(items[0].id).change(); }
         });
+        if (items.length == 1) { el.val(items[0].id).change(); }
+
     });
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -204,7 +208,7 @@ function showScriptDetails(script) {
     let $versionTip = $('#versionTooltip');
     $versionTip.off("click");
     $versionTip.on("click", async function (event) {
-        window.copyText(selectedScript.filename, 'URL Copied!');
+        window.copyText(selectedScript.filename, 'Path Copied!');
 
         event.preventDefault();
         return false;

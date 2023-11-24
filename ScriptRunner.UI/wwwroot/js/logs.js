@@ -7,7 +7,11 @@ $(document).ready(function () {
         "columns": [
             { "data": "categoryName", "title": "Category Name", "width":"15%", className: "logWrap" },
             { "data": "logLevel", "title": "LogLevel", "width": "10%" },
-            { "data": "message", "title": "Message", "width": "60%" },
+            {
+                "data": "message", "title": "Message", "width": "60%", render: function (data, type, row) {
+                    return `<div style="max-width:800px">${data}</div>`;
+                }
+            },
             {
                 "data": "createdDate", "width": "15%", "sType": "date-uk", "title": "Created Date", "type": "datetime", render: function (data, type, row) {
                     let dt = new moment(data, moment.ISO_8601);

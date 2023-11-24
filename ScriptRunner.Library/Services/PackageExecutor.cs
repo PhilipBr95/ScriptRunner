@@ -38,8 +38,8 @@ namespace ScriptRunner.Library.Services
             {                
                 _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");                                            
 
-                var parameters = package.Params;
-                parameters.AddRange(new Param[] { new Param { Name = "ActionedBy", Value = actionedBy } });
+                var parameters = package.Params.ToList();
+                parameters.Add(new Param { Name = "ActionedBy", Value = actionedBy });
 
                 foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))
                 {
@@ -65,7 +65,11 @@ namespace ScriptRunner.Library.Services
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, $"Unknown error running {package.UniqueId} - {scriptFilename} with Params: {JsonConvert.SerializeObject(package.Params)}");
+                var paramstring = JsonConvert.SerializeObject(package.Params);
+                if (paramstring.Length > 5000)
+                    paramstring = paramstring[..5000] + "...";
+
+                _logger?.LogError(ex, $"Unknown error running {package.UniqueId} - {scriptFilename} with Params: {paramstring}");
                 success = false;
 
                 throw;

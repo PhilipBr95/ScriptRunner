@@ -5,6 +5,6 @@ namespace ScriptRunner.Library.Services
 {
     public interface IPowerShellExecutor
     {
-        Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params, Options options);
+        Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, IEnumerable<Param> @params, Options options);
     }
 }

@@ -21,7 +21,7 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
-        public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, Param[] @params, Models.Options? options)
+        public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, IEnumerable<Param> @params, Models.Options? options)
         {
             var psCommand = string.Empty;
             var tempFile = string.Empty;

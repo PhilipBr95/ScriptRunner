@@ -19,7 +19,7 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
-        public async Task<ScriptResults> ExecuteAsync(SqlScript sqlScript, Param[] @params)
+        public async Task<ScriptResults> ExecuteAsync(SqlScript sqlScript, IEnumerable<Param> @params)
         {
             try
             {

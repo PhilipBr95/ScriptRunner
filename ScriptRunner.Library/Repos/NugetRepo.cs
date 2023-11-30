@@ -130,8 +130,23 @@ namespace ScriptRunner.Library.Repos
                 var repository = Repository.Factory.GetCoreV3(packageSource);
 
                 SourceCacheContext cache = new SourceCacheContext();
-                PackageSearchResource packageSearchResource = await repository.GetResourceAsync<PackageSearchResource>();
-                FindPackageByIdResource findPackageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>();
+
+                PackageSearchResource packageSearchResource = null;
+                FindPackageByIdResource findPackageByIdResource = null;
+
+                try
+                {
+                    packageSearchResource = await repository.GetResourceAsync<PackageSearchResource>();
+                    findPackageByIdResource = await repository.GetResourceAsync<FindPackageByIdResource>();
+                }
+                catch(Exception ex)
+                {
+                    //Probably offline
+
+                    _logger?.LogWarning(ex, $"Unknown error retrieving packages from {_repoSettings.GitRepo}");
+                    return Array.Empty<Package>();
+                }
+
                 SearchFilter searchFilter = new SearchFilter(includePrerelease: true);
 
                 var logger = NuGet.Common.NullLogger.Instance;

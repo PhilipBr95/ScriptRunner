@@ -8,6 +8,7 @@ $(function () {
         searching: false,
 
         columns: [
+            { "data": "category", "title": "Category" },
             { "data": "system", "title": "System" },
             { "data": "title", "title": "Title" },
             {
@@ -57,6 +58,7 @@ $(function () {
                     return `<input type="checkbox" class="remote-checkbox" name="selectedIds" value="${data.id}" />`;
                 }
             },
+            { "data": "category", "title": "Category" },
             { "data": "system", "title": "System" },
             { "data": "title", "title": "Title" },
             {

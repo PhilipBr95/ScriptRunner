@@ -17,7 +17,7 @@ $(function () {
             },
             {
                 "data": "version", "title": "Version", render: function (data, type, row) {
-                    return `<div class="mytooltip">${data}<span class="tooltiptext">${row.filename}</span></div>`;
+                    return `<div class="mytooltip" data-tooltip="${row.filename}">${data}</div>`;
                 } },
             {
                 "data": "importedDate", "sType": "date-uk", "title": "Imported Date", "type": "datetime", render: function (data, type, row) {
@@ -27,7 +27,16 @@ $(function () {
             }
         ],
         "order": [[4, 'desc']],
-    });
+        "initComplete": function (settings, json) {
+            tippy('.mytooltip', {
+                maxWidth: 600,
+                content(reference) {
+                    const tooltip = reference.getAttribute('data-tooltip')
+                    return tooltip
+                }
+            });
+        }
+    });    
 
     let table = $('#remoteScripts').DataTable({
         ajax: "/api/script/remote",

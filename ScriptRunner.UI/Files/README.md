@@ -122,6 +122,7 @@ There are several other RunSettings you can tweak with when using `powershell.ex
 | Powershell.RedirectStandardOutput | Whether to capture output                             |
 | Powershell.RedirectStandardError  | Whether to capture errors                             |
 | Powershell.UseTemporaryFile       | Whether to use a temporary file, or encode the script |
+| Powershell.ConvertJsonToTable    | Powershell tables aren't easy to scrape, so use `ConvertTo-Json` and this flag will convert it to a table.  If you have an enum you want as text, you have to use `ConvertTo-Csv | ConvertFrom-Csv | ConvertTo-Json` or `ConvertTo-Json -EnumsAsStrings` with PS Core.  **Note:** Messages aren't displayed  |
 
 
 ## Security

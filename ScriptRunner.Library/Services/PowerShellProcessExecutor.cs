@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
@@ -78,15 +79,15 @@ namespace ScriptRunner.Library.Services
                 if(!string.IsNullOrWhiteSpace(error))
                     throw new Exception(error);
 
-                var detectTables = options?.GetSetting<bool?>("Powershell.DetectTables") ?? _powershellSettings.DetectTables;
+                var detectJsonTables = options?.GetSetting<bool?>("Powershell.ConvertJsonToTable") ?? _powershellSettings.DetectJsonTables;
 
                 List<DataTable>? dataTables = null;
                 List<string>? messages = null;
 
                 var lines = output.Split(_powershellSettings.NewLine);
 
-                if (detectTables)
-                    (dataTables, messages) = FindTables(lines);
+                if (detectJsonTables)
+                    (dataTables, messages) = FindJsonTables(lines);
                 else
                     messages = lines.ToList();
 
@@ -104,88 +105,18 @@ namespace ScriptRunner.Library.Services
             }
         }
 
-        private static (List<DataTable> dataTables, List<string> messages) FindTables(string[] lines)
+        private static (List<DataTable> dataTables, List<string> messages) FindJsonTables(string[] lines)
         {
-            var dataTables = new List<DataTable>();
+            //Find all the []'s
+            var regex = new Regex("\\[(.*?)]");
+            var datasets = regex.Matches(string.Join(" ", lines));
+
             var messages = new List<string>();
-
-            DataTable? table = null;
-            IEnumerable<Column>? cols = null;
-            var inTable = false;           
-
-            for (var i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i];
-                var chars = line.Replace(" ", string.Empty).Replace("\r", string.Empty).Distinct();
-
-                if (chars.Count() == 1 && chars.First() == '-')
-                {
-                    messages.RemoveAt(messages.Count - 1);
-
-                    inTable = true;
-
-                    table = new DataTable();
-                    dataTables.Add(table);
-
-                    var propLine = lines[i - 1];
-                    cols = GetColumns(propLine);
-
-                    foreach (var col in cols)
-                    {
-                        table.Columns.Add(col.ColumnName, typeof(string));
-                    }
-                }
-                else if (line == "\r")
-                {
-                    inTable = false;
-                }
-                else if (inTable)
-                {
-                    var row = new List<string>();
-
-                    foreach (var col in cols)
-                    {
-                        var value = line[col.StartPosition..col.EndPosition].Trim();
-                        row.Add(value);
-                    }
-
-                    table!.Rows.Add(row.ToArray());
-                }
-                else
-                {
-                    messages.Add(line);
-                }
-            }
+            List<DataTable> dataTables = datasets.Select(s => (DataTable)JsonConvert.DeserializeObject(s.Value, (typeof(DataTable))))
+                                                 .ToList();                            
 
             return (dataTables, messages);
         }
 
-        private static IEnumerable<Column> GetColumns(string propLine)
-        {
-            var columns = new List<Column>();
-            Column? col = null;
-            var start = 0;
-            var inColumn = false;
-
-            for (var i=0; i < propLine.Length; i++)
-            {
-                if (propLine[i] == ' ' && inColumn == false)
-                {
-                    inColumn = true;
-                    col = new Column { StartPosition = start, ColumnName = propLine[start..i] };
-                    columns.Add(col);
-
-                    start = i;
-                }            
-                else if (propLine[i] != ' ' && inColumn == true)
-                {
-                    col!.EndPosition = i;
-                    inColumn = false;
-                    start = i;
-                }
-            }
-
-            return columns;
-        }
     }
 }

@@ -38,7 +38,7 @@ namespace ScriptRunner.Library.Services
             {                
                 _logger?.LogInformation($"Running {package.UniqueId} for {actionedBy}");                                            
 
-                var parameters = package.Params.ToList();
+                var parameters = package.Params?.ToList() ?? Array.Empty<Param>().ToList();
                 parameters.Add(new Param { Name = "ActionedBy", Value = actionedBy });
 
                 foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))

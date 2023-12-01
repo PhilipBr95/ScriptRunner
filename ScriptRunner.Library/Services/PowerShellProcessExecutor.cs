@@ -72,7 +72,7 @@ namespace ScriptRunner.Library.Services
                     output = proc.StandardOutput.ReadToEnd();
 
                 if (startInfo.RedirectStandardError)
-                    error = proc.StandardOutput.ReadToEnd();
+                    error = proc.StandardError.ReadToEnd();
 
                 await proc.WaitForExitAsync();
 

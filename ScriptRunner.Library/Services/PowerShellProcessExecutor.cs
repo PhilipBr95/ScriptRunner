@@ -114,10 +114,20 @@ namespace ScriptRunner.Library.Services
 
             var messages = regex.Replace(output, ev =>
             {
-                var dataTable = (DataTable)JsonConvert.DeserializeObject(ev.Value, (typeof(DataTable)));
-                dataTables.Add(dataTable);
+                try
+                {
+                    var dataTable = (DataTable)JsonConvert.DeserializeObject(ev.Value, (typeof(DataTable)));
+                    dataTables.Add(dataTable);
 
-                return "";
+                    return "";
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, $"Incorrect [] matching with {ev.Value}");
+                }
+
+                //Backup plan
+                return ev.Value;
             });
             
             return (dataTables, messages.Split(_powershellSettings.NewLine).ToList());

@@ -84,12 +84,13 @@ namespace ScriptRunner.Library.Services
                 List<DataTable>? dataTables = null;
                 List<string>? messages = null;
 
-                var lines = output.Split(_powershellSettings.NewLine);
-
                 if (detectJsonTables)
-                    (dataTables, messages) = FindJsonTables(lines);
+                    (dataTables, messages) = FindJsonTables(output);
                 else
+                {
+                    var lines = output.Split(_powershellSettings.NewLine);
                     messages = lines.ToList();
+                }
 
                 return new ScriptResults { DataTables = dataTables, Messages = messages };
             }
@@ -104,19 +105,22 @@ namespace ScriptRunner.Library.Services
                     File.Delete(tempFile);
             }
         }
-
-        private static (List<DataTable> dataTables, List<string> messages) FindJsonTables(string[] lines)
+        
+        private (List<DataTable> dataTables, List<string> messages) FindJsonTables(string output)
         {
             //Find all the []'s
-            var regex = new Regex("\\[(.*?)]");
-            var datasets = regex.Matches(string.Join(" ", lines));
+            var regex = new Regex($"\\[((.|{_powershellSettings.NewLine})*?)]");
+            List<DataTable> dataTables = new();
 
-            var messages = new List<string>();
-            List<DataTable> dataTables = datasets.Select(s => (DataTable)JsonConvert.DeserializeObject(s.Value, (typeof(DataTable))))
-                                                 .ToList();                            
+            var messages = regex.Replace(output, ev =>
+            {
+                var dataTable = (DataTable)JsonConvert.DeserializeObject(ev.Value, (typeof(DataTable)));
+                dataTables.Add(dataTable);
 
-            return (dataTables, messages);
+                return "";
+            });
+            
+            return (dataTables, messages.Split(_powershellSettings.NewLine).ToList());
         }
-
     }
 }

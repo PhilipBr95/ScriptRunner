@@ -1,5 +1,4 @@
-﻿
-var scripts;
+﻿var scripts;
 var selectedScript;
 var dynamicFunctions = [];
 var tippyInstances = [];
@@ -493,4 +492,69 @@ $('#execute').on("click", async function (e) {
             $('*').css('cursor', '');
         });
     });
+});
+
+$('.viewScriptSelector').on("click", async function (e) {
+    var $div = $('#scriptPopup');
+    $div.removeClass('hidden');
+
+    let $modal = $("#scriptsModal");
+    $modal.modal('show');
+
+    let table;
+
+    if ($.fn.dataTable.isDataTable("#scriptsTable") == false) {
+        table = $('#scriptsTable').DataTable({
+            retrieve: true,
+            paging: true,
+            ajax: { url: "/api/script" },
+            fixedHeader: true,
+            searching: true,
+            pageLength: 5,
+            dom: "frtip",
+            ordering: false,
+
+            columns: [
+                { "data": "id", "visible": false },
+                { "data": "category", "title": "Category" },
+                { "data": "system", "title": "System" },
+                { "data": "title", "title": "Title" },
+                {
+                    "data": "tags", "title": "Tags",
+                    "render": function (data, type, row, meta) {
+
+                        if (row.tags != null) {
+                            var htmlDetail = row.tags?.join(', ');
+
+                            return type === 'display' ? htmlDetail : htmlDetail;
+                        } else {
+                            return '';
+                        }
+                    }
+                }
+            ]
+        });
+
+        table.on('click', 'tbody tr', (e) => {
+            let classList = e.currentTarget.classList;
+
+            if (classList.contains('selected')) {
+                classList.remove('selected');
+            }
+            else {
+                table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+                classList.add('selected');
+            }
+        });
+    } else {
+        table = $('#scriptsTable').DataTable();
+        table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+    }
+
+    $('#runScript').on('click', function () {
+        let data = table.rows('.selected').data()[0];
+        let url = '/?ScriptId=' + data.id;
+        window.location.href = url;
+    });
+
 });

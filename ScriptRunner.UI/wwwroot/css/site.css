@@ -372,3 +372,8 @@ dd {
 .logWrap {
     word-break: break-all;
 }
+
+.viewScriptSelector {
+    text-decoration: underline;
+    cursor: pointer;
+}

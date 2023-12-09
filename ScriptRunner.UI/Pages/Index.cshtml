@@ -12,6 +12,28 @@
     @Html.AntiForgeryToken()
 
     <div class="container">
+        <!-- Modal -->
+        <div class="modal fade" id="scriptsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Select a Script</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table id='scriptsTable' class="display" style="width:100%">
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="runScript">Run Script</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <div style="width:75%">
             <div class="row mb-2 align-items-baseline">
                 <div class="col-2">
@@ -31,7 +53,9 @@
             </div>
             <div class="row mb-2 align-items-baseline">
                 <div class="col-2">
-                    <label for="scripts" class="form-label label">Script</label>
+                    <label for="scripts" class="form-label label viewScriptSelector">Script
+                        <span class="mytooltip" data-tooltip="Click to view/search all scripts">&nbsp;?</span>
+                    </label>                    
                 </div>
                 <div class="col-10">
                     <select id="scripts" class="form-select dropdown"></select>

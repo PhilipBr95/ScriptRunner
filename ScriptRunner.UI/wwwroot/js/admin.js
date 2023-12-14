@@ -218,7 +218,7 @@ function populateForm($modal, payload) {
         let $script = $modal.find("#new-script");
 
         tippy('#new-script', {
-            content: '<p><b>SQL Parameter Replacement</b></p><p>The source SQL has been modified and the Parameter substitutions have been added.</p><p>Please check you are happy with the SQL - The changes have been highlighted</p>',
+            content: '<p><b>SQL Parameter Replacement</b></p><p>The source SQL has been modified and the Parameter substitutions have been added.<br />Please check you are happy with the SQL - The changes are highlighted</p>',
             allowHTML: true,
             maxWidth: 600
         });

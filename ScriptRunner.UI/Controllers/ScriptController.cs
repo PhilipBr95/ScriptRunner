@@ -59,29 +59,6 @@ namespace ScriptRunner.UI.Controllers
             }
         }
 
-        public class PackageModel
-        {
-            public string System { get; set; }
-            public string Title{ get; set; }
-
-            public string Id { get; set; }
-            public string Version { get; set; }
-            public DateTime? ImportedDate { get; set; }
-
-            //public PackageModel(IPackageSearchMetadata s)
-            //{
-            //    Version = s.Identity.Version.OriginalVersion;
-            //    Title = s.Title;
-            //    Id = s.Identity.Id;
-            //}
-
-			//public PackageModel(Package s)
-			//{
-            //    System = s.System;
-            //    Title = s.titl
-			//}
-		}
-
         [HttpGet("/api/[controller]/remote")]
         public async Task<IActionResult> GetRemoteScriptsAsync()
         {
@@ -189,9 +166,12 @@ namespace ScriptRunner.UI.Controllers
         {
             var filename = string.Empty;
 
+            if(HttpContext.Request.Form.Files.Count != 1)
+                throw new Exception($"Please specify a file");
+
             try
             {
-                var file = HttpContext.Request.Form.Files.FirstOrDefault();
+                var file = HttpContext.Request.Form.Files[0];
                 filename = file.FileName;
 
                 string sql = string.Empty;

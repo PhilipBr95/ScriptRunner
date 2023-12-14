@@ -21,7 +21,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <table id='scriptsTable' class="display" style="width:100%">
+                        <table id='scriptsTable' class="display scriptsTableView" style="width:100%">
                         </table>
                     </div>
                     <div class="modal-footer">
@@ -53,12 +53,11 @@
             </div>
             <div class="row mb-2 align-items-baseline">
                 <div class="col-2">
-                    <label for="scripts" class="form-label label viewScriptSelector">Script
-                        <span class="mytooltip" data-tooltip="Click to view/search all scripts">&nbsp;?</span>
-                    </label>                    
+                    <label for="scripts" class="form-label label">Script</label>                    
                 </div>
-                <div class="col-10">
+                <div class="col-10 input-group-flex">
                     <select id="scripts" class="form-select dropdown"></select>
+                    <img id="viewScriptSelector" class=" input-group-append mytooltip mytooltip-pointer m-2" src="~/img/script-file.svg" height="20px" data-tooltip="Click to view and search all scripts" />
                 </div>
             </div>
             <div class="row mb-2 align-items-baseline">

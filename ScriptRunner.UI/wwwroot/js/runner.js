@@ -494,7 +494,7 @@ $('#execute').on("click", async function (e) {
     });
 });
 
-$('.viewScriptSelector').on("click", async function (e) {
+$('#viewScriptSelector').on("click", async function (e) {
     var $div = $('#scriptPopup');
     $div.removeClass('hidden');
 

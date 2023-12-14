@@ -185,48 +185,10 @@ dd {
     font-weight: bold;
 }
 
-/*
-
-.mytooltip .tooltiptext {
-    visibility: hidden;
-    width: 400px;
-    background-color: #555;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -200px;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-weight: normal;
-    word-wrap: break-word;
+.mytooltip-pointer {
+    cursor: pointer;
 }
 
-.mytooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: #555 transparent transparent transparent;
-}
-
-.mytooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-.mytooltip-right {
-    top: -5px;
-    left: 125%;
-}
-*/
 #newScript dl {
     display: flex;
     flex-flow: row wrap;
@@ -373,7 +335,15 @@ dd {
     word-break: break-all;
 }
 
-.viewScriptSelector {
-    text-decoration: underline;
+.input-group-flex{
+    display: flex;
+}
+
+.navbar-brand-text {
+    font-weight: bold;
+    color: #1E3A4C!important;
+}
+
+.scriptsTableView {
     cursor: pointer;
 }

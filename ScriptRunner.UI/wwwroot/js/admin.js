@@ -27,7 +27,7 @@ $(function () {
                 }
             }
         ],
-        "order": [[4, 'desc']],
+        "order": [[2, 'asc']],
         "initComplete": function (settings, json) {
             tippy('.mytooltip', {
                 maxWidth: 600,
@@ -68,7 +68,7 @@ $(function () {
             },
             { "data": "version", "title": "Version" },      
         ],
-        "order": [[3, 'desc']],
+        "order": [[3, 'asc']],
         dom: 'frtlip',
     });
 

@@ -532,7 +532,12 @@ $('#viewScriptSelector').on("click", async function (e) {
                         }
                     }
                 }
-            ]
+            ],
+            initComplete: function () {
+                setTimeout(() => {
+                    $('div.dataTables_filter input').focus()
+                }, 500);
+            }
         });
 
         table.on('click', 'tbody tr', (e) => {
@@ -549,6 +554,10 @@ $('#viewScriptSelector').on("click", async function (e) {
     } else {
         table = $('#scriptsTable').DataTable();
         table.rows('.selected').nodes().each((row) => row.classList.remove('selected'));
+
+        setTimeout(() => {
+            $('div.dataTables_filter input').focus()
+        }, 500);
     }
 
     $('#runScript').on('click', function () {

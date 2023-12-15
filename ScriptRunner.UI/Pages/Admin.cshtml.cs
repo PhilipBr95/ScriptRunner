@@ -45,24 +45,5 @@ namespace ScriptRunner.UI.Pages
 
             await _scriptRetriever.ImportPackagesAsync(currentUser, selectedIds);
         }
-
-        [Route("/Admin/UploadFile")]
-        [HttpPost]
-        public async Task OnPostUploadFile()
-        {
-
-            _logger?.LogInformation($"sss");
-            //if (formFile == null)
-            //    return;
-
-            //var currentUser = HttpContext.User.Identity.Name;
-            //_logger?.LogInformation($"{currentUser} - Importing ScriptRunner file: {formFile.FileName}");
-
-            //var filePath = "";
-            //using (var stream = System.IO.File.Create(filePath))
-            //{
-            //    await formFile.CopyToAsync(stream);
-            //}
-        }
     }
 }

@@ -23,7 +23,7 @@ namespace ScriptRunner.UI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            var webSettings = builder.Configuration.GetSection(nameof(WebSettings)).Get<WebSettings>();
+            var webSettings = builder.Configuration.GetRequiredSection(nameof(WebSettings)).Get<WebSettings>();
 
             builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
                             .AddNegotiate();

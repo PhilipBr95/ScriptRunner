@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -22,6 +23,7 @@ namespace ScriptRunner.UI.Controllers
     [Route("api/[controller]")]
     public class ScriptController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly IPackageRetriever _scriptRetriever;
         private readonly IPackageExecutor _scriptRunner;
         private readonly INugetRepo _nugetRepo;
@@ -30,8 +32,9 @@ namespace ScriptRunner.UI.Controllers
         private readonly WebSettings _webSettings;
         private readonly ILogger<ScriptController> _logger;
 
-        public ScriptController(IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, INugetRepo nugetRepo, IScriptRepo scriptRepo, IOptions<RepoSettings> options, IOptions<WebSettings> webSettings, ILogger<ScriptController> logger) 
+        public ScriptController(IAuthorizationService authorizationService, IPackageRetriever scriptRetriever, IPackageExecutor scriptRunner, INugetRepo nugetRepo, IScriptRepo scriptRepo, IOptions<RepoSettings> options, IOptions<WebSettings> webSettings, ILogger<ScriptController> logger) 
         {
+            _authorizationService = authorizationService;
             _scriptRetriever = scriptRetriever;
             _scriptRunner = scriptRunner;
             _nugetRepo = nugetRepo;
@@ -46,19 +49,18 @@ namespace ScriptRunner.UI.Controllers
         {
             try
             {
-                //todo - create a ScriptVM to remove some properties
                 var packages = await _scriptRetriever.GetPackagesAsync();
                 packages = packages.Where(w => IsAllowed(w.AllowedADGroups));
 
-				return Json(new { data = packages });
+                return Json(new { data = packages });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger?.LogError(ex, "Unknown error");
                 return Json(null);
             }
         }
-
+        
         [HttpGet("/api/[controller]/remote")]
         public async Task<IActionResult> GetRemoteScriptsAsync()
         {
@@ -88,7 +90,7 @@ namespace ScriptRunner.UI.Controllers
 
                 if (IsAllowed(repoScript.AllowedADGroups))
                 {
-                    PackageResult result = null;
+                    PackageResult? result = null;
                     var currentUser = HttpContext.User.Identity.Name;
 
                     if (script.RunAsUser)
@@ -97,7 +99,7 @@ namespace ScriptRunner.UI.Controllers
                             throw new Exception("Authenticated user isn't a WindowsIdentity");
 
                         result = await WindowsIdentity.RunImpersonatedAsync(windowsId.AccessToken, async () => 
-                                 await _scriptRunner.ExecuteAsync(repoScript, currentUser));
+                                    await _scriptRunner.ExecuteAsync(repoScript, currentUser));
                     }
                     else result = await _scriptRunner.ExecuteAsync(repoScript, currentUser);
 
@@ -105,7 +107,10 @@ namespace ScriptRunner.UI.Controllers
                 }
                 else
                 {
-                    return Unauthorized($"You are not allowed to execute the script {script.UniqueId}");
+                    var msg = $"You are not allowed to execute the script: {script.UniqueId}";
+
+                    _logger?.LogError(msg);
+                    return Unauthorized(msg);
                 }
             }
             catch (Exception ex)
@@ -117,6 +122,9 @@ namespace ScriptRunner.UI.Controllers
 
 		private bool IsAllowed(string[]? allowedGroupsAD)
 		{
+            if (IsAdmin())
+                return true;
+
 			var groups = HttpContext.User.Identity.Groups();
 
 			if (allowedGroupsAD != null)
@@ -130,7 +138,16 @@ namespace ScriptRunner.UI.Controllers
             return false;
 		}
 
-		[HttpPost("/api/Script/ImportScript")]
+        private bool IsAdmin()
+        {
+            //It's part of a where clause, so can't be async
+            return _authorizationService.AuthorizeAsync(User, "AdminOnly")
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult().Succeeded;
+        }
+
+        [HttpPost("/api/Script/ImportScript")]
         [IgnoreAntiforgeryToken]
         public async Task<IActionResult> ImportScript(Package package)
         {

@@ -18,8 +18,6 @@ namespace ScriptRunner.UI.Auth
                 return Task.CompletedTask;
             }
 
-            //var isAuthorized = context.User.IsInRole(requirement.GroupName);
-
             var groups = new List<string>();//save all your groups' name
             var wi = (WindowsIdentity)context?.User?.Identity;
             if (wi?.Groups != null)

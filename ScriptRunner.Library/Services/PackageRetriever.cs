@@ -24,27 +24,28 @@ namespace ScriptRunner.Library.Services
         {
             var scripts = await GetPackagesAsync();
             return scripts.Where(w => w.UniqueId == uniqueId)
-                          .SingleOrDefault();
+                          .Single();
         }
 
         public async Task<IEnumerable<Package>> GetPackagesAsync()
-        {
+        { 
             return await _scriptCache.GetOrCreateAsync(nameof(_scriptCache), async (cacheEntry) =>
             {
-                var scripts = (await _scriptRepo.GetScriptsAsync()).ToList();
+                List<Package> scripts = (await _scriptRepo.GetScriptsAsync()).ToList();
                 scripts.AddRange(await _nugetRepo.GetScriptsAsync());
 
                 //Find dups
                 var dups = scripts.GroupBy(g => g.UniqueId)
-                                  .Select(s => new { s.Key, Total = s.Count() })
-                                  .Where(w => w.Total > 1)
-                                  .Select(s => s.Key);
+                                  .Select(s => new { s.Key, Total = s.Count(), Files = s.Select(s => s.Filename) })
+                                  .Where(w => w?.Total > 1)
+                                  .Select(s => new { s.Key, s.Files });
 
                 if (dups.Count() > 0)
                 {
-                    _logger?.LogError($"Duplicate Packages found: {string.Join(",", dups)}");
+                    _logger?.LogWarning($"Removing: [{string.Join(",", dups.SelectMany(s => s.Files))}]");
+                    _logger?.LogError($"{dups.Count()} Duplicate Packages found: [{string.Join(", ", dups.Select(s => s.Key))}]");                    
 
-                    scripts.RemoveAll(r => dups.Contains(r.UniqueId) == true);
+                    scripts.RemoveAll(r => dups.Select(s => s.Key).Contains(r.UniqueId) == true);
                 }
 
                 return scripts;

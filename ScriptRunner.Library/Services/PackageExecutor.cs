@@ -40,6 +40,7 @@ namespace ScriptRunner.Library.Services
 
                 var parameters = package.Params?.ToList() ?? Array.Empty<Param>().ToList();
                 parameters.Add(new Param { Name = "ActionedBy", Value = actionedBy });
+                parameters.Add(new Param { Name = "ScriptFolder", Value = Path.GetDirectoryName(package.Filename) });
 
                 foreach (var script in package.Scripts.OrderBy(o => Path.GetFileName(o.Filename)))
                 {

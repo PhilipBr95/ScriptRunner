@@ -48,6 +48,19 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
 
         showScriptDetails(script)
     }
+
+    tippyInstances.forEach(instance => {
+        instance.destroy();
+    });
+    tippyInstances.length = 0; // clear it
+
+    tippyInstances = tippy('.mytooltip', {
+        maxWidth: 600,
+        content(reference) {
+            const tooltip = reference.getAttribute('data-tooltip')
+            return tooltip
+        }
+    });
 });
 
 function showScriptDetails(script) {    
@@ -214,19 +227,6 @@ function showScriptDetails(script) {
     });     
 
     addOptions(script);
-
-    tippyInstances.forEach(instance => {
-        instance.destroy();
-    });
-    tippyInstances.length = 0; // clear it
-
-    tippyInstances = tippy('.mytooltip', {
-        maxWidth: 600,
-        content(reference) {
-            const tooltip = reference.getAttribute('data-tooltip')
-            return tooltip
-        }
-    });
 }
 
 window.copyText = function copyText(textToCopy, message) {

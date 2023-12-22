@@ -157,6 +157,7 @@ function showScriptDetails(script) {
                     }
                 }
 
+
                 let html = getParamTemplateHtml(el);
                 $html = $($.parseHTML(html))
                 $input = $html.find('input');
@@ -411,8 +412,8 @@ async function updateParamValues() {
     var values = $('.valueinputs');
 
     for (let i = 0; i < values.length; i++) {
-        let value = values[i];
-        let param = selectedScript.params?.find(f => f.name == value.id);        
+        let value = values.eq(i);
+        let param = selectedScript.params?.find(f => f.name == value.attr('id'));        
 
         if (param != null) {
             await populateParamValue(param, value);
@@ -424,19 +425,20 @@ async function updateParamValues() {
 
 async function populateParamValue(param, value) {
 
-    if (param.type == "select") {
-        param.value = value.checked;
-    } else if (param.type == "checkbox") {
-        param.value = value.checked;
-    } else if (param.type == "file") {
-        if (value.files.length > 0) {
+    if (param.htmlType == "select") {
+        param.value = value.val();
+    } else if (param.htmlType == "checkbox") {
+        param.value = value.is(":checked");
+    } else if (param.htmlType == "file") {
+        let $files = value.prop('files');
+        if ($files.length > 0) {
             let file = new FileReader();
 
-            file.readAsDataURL(value.files[0])
+            file.readAsDataURL($files[0])
             await new Promise(resolve => file.onload = () => resolve())
 
             param.value = file.result;
-            param.data['FileName'] = value.files[0].name
+            param.data['FileName'] = $files[0].name
         }
     } else {
         param.value = value.value;

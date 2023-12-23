@@ -204,15 +204,14 @@ function showScriptDetails(script) {
 
     let $copyEl = $("#copyScript");
     $copyEl.on("mouseenter", async function () {
-        if ($copyEl.attr("href") == '') { 
-            let href = await generateUrl(script);
-            $copyEl.attr("href", href)
-        }
+        let href = await generateUrl(script);
+        $copyEl.attr("href", href)
     });
 
     $copyEl.off("click");
     $copyEl.on("click", async function (event) {
-        window.copyText($copyEl.attr("href"), 'URL Copied!');
+        let href = await generateUrl(script);
+        window.copyText(href, `${href} copied!`);
 
         event.preventDefault();
         return false;
@@ -409,28 +408,28 @@ function populateDropDown(el, items) {
 }
 
 async function updateParamValues() {
-    var values = $('.valueinputs');
+    var $values = $('.valueinputs');
 
-    for (let i = 0; i < values.length; i++) {
-        let value = values.eq(i);
-        let param = selectedScript.params?.find(f => f.name == value.attr('id'));        
+    for (let i = 0; i < $values.length; i++) {
+        let $value = $values.eq(i);
+        let param = selectedScript.params?.find(f => f.name == $value.attr('id'));        
 
         if (param != null) {
-            await populateParamValue(param, value);
+            await populateParamValue(param, $value);
         }
     };
 
-    return values;    
+    return $values;    
 }
 
-async function populateParamValue(param, value) {
+async function populateParamValue(param, $value) {
 
     if (param.htmlType == "select") {
-        param.value = value.val();
+        param.value = $value.val();
     } else if (param.htmlType == "checkbox") {
-        param.value = value.is(":checked");
+        param.value = $value.is(":checked");
     } else if (param.htmlType == "file") {
-        let $files = value.prop('files');
+        let $files = $value.prop('files');
         if ($files.length > 0) {
             let file = new FileReader();
 
@@ -441,7 +440,7 @@ async function populateParamValue(param, value) {
             param.data['FileName'] = $files[0].name
         }
     } else {
-        param.value = value.value;
+        param.value = $value.val();
     }
 }
 

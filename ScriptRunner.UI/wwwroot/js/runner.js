@@ -153,7 +153,7 @@ function showScriptDetails(script) {
                         dataTransfer.items.add(file);
                         dataTransfers[el.name] = dataTransfer;
 
-                        el.tooltip = `Original file provided from previous run`
+                        el.tooltip = `File populated from URL`
                     }
                 }
 
@@ -210,10 +210,15 @@ function showScriptDetails(script) {
 
     $copyEl.off("click");
     $copyEl.on("click", async function (event) {
-        let href = await generateUrl(script);
-        window.copyText(href, `${href} copied!`);
-
         event.preventDefault();
+
+        try {
+            let href = await generateUrl(script);
+            window.copyText(href, `${href} copied!`);
+        } catch (err) {
+            alert(err);
+        }
+        
         return false;
     });     
 
@@ -231,6 +236,10 @@ function showScriptDetails(script) {
 
 window.copyText = function copyText(textToCopy, message) {
     navigator.clipboard.writeText(textToCopy);
+
+    if (message.length > 100) {
+        message = message.substring(0, 100) + '...'
+    }
 
     $.toast({
         type: 'success',

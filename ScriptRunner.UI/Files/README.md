@@ -44,7 +44,11 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
 | `RunAsUser`  | (Optional) Whether to run the package as the user or the IIS AppPool - Default to false |
 | `ConnectionString` | (Optional) - Only required for SQL scripts. If it isn't provided, then the folder structure will be used to create the ConnectionString.<br />The folder structure for the ConectionString is `\Server\Database\Script.sql`|
 | `Params`           | Params must be populated by the user (unless optional - `"Required": false`), before execution.<br /><mark>Reference them by surrounding their name with curley brackets</mark>, eg, `{Name}`. `{ActionedBy}` is added automatically.<table><tbody><tr><td>`Type`</td><td>Allowed Types: `text/string/varchar`, `number/int`, `checkbox`, `combo/select`, `datetime` and `file` - The file will be base64 encoded when presented to the script.</td></tr><tr><td>`Tooltip`</td><td>(Optional) - Include additional instructions</td></tr><tr><td>`Data`</td><td>(Optional) - A dictioary to provide additional config, eg FileType, combo values</td></tr><tr><td>`Required`</td><td>(Optional) - Whether the must be populated or not</td></tr></tbody></table> |
-| `Options`          | Options allow you to customise the UX<br /><table><tbody><tr><td>`Layout`</td><td>(Optional) - The layout of the Messages and Results<br />eg, `HRm` means Show the Results(with Headers) first and then the Messages (lowercase, meaning "without the label")</td></tr><tr><td>`DataTableDom`</td><td>(Optional) - The DataTable DOM to use</td></tr><tr><td>`Css`</td><td>(Optional) - A list of CSS's to apply</td></tr><tr><td>`JQuery`</td><td>(Optional) - A list of JQuery functions</td></tr></tbody></table>                                                                                                                                                                                                    |
+| `Options`          | Options allow you to customise the UX<br /><table><tbody><tr><td>`Layout`</td><td>(Optional) - The layout of the Messages and Results<br />eg, `HRm` means Show the Results(with Headers) first and then the Messages (lowercase, meaning "without the label")</td></tr><tr><td>`DataTableDom`</td><td>(Optional) - The DataTable DOM to use</td></tr><tr><td>`Css`</td><td>(Optional) - A list of CSS's to apply</td></tr><tr><td>`JQuery`</td><td>(Optional) - A list of JQuery functions</td></tr></tbody></table>
+
+TODO - make better!!
+Add `onClickPropertyName`
+|
 
 ## Folders
 
@@ -108,21 +112,21 @@ If you want to run older scripts, then you'll need to use the RunSettings proper
     {
         ...
         "Options": {
-            "RunSettings": { "Executor" : "PowerShellProcessExecutor" }
+            "RunSettings": { "Executor" : "PowerShellProcessExecutor", "Powershell.ConvertJsonToTable": true }
         }
     }
 ```
 This setting changes the engine to use the `powershell.exe`.
 There are several other RunSettings you can tweak with when using `powershell.exe`:
 
-| Option                            | Description                                           |
+| Option.RunSetting                 | Description                                           |
 | --------------------------------- | ----------------------------------------------------- |
 | Powershell.Executable             | The app to run - `powershell.exe`                     |
 | Powershell.ExecutableArguments    | The args to pass in                                   |
 | Powershell.RedirectStandardOutput | Whether to capture output                             |
 | Powershell.RedirectStandardError  | Whether to capture errors                             |
 | Powershell.UseTemporaryFile       | Whether to use a temporary file, or encode the script |
-| Powershell.ConvertJsonToTable    | Powershell tables aren't easy to scrape, so use `ConvertTo-Json` and this flag will convert it to a table.  If you have an enum you want as text, you have to use `ConvertTo-Csv | ConvertFrom-Csv | ConvertTo-Json` or `ConvertTo-Json -EnumsAsStrings` with PS Core.|
+| Powershell.ConvertJsonToTable    | Powershell tables aren't easy to scrape, so use `ConvertTo-Json` function to convert the result to a table.  If the powershell might return a single result, then use the array constructor `@(...)` to force an array.  <br />If you have an enum you want as text, you have to use `ConvertTo-Csv | ConvertFrom-Csv | ConvertTo-Json` or `ConvertTo-Json -EnumsAsStrings` with PS Core. |
 
 
 ## Security

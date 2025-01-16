@@ -44,6 +44,7 @@ namespace ScriptRunner.UI
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddMemoryCache();
 
             //builder.Services.AddOptions<RepoSettings>();
             builder.Services.Configure<RepoSettings>(builder.Configuration.GetSection(nameof(RepoSettings)));

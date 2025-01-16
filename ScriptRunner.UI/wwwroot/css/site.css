@@ -340,9 +340,150 @@ dd {
 
 .navbar-brand-text {
     font-weight: bold;
-    color: #1E3A4C!important;
+    font-size: x-large;
+    color: #1E3A4C !important;
 }
+.navbar-brand-text-script {
+    color: #265475 !important;
+    font-family: 'Script MT';
+}
+.navbar-brand-text-runner {
+    font-family: monospace;
+}
+
+.nav-link {
+    color: #265475 !important;
+    font-size: larger;
+    font-family: monospace;
+}
+
+.navbar-nav {
+    font-family: Arial;
+    list-style: none;
+    padding-top: 3px;
+    margin: 0;
+    float: left;
+}
+
+.navbar-nav li {
+    border-right: 2px solid #c4c4c4;
+    display: inline-block;
+    float: left;
+    padding: 0 15px;
+}
+
+.navbar-nav li:last-child {
+    border-right: 0;
+} 
 
 .scriptsTableView {
     cursor: pointer;
 }
+
+@-webkit-keyframes quickFlash {
+    0% {
+        background-color: rgb(191, 191, 191);
+        opacity: 1;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+.quickFlash {
+    -webkit-animation-name: quickFlash;
+    -webkit-animation-duration: 1900ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-name: quickFlash;
+    -moz-animation-duration: 1900ms;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+}
+
+.card {
+    border-radius: 20px;
+}
+
+.top-buffer {
+    margin-top: 3px;
+}
+
+body {
+    background-color: rgb(220,220,220);
+}
+.bg-white {
+    background-color: rgb(220,220,220) !important;
+}
+
+
+/*--Popular--------------------------------------------------------------------------*/
+
+.card-popular {
+    background-color: rgb(236, 242, 249);
+    font-size: medium;    
+}
+
+/*@media only screen and (max-width: 1000px) {
+    .card-popular {
+        display: none
+    }
+}
+*/
+
+#popular > thead {
+    display: none;
+}
+
+#popular > tbody .odd,
+#popular > tbody .odd > .sorting_1 {
+    background-color: transparent;
+}
+
+#popular > tbody .even,
+#popular > tbody .even > .sorting_1 {
+    background-color: transparent;
+}
+
+#popular tbody tr:hover {
+    background-color: rgb(200, 220, 240);
+}
+
+.playTop5 {
+    text-decoration: none;
+    /*cursor: pointer;*/
+    color: black;
+}
+
+.results-href {
+    text-decoration: none;
+    color: black;
+}
+
+#popular {
+    border-bottom: none;
+}
+
+/*--Execute--------------------------------------------------------------------------*/
+
+.card-execute {
+    background-color: rgb(230, 255, 230);
+    
+}
+
+/*--Results--------------------------------------------------------------------------*/
+
+.card-results {
+    background-color: rgb(242, 242, 242);
+}
+
+.col-gap {
+    column-gap: 10px;
+}
+
+.dataTables_length {
+    padding-top: 2px;
+}
+
+
+

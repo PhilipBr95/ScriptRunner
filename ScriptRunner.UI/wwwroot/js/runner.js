@@ -1,54 +1,98 @@
 ﻿var scripts;
 var selectedScript;
-var dynamicFunctions = [];
 var tippyInstances = [];
 
-$.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
-    scripts = response;
+$(document).ready(function () {
+    populateTop5();
+    populateScripts();    
+});
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const scriptId = urlParams.get('ScriptId');
+function populateTop5() {
 
-    let categories = [... new Set(scripts.data.map(obj => obj.category))];
-    let el = $('#categories');
-    populateDropDown(el, categories.map(obj => ({ id: obj, value: obj })))
+    var table = $('#popular').DataTable({
+        "rowId": 'id',
+        ajax: { url: "/api/history/popular", dataSrc: "" },
+        "columns": [
+            {
+                "className": 'run-control',
+                "orderable": false,
+                "data": null,
+                "width": "0px", render: function (data, type, row) {
+                    let url = generateUrlFromScript(data);
 
-    el.on("change", function () {
-        showScriptDetails(null)
-        let systems = [... new Set(scripts.data.filter(e => e.category == this.value).map(obj => obj.system))];
+                    if (url == null)
+                        return '';
 
-        let el = $('#scripts');
-        el.empty();
+                    return `<a href="${url}"><img width="16px" height="16px" src="../img/play-solid.svg" title="Load Script" class="playTop5" /></a>`
+                }
+            },
+            {
+                "data": "title",
+                "title": "Script",
+                render: function (data, type, row) {
+                    return `<a href="?ScriptId=${row.id}" class="playTop5">${data}</a>`
+                }
+            }
+        ],
+        dom: 'rt',
+        autoWidth: false,
+        order: []
+    });            
 
-        el = $('#systems');
-        let items = systems.map(obj => ({ id: obj, value: obj }));
-        populateDropDown(el, items)
+}
+
+function populateScripts() {
+    $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).done(function (response) {
+        scripts = response;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const scriptId = urlParams.get('ScriptId');
+
+        let categories = [... new Set(scripts.data.map(obj => obj.category))];
+        let el = $('#categories');
+        populateDropDown(el, categories.map(obj => ({ id: obj, value: obj })))
 
         el.on("change", function () {
             showScriptDetails(null)
-
-            let category = $('#categories').val();
-            let items = scripts.data.filter(e => e.category == category && e.system == this.value)
+            let systems = [... new Set(scripts.data.filter(e => e.category == this.value).map(obj => obj.system))];
 
             let el = $('#scripts');
-            populateDropDown(el, items.map(obj => ({ id: obj.id, value: obj.title })))
+            el.empty();
+
+            el = $('#systems');
+            let items = systems.map(obj => ({ id: obj, value: obj }));
+            populateDropDown(el, items)
 
             el.on("change", function () {
-                let script = scripts.data.find(e => e.id == this.value)
-                showScriptDetails(script);
+                showScriptDetails(null)
+
+                let category = $('#categories').val();
+                let items = scripts.data.filter(e => e.category == category && e.system == this.value)
+
+                let el = $('#scripts');
+                populateDropDown(el, items.map(obj => ({ id: obj.id, value: obj.title })))
+
+                el.on("change", function () {
+                    let script = scripts.data.find(e => e.id == this.value)
+                    showScriptDetails(script);                    
+                });
+                if (items.length == 1 && scriptId == null) { el.val(items[0].id).change(); }
             });
             if (items.length == 1 && scriptId == null) { el.val(items[0].id).change(); }
+
         });
-        if (items.length == 1 && scriptId == null) { el.val(items[0].id).change(); }
 
+        if (scriptId != null) {
+            let script = scripts.data.find(e => e.id == scriptId)
+
+            showScriptDetails(script)
+        }
+
+        attachTooltips();
     });
+}
 
-    if (scriptId != null) {
-        let script = scripts.data.find(e => e.id == scriptId)
-
-        showScriptDetails(script)
-    }
-
+function attachTooltips() {
     tippyInstances.forEach(instance => {
         instance.destroy();
     });
@@ -61,15 +105,15 @@ $.ajax({ url: "/api/script", type: 'GET', contentType: 'application/json' }).don
             return tooltip
         }
     });
-});
+}
 
-function showScriptDetails(script) {    
+function showScriptDetails(script) {
     selectedScript = script;
 
     let $params = $('#Params');
     $params.empty();
 
-    $('#results').addClass('hidden');
+    $('#resultsWrapper').addClass('hidden');
 
     if (script == null) {
         $('#description').text('');
@@ -78,7 +122,7 @@ function showScriptDetails(script) {
         $('#versionTooltip').text('');
 
         $('#execute').addClass('hidden');
-        $('#copyScript').addClass('hidden');        
+        $('#copyScript').addClass('hidden');
 
         return;
     } else {
@@ -101,8 +145,8 @@ function showScriptDetails(script) {
             $('#tags').parent().parent().removeClass('hidden');
         } else {
             $('#tags').parent().parent().addClass('hidden');
-        }        
-        
+        }
+
         $('#version').text(`${script.uniqueId}`);
         $('#versionTooltip').attr('data-tooltip', `${script.filename}`);
         $('#versionTooltip').text('?');
@@ -113,6 +157,7 @@ function showScriptDetails(script) {
         selectedScript = script;
     }
 
+    //Clone the params
     const urlParams = new URLSearchParams(window.location.search);
     const newParams = new URLSearchParams();
     for (const [name, value] of urlParams) {
@@ -143,7 +188,7 @@ function showScriptDetails(script) {
 
                 $html = $($.parseHTML(html))
                 $input = $html.find('input');
-                
+
             } else if (el.htmlType == "file") {
                 if (value?.length > 0) {
                     let file = convertBase64ToFile(value, el.data['FileType']);
@@ -153,7 +198,7 @@ function showScriptDetails(script) {
                         dataTransfer.items.add(file);
                         dataTransfers[el.name] = dataTransfer;
 
-                        el.tooltip = `File populated from URL`
+                        el.tooltip = `File populated from URL - Ignore Filename`
                     }
                 }
 
@@ -204,7 +249,7 @@ function showScriptDetails(script) {
 
     let $copyEl = $("#copyScript");
     $copyEl.on("mouseenter", async function () {
-        let href = await generateUrl(script);
+        let href = await generateUrlFromInputs(script);
         $copyEl.attr("href", href)
     });
 
@@ -213,14 +258,14 @@ function showScriptDetails(script) {
         event.preventDefault();
 
         try {
-            let href = await generateUrl(script);
+            let href = await generateUrlFromInputs(script);
             window.copyText(href, `${href} copied!`);
         } catch (err) {
             alert(err);
         }
-        
+
         return false;
-    });     
+    });
 
     let $versionTip = $('#versionTooltip');
     $versionTip.off("click");
@@ -229,9 +274,21 @@ function showScriptDetails(script) {
 
         event.preventDefault();
         return false;
-    });     
-
+    });
+    
     addOptions(script);
+    attachTooltips();
+    
+    //Do we need to auto-execute
+    if (newParams.get("autoexecute") != null) { 
+        executeScript();
+
+        $.toast({
+            type: 'success',
+            autoDismiss: true,
+            message: 'Auto-Executing...'
+        });
+    }
 }
 
 window.copyText = function copyText(textToCopy, message) {
@@ -246,111 +303,6 @@ window.copyText = function copyText(textToCopy, message) {
         autoDismiss: true,
         message: message
     });
-}
-
-function addOptions(script) {
-    //Remove the old styles
-    $("head [id^=customStyles]").remove();
-
-    //Remove the old functions
-    if (dynamicFunctions?.length > 0) {
-        dynamicFunctions.forEach(jQuery => {
-            $(jQuery.parent).off(jQuery.event, jQuery.selector, jQuery.func);
-        });
-    }
-
-    //Default Results then Messages
-    let layout = "HRM";
-
-    if (script.options != null) {
-        let options = script.options;
-
-        //Styles
-        if (options.css?.length > 0) {
-            for (let i = 0; i < options.css.length; i++) {
-                let css = options.css[i];
-            
-                $(`<style id='customStyles${i}' type='text/css'>${css}</style>\n`).appendTo('head');
-            }            
-        }
-
-        //Functions
-        if (options.jQuery?.length > 0) {           
-            for (let i = 0; i < options.jQuery.length; i++) {
-                let jQuery = options.jQuery[i];
-
-                jQuery.func = new Function('evt', jQuery.function);
-                $(jQuery.parent).on(jQuery.event, jQuery.selector, { script: script }, jQuery.func);
-
-                dynamicFunctions.push(jQuery);
-            }            
-        }
-
-        if (options.layout != null) {
-            layout = options.layout;
-        }
-
-        $('#resultsLabel').text(options.resultsLabel ?? "Results");
-        $('#messagesLabel').text(options.messagesLabel ?? "Messages");
-    }
-
-    let showMessagesLabel = true;
-    let showResultsLabel = true;
-    let showHeaders = false;
-
-    //Figure out what to hide
-    for (let letter of layout) {
-        switch (letter) {
-            case "m":
-                showMessagesLabel = false;
-                break;
-            case "M":
-                showMessagesLabel = true;
-                break;
-            case "r":
-                showResultsLabel = false;
-                break;
-            case "R":
-                showResultsLabel = true;
-                break;    
-            case "h":
-            case "H":
-                showHeaders = true;
-                break;
-        }
-    }
-
-    let $messagesLabel = $('#messagesDiv > div > label:first-child');
-    let $resultsLabel = $('#resultsDiv > div > label:first-child');
-
-    if (showMessagesLabel) {
-        $messagesLabel.removeClass('hidden');
-    } else {
-        $messagesLabel.addClass('hidden');
-    }
-
-    if (showResultsLabel) {
-        $resultsLabel.removeClass('hidden');
-    } else {
-        $resultsLabel.addClass('hidden');
-    }
-
-    if (!showHeaders) {
-        //$('#results').find('thead').css({ "display": "none" });
-        $(`<style id='customStyles_thead' type='text/css'>thead { display: none }</style>\n`).appendTo('head');
-    }
-
-    //Remove the H
-    layout = layout.replace(/H/ig, '');
-
-    //Change the order
-    if (layout.toUpperCase() == "MR") {
-        $('#messagesDiv').prependTo($('#results'));
-    } else {
-        $('#messagesDiv').appendTo($('#results'))
-    }
-
-
 }
 
 function getParamTemplateHtml(el) {
@@ -386,9 +338,9 @@ function getParamTemplate(htmlType) {
     return $(templateName).html();
 }
 
-async function generateUrl(script) {
+async function generateUrlFromInputs(script) {
     let url = window.location.href.split('?')[0];
-    url += `?ScriptId=${script.id}`;
+    url += `?ScriptId=${encodeURIComponent(script.id)}`;
 
     await updateParamValues().then(() => {
 
@@ -473,7 +425,11 @@ function convertBase64ToFile(image, filetype) {
     return null;
 };
 
-$('#execute').on("click", async function (e) {    
+$('#execute').on("click", async function (e) {
+    executeScript();
+});
+
+function executeScript() {
     if ($("#form")[0].checkValidity() == false) {
         $("#form")[0].reportValidity()
         return;
@@ -488,11 +444,11 @@ $('#execute').on("click", async function (e) {
         $.ajax({
             url: "/api/Script", type: 'POST', contentType: 'application/json', dataType: 'json', data: jsonData
         }).done(function (response) {
-            var $results = $('#results');
+            var $results = $('#resultsWrapper');
             showResults(selectedScript, $results, response, true);
 
             const $execute = $('#execute');
-            
+
             $execute.attr("disabled", false);
             $execute[0].scrollIntoView();
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -502,7 +458,7 @@ $('#execute').on("click", async function (e) {
             $('*').css('cursor', '');
         });
     });
-});
+};
 
 $('#viewScriptSelector').on("click", async function (e) {
     var $div = $('#scriptPopup');
@@ -577,3 +533,6 @@ $('#viewScriptSelector').on("click", async function (e) {
     });
 
 });
+
+
+

@@ -1,14 +1,107 @@
-﻿function showResults(script, $results, packageResult, showResults) {    
-    $resultsTables = $results.find('div[name="resultsTables"]')
-    $resultsMessages = $results.find('div[name="resultsMessages"]')
-    let dd = script;
+﻿var dynamicFunctions = [];
+var resultsTable;
+function addOptions(script) {
+    //Remove the old styles
+    $("head [id^=customStyles]").remove();
 
+    //Remove the old functions
+    if (dynamicFunctions?.length > 0) {
+        dynamicFunctions.forEach(jQuery => {
+            $(jQuery.parent).off(jQuery.event, jQuery.selector, jQuery.func);
+        });
+    }
+
+    //Default layout is Messages then Results(with Headers)
+    let layout = "MHR";
+
+    if (script.options != null) {
+        let options = script.options;
+
+        //Styles
+        if (options.css?.length > 0) {
+            for (let i = 0; i < options.css.length; i++) {
+                let css = options.css[i];
+
+                $(`<style id='customStyles${i}' type='text/css'>${css}</style>\n`).appendTo('head');
+            }
+        }
+
+        //Functions
+        if (options.jQuery?.length > 0) {
+            for (let i = 0; i < options.jQuery.length; i++) {
+                let jQuery = options.jQuery[i];
+
+                jQuery.func = new Function('evt', jQuery.function);
+                $(jQuery.parent).on(jQuery.event, jQuery.selector, { script: script }, jQuery.func);
+
+                dynamicFunctions.push(jQuery);
+            }
+        }
+
+        if (options.layout != null) {
+            layout = options.layout;
+        }
+
+        //Is there a custom label for the messages
+        $('#resultsLabel').text(options.resultsLabel ?? "Results");
+    }
+
+    let showResultsLabel = false;
+    let showHeaders = false;
+
+    //Figure out what to hide
+    for (let letter of layout) {
+        switch (letter) {
+            case "r":
+            case "R":
+                showResultsLabel = true;
+                break;
+            case "h":
+            case "H":
+                showHeaders = true;
+                break;
+        }
+    }
+
+    let $resultsLabel = $('#resultsWrapper #tables');
+
+    if (showResultsLabel) {
+        $resultsLabel.removeClass('hidden');
+    } else {
+        $resultsLabel.addClass('hidden');
+    }
+
+    if (!showHeaders) {
+        //Not sure why this won't work??
+        //$('#resultsWrapper thead').css({ "display": "none" });
+        $(`<style id='customStyles_thead' type='text/css'>thead { visibility: hidden; } thead > tr > th { padding-top: 0!important; padding-bottom: 0!important } </style>\n`).appendTo('head');
+    }
+
+
+    //Remove the H
+    layout = layout.replace(/H/ig, '');
+
+    //Change the order
+    if (layout.toUpperCase() == "MR") {
+        $('#messages').prependTo($('#tablesAndMessages'));
+    } else {
+        $('#messages').appendTo($('#tablesAndMessages'))
+    }
+}
+
+function showResults(script, $results, packageResult, showResults) {    
+    let $resultsParent = $results.find('#tables')
+    let $resultsDiv = $results.find('#resultsDiv')
+
+    let $messagesParent = $results.find('#messages')
+    let $messagesDiv = $results.find('#messagesDiv')
+    
     if (showResults == true) {
         $results.removeClass('hidden');
     }
 
-    $resultsTables.html('');
-    $resultsMessages.html('');
+    $resultsDiv.html('');
+    $messagesDiv.html('');
 
     let showMessages = false;
     let showTables = false;
@@ -18,26 +111,26 @@
         let obj = packageResult.results[x];
 
         if (obj.messages != null && obj.messages.length > 0) {
-            let id = `resultsMessage${x}`
+            let id = `resultsMessagesss${x}`
 
             let messages = '';
             obj.messages.forEach(function (obj, x) {
                 messages += `<div>${obj}</div>`;
             });
 
-            $resultsMessages.append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);
-            $resultsMessages.parent().removeClass('hidden');
+            $messagesDiv.append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);            
+            $messagesParent.removeClass('hidden');
 
             showMessages = true;
         }
 
-        obj.dataTables?.forEach(function (obj, y) {
+        obj.dataTables?.forEach(function (dataTable, y) {
             let id = `resultsTable${tableCount}`
-            $resultsTables.append(`<table id='${id}' class="display" style="width:100%"></table>`);
+            $resultsDiv.append(`<table id='${id}' class="display resultsTable" style="width:100%"></table>`);
 
-            showResultsTable(id, obj, script?.options?.dataTableDom);
+            showResultsTable(id, dataTable, script?.options);
 
-            $resultsTables.parent().removeClass('hidden');
+            $resultsParent.removeClass('hidden');
 
             showTables = true;
             tableCount++;
@@ -45,39 +138,180 @@
     }
 
     if (showMessages == false) {
-        $resultsMessages.parent().addClass('hidden');
+        $messagesParent.addClass('hidden');
     }
 
     if (showTables == false) {
-        $resultsTables.parent().addClass('hidden');
-    }
+        $resultsParent.addClass('hidden');
+    }    
+
+    //flashElement($('#tablesAndMessages'));
 }
 
-function showResultsTable(id, dataTable, dom) {
+function showResultsTable(id, dataTable, options) {
+    const renderHref = function (column, data, row) {
+        let href = Interpolate(column.href, row)
+
+        let css = column.hrefCss ?? "results-href";
+        return `<a href="${href}" class="${css}">${data}</a>`
+    }
+
+    if (dataTable.length == 0) {
+        return;
+    }
+
     var columns = [];
     let columnNames = Object.keys(dataTable[0]);
+    let showAllColumns = options.columns == null || options?.columns?.length == 0;
 
-    for (var i in columnNames) {
-        columns.push({
-            data: columnNames[i],
-            title: columnNames[i].charAt(0).toUpperCase() + columnNames[i].slice(1) 
-        });
+    for (var col in columnNames) {        
+        //Do we care about this column
+        let column = options?.columns?.find(key => key.columnName.toLowerCase() === columnNames[col].toLowerCase());
+        if (showAllColumns == false && column === undefined)
+            continue;
+        
+        let config = {
+            data: columnNames[col],
+            title: column?.title ?? (columnNames[col].charAt(0).toUpperCase() + columnNames[col].slice(1)),
+        }        
+
+        if (column?.href != null) {
+            config.render = function (data, type, row) {
+                return renderHref(column, data, row);
+            }
+        }
+
+        //Handle dates
+        let dateType = getDateType(columnNames[col]);
+        if (dateType != null) {
+            console.log("Date/DateTime column: " + columnNames[col]);
+
+            config.sType = column?.sType ?? "date-uk";
+            config.type = dateType;
+            config.render = function (data, type, row) {
+                let dt = new moment(data, moment.ISO_8601);
+
+                if (dateType == "datetime")
+                    data = dt.format('DD/MM/YYYY HH:mm:ss');
+                else
+                    data = dt.format('DD/MM/YYYY');
+
+                if (column?.href != null)
+                    return renderHref(column, data, row);
+                else
+                    return data;
+            }
+        }
+
+        columns.push(config);
     }
 
     let setup = {
         //Not sure why we need to reinitialise, but hey
         retrieve: true,
 
-        paging: false,
+        paging: true,
         fixedHeader: true,
         searching: false,
+        pageLength: 20,
+        dom: 'frtlip',
         data: dataTable,
-        columns: columns
+        columns: columns,
+        order: [],
+        initComplete: function () {
+            let $datatable = $(`#${id} > tbody > tr > td`);
+
+            $datatable.hover(function (e) {
+                
+                var row = this._DT_RowIndex;
+                var data = resultsTable.row($(this).closest('tr')).data();
+
+                if (data != undefined) {
+                    let columns = Object.keys(data);
+                    let col = resultsTable.cell(this).index().column;
+                    let column = options.columns?.find(key => key.columnName.toLowerCase() === columnNames[col].toLowerCase());            
+
+                    //Create a custom href
+                    let href = Interpolate(column?.href, data)
+                    let onClick = Interpolate(column?.onClick, data)
+                    
+                    if (onClick != null) {
+                        console.log(onClick)
+
+                        $(this).css('cursor', 'pointer');
+                        //$(this).attr("href", href);
+                        $(this).attr("onclick", onClick);
+                    }
+                    
+                    if (href != null) {
+                        let $el = $(this);
+                        let css = column.hrefCss ?? "results-href";
+
+                        //A hack to get the href to work
+                        //$el.replaceWith(`<td><a href="${href}" class="${css}">${$el.text()}</a></td>`)
+                    }
+                }
+
+                return false;
+            })
+        }
     };
 
-    if (dom != null) {
-        setup.dom = dom;
+    if (options?.dom != null) {
+        setup.dom = options.dom;
     }
 
-    $(`#${id}`).DataTable(setup);    
+    resultsTable = $(`#${id}`).DataTable(setup);      
+}
+
+function Interpolate(string, data) {
+    if (string == null)
+        return;
+
+    string = string.replace("{", "${");
+
+    let keys = Object.keys(data);
+    return string.replace(/\${(.*?)}/gi, (x, g) => data[keys.find(key => key.toLowerCase() === g.toLowerCase())]);
+}
+
+function getDateType(columnName) {
+    columnName = columnName.toLowerCase();
+
+    if (columnName.includes("datetime"))
+        return "datetime";
+
+    if (columnName.includes("date"))
+        return "date";
+
+    return null;
+}
+
+function flashElement(element) {
+    element
+        .addClass("quickFlash")
+        .on(
+            "webkitAnimationEnd oanimationend msAnimationEnd animationend",
+            function () {
+                $(this)
+                    .delay(500)// Wait for milliseconds.
+                    .queue(function () {
+                        $(this)
+                            .removeClass("quickFlash")
+                            .dequeue();
+                    });
+            }
+        );
+}
+
+function generateUrlFromScript(script) {
+    if (script.data != null) {
+        let url = `/?ScriptId=${encodeURIComponent(script.data.id)}`;
+
+        script.data.params?.forEach(el => {
+            let value = $(`#${el.name}`).val();
+            url += `&${el.name}=${encodeURIComponent(el.value)}`;
+        });
+
+        return url;
+    }
 }

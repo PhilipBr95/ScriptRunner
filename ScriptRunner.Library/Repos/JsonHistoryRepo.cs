@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ScriptRunner.Library.Helpers;
@@ -27,17 +28,17 @@ namespace ScriptRunner.Library.Repos
         public async Task SaveActivityAsync<T>(Activity<T> activitity)
         {
             try
-            {
-                var activities = await LoadActivitiesAsync<T>();
+            {                
+                var activities = await LoadActivitiesAsync<T>();             
+                activities.Add(activitity);
 
                 await _repoLock.WaitAsync();
-              
-                activities.Add(activitity);
 
                 if (BackupRepo())
                 {
                     //Remove old items
-                    activities = activities.Where(w => DateTime.Now.Subtract(w.CreatedDate).TotalDays < _historySettings.MaxHistoryDaysOld)
+                    activities = activities.OrderByDescending(o => o.CreatedDate)
+                                           .Take(_historySettings.MaxActivitiesInHistoryFile)
                                            .ToList();
                 }
 
@@ -77,7 +78,8 @@ namespace ScriptRunner.Library.Repos
                                 //Get rid of really old backups
                                 var backupToDelete = Directory.GetFiles(_historySettings.Folder, Path.GetExtension(_historySettings.Filename))
                                                               .Select(s => new FileInfo(s))
-                                                              .Where(w => w.CreationTime.AddDays(_historySettings.MaxBackupAgeInDays) < DateTime.Now)
+                                                              .OrderByDescending(w => w.CreationTime)
+                                                              .Take(_historySettings.MaxBackupFiles)
                                                               .ToList();
 
                                 backupToDelete.ForEach(w => w.Delete());

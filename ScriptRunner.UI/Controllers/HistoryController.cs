@@ -28,6 +28,20 @@ namespace ScriptRunner.UI.Controllers
                                                      .Take(_webSettings.MaxHistoryItems);
             return Json(transactions);
         }
+
+        [Route("~/api/history/popular")]
+        public async Task<IActionResult> GetPopularHistoryAsync()
+        {
+            var transactions = await _historyService.GetActivitiesAsync<Package>();
+            var top5 = transactions.GroupBy(gb => gb.Data.Id)
+                                   .OrderByDescending(o => o.Count())
+                                   .Take(8)
+                                   .Select(s => new { Id = s.Key, Package = s.First() })
+                                   .Select(ss => new { ss.Id, ss.Package.System, Title = $"{ss.Package.Data.Category}\\{ss.Package.Data.Title}", Data = ss.Package.Data })
+                                   ;
+
+            return Json(top5);
+        }
     }
 }
 

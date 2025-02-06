@@ -481,9 +481,21 @@ body {
     column-gap: 10px;
 }
 
-.dataTables_length {
+/*.dataTables_length {
     padding-top: 2px;
 }
+*/
 
+.my-dataTable > tbody > tr:nth-child(even of :not(.child)) > td,
+.my-dataTable > tbody > tr:nth-child(even of :not(.child)) + .child > td {
+    background-color: #e0dcdc;
+}
 
+.my-dataTable > tbody > tr:nth-child(odd of :not(.child)) > td,
+.my-dataTable > tbody > tr:nth-child(odd of :not(.child)) + .child > td {
+    background-color: #e7e6e2;
+}
 
+.my-dataTable > tbody th, table.dataTable tbody td {
+    padding: 8px 10px; /* e.g. change 8x to 4px here */
+}

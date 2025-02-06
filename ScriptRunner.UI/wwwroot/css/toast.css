@@ -1,4 +1,17 @@
-﻿#toasts {
+﻿.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.toast.showing, .toast.show {
+    opacity: 1;
+}
+
+#toasts {
     min-height: 0;
     position: fixed;
     right: 20px;

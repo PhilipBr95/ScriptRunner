@@ -5,6 +5,10 @@ var tippyInstances = [];
 $(document).ready(function () {
     populateTop5();
     populateScripts();    
+    
+    const toastLiveExample = document.getElementById('liveToast')
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    toastBootstrap.show()
 });
 
 function populateTop5() {
@@ -207,7 +211,7 @@ function showScriptDetails(script) {
                 $html = $($.parseHTML(html))
                 $input = $html.find('input');
 
-                if ('FileType' in el.data) {
+                if (el.data != null && 'FileType' in el.data) {
                     $input.attr('accept', el.data['FileType']);
                 }
             } else {

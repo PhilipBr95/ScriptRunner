@@ -3,12 +3,8 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "datatables.net@2.1.1",
+      "library": "datatables.net@2.2.1",
       "destination": "wwwroot/lib/datatables.net/"
-    },
-    {
-      "library": "datatables.net-dt@2.1.1",
-      "destination": "wwwroot/lib/datatables.net-dt/"
     },
     {
       "library": "moment.js@2.29.4",
@@ -16,42 +12,33 @@
     },
     {
       "provider": "jsdelivr",
-      "library": "datatables.net-plugins@1.13.6",
-      "destination": "wwwroot/lib/datatables.net-plugins/",
-      "files": [
-        "sorting/anti-the.d.ts",
-        "sorting/anti-the.js",
-        "sorting/anti-the.min.js",
-        "sorting/anti-the.min.mjs",
-        "sorting/anti-the.mjs",
-        "dataRender/datetime.d.ts",
-        "dataRender/datetime.js",
-        "dataRender/datetime.min.js",
-        "dataRender/datetime.min.mjs",
-        "dataRender/datetime.mjs"
-      ]
-    },
-    {
-      "provider": "jsdelivr",
       "library": "highlight-within-textarea@2.0.5",
       "destination": "wwwroot/lib/highlight-within-textarea/"
     },
-  {
-    "provider": "cdnjs",
-    "library": "showdown@2.1.0",
-    "destination": "wwwroot/lib/showdown/"
-  }
-,
-{
-  "provider": "cdnjs",
-  "library": "tippy.js@6.3.7",
-  "destination": "wwwroot/lib/tippy.js/"
-}
-,
-{
-  "provider": "cdnjs",
-  "library": "popper.js@2.11.8",
-  "destination": "wwwroot/lib/popper.js/"
-}
-]
+    {
+      "provider": "cdnjs",
+      "library": "showdown@2.1.0",
+      "destination": "wwwroot/lib/showdown/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "tippy.js@6.3.7",
+      "destination": "wwwroot/lib/tippy.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "popper.js@2.11.8",
+      "destination": "wwwroot/lib/popper.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jquery@3.7.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables.net-bs5@2.2.1",
+      "destination": "wwwroot/lib/datatables.net-bs5/"
+    }
+  ]
 }

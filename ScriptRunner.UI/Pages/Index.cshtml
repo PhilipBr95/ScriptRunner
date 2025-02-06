@@ -4,6 +4,17 @@
 <form method="post" action="/api/Script" id="form" autocomplete="off">
     @Html.AntiForgeryToken()    
 
+    <div class="toast-container position-fixed p-3 top-0 end-0">
+        <div id='liveToast' class="toast align-items-center text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" data-bs-animation="true">
+          <div class="d-flex">
+            <div class="toast-body">
+              Hello, world! This is a toast message.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+       </div>
+
     <div class="container gy-2">
         <div class="row gx-2 gy-2">            
             <div class="col-12 col-lg-4">
@@ -45,7 +56,7 @@
                             </div>
                         </div>
 
-                        <div style="width:75%">
+                        <div>
                             <div class="row mb-2 align-items-baseline">
                                 <div class="col-2">
                                     <label for="categories" class="form-label label">Category</label>
@@ -100,7 +111,7 @@
                                 <div class="col-2">
                                     <label for="Params" class="form-label label">Parameters</label>
                                 </div>
-                                <div class="col-10">
+                                <div class="col-10 col-md-9">
                                     <div id="Params">
                                     </div>
                                 </div>
@@ -147,11 +158,9 @@
     </div>
 
     <!--Templates-->
-    <div id="paramTemplate" class="paramTemplate">
+        <div id="paramTemplate" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-            <div class="col-6">
-                <label for="{Name}" class="form-label col-6 label">{Name}</label>
-             </div>
+            <label for="{Name}" class="form-label col-3">{Name}</label>
             <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs valueinputs-auto" />
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -159,8 +168,7 @@
 
     <div id="paramTemplate-File" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-
-            <label for="{Name}" class="form-label col-4 label">{Name}ss</label>
+            <label for="{Name}" class="form-label col-3">{Name}</label>
             <input type="file" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs valueinputs-auto" />
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -168,7 +176,7 @@
 
     <div id="paramTemplate-Checkbox" class="paramTemplate">
         <div class="input-group input-group-checkbox mb-2 align-items-baseline">
-            <label class="form-label col-4 label" for="{Name}">{Name}</label>
+            <label class="form-label col-3" for="{Name}">{Name}</label>
             <input class="form-check-input valueinputs" type="checkbox" value="" id="{Name}">
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -176,7 +184,7 @@
 
     <div id="paramTemplate-Select" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-            <label class="form-label col-4 label" for="{Name}">{Name}</label>
+            <label class="form-label col-3" for="{Name}">{Name}</label>
             <select name="{Name}" id="{Name}" class="form-select valueinputs valueinputs-auto">
                 {Options}
             </select>
@@ -186,8 +194,8 @@
 </form>
 
 @section Scripts {
-    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/js/results.js" asp-append-version="true"></script>
+    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/js/toast.js" asp-append-version="true" type="module"></script>
     <script src="~/lib/popper.js/umd/popper.js" type="module"></script>
     <script src="~/lib/tippy.js/tippy.umd.min.js" type="module"></script>

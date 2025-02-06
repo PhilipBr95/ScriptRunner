@@ -42,9 +42,8 @@ $(function () {
     let table = $('#remoteScripts').DataTable({
         ajax: "/api/script/remote",
         processing: true,
-        language: {
-            processing: "<div class='spinner'></div>",
-            emptyTable: "No New Packages Found"
+        language: {            
+            emptyTable: "No Packages Found"
         },
         paging: false,
         fixedHeader: true,

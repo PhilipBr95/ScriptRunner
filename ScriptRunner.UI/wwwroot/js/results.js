@@ -126,7 +126,7 @@ function showResults(script, $results, packageResult, showResults) {
 
         obj.dataTables?.forEach(function (dataTable, y) {
             let id = `resultsTable${tableCount}`
-            $resultsDiv.append(`<table id='${id}' class="display resultsTable" style="width:100%"></table>`);
+            $resultsDiv.append(`<table id='${id}' class="display resultsTable my-dataTable" style="width:100%"></table>`);
 
             showResultsTable(id, dataTable, script?.options);
 
@@ -162,7 +162,7 @@ function showResultsTable(id, dataTable, options) {
 
     var columns = [];
     let columnNames = Object.keys(dataTable[0]);
-    let showAllColumns = options.columns == null || options?.columns?.length == 0;
+    let showAllColumns = options?.columns == null || options?.columns?.length == 0;
 
     for (var col in columnNames) {        
         //Do we care about this column
@@ -173,6 +173,7 @@ function showResultsTable(id, dataTable, options) {
         let config = {
             data: columnNames[col],
             title: column?.title ?? (columnNames[col].charAt(0).toUpperCase() + columnNames[col].slice(1)),
+            className: 'dt-left'
         }        
 
         if (column?.href != null) {
@@ -206,15 +207,29 @@ function showResultsTable(id, dataTable, options) {
         columns.push(config);
     }
 
+    //Default layout
+    let layout = {
+        topStart: null,
+        topEnd: 'search',
+        bottomStart: 'info',
+        bottomEnd: 'paging',
+        bottom1Start: 'pageLength',
+    };
+
+    if (options?.dataTableLayout != null) {
+        layout = options.dataTableLayout;
+    }
+
     let setup = {
         //Not sure why we need to reinitialise, but hey
         retrieve: true,
 
+        autoWidth: true,
         paging: true,
-        fixedHeader: true,
-        searching: false,
+        fixedHeader: true,        
         pageLength: 20,
-        dom: 'frtlip',
+
+        layout: layout,
         data: dataTable,
         columns: columns,
         order: [],
@@ -257,8 +272,8 @@ function showResultsTable(id, dataTable, options) {
         }
     };
 
-    if (options?.dom != null) {
-        setup.dom = options.dom;
+    if (options?.dataTableDom != null) {
+        //setup.dom = options.dataTableDom;
     }
 
     resultsTable = $(`#${id}`).DataTable(setup);      

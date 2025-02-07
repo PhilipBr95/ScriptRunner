@@ -10,6 +10,13 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+#toast-container > .toast {
+    width: auto !important;
+    min-width: 250px; /* Optional: Set a minimum width */
+    max-width: 100%; /* Optional: Set a maximum width */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
 html {
   font-size: 14px;
 }

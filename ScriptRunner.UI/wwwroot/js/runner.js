@@ -4,12 +4,15 @@ var tippyInstances = [];
 
 $(document).ready(function () {
     populateTop5();
-    populateScripts();    
-    
-    const toastLiveExample = document.getElementById('liveToast')
-    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
-    toastBootstrap.show()
+    populateScripts();
 });
+
+function showToast(message) {
+    toastr.options.closeMethod = 'fadeOut';
+    toastr.options.timeOut = 1500;
+    toastr.options.closeEasing = 'swing';
+    toastr.info(message);
+}
 
 function populateTop5() {
 
@@ -263,7 +266,7 @@ function showScriptDetails(script) {
 
         try {
             let href = await generateUrlFromInputs(script);
-            window.copyText(href, `${href} copied!`);
+            window.copyText(href, href, 'copied to clipboard');
         } catch (err) {
             alert(err);
         }
@@ -274,7 +277,7 @@ function showScriptDetails(script) {
     let $versionTip = $('#versionTooltip');
     $versionTip.off("click");
     $versionTip.on("click", async function (event) {
-        window.copyText(selectedScript.filename, 'Path Copied!');
+        window.copyText(selectedScript.filename, selectedScript.filename, 'copied to clipboard');
 
         event.preventDefault();
         return false;
@@ -287,26 +290,21 @@ function showScriptDetails(script) {
     if (newParams.get("autoexecute") != null) { 
         executeScript();
 
-        $.toast({
-            type: 'success',
-            autoDismiss: true,
-            message: 'Auto-Executing...'
-        });
+        showToast('Auto-Executing...');
     }
 }
 
-window.copyText = function copyText(textToCopy, message) {
+window.copyText = function copyText(textToCopy, message, messageEnd) {
     navigator.clipboard.writeText(textToCopy);
 
     if (message.length > 100) {
         message = message.substring(0, 100) + '...'
     }
 
-    $.toast({
-        type: 'success',
-        autoDismiss: true,
-        message: message
-    });
+    if (messageEnd != null)
+        message = `${message} ${messageEnd}`;
+
+    showToast(message);
 }
 
 function getParamTemplateHtml(el) {

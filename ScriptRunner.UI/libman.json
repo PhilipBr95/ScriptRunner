@@ -40,5 +40,11 @@
       "library": "datatables.net-bs5@2.2.1",
       "destination": "wwwroot/lib/datatables.net-bs5/"
     }
-  ]
+  ,
+{
+  "provider": "cdnjs",
+  "library": "toastr.js@2.1.4",
+  "destination": "wwwroot/lib/toastr.js/"
+}
+]
 }

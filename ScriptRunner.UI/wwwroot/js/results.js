@@ -244,7 +244,7 @@ function showResultsTable(id, dataTable, options) {
                 if (data != undefined) {
                     let columns = Object.keys(data);
                     let col = resultsTable.cell(this).index().column;
-                    let column = options.columns?.find(key => key.columnName.toLowerCase() === columnNames[col].toLowerCase());            
+                    let column = options?.columns?.find(key => key.columnName.toLowerCase() === columnNames[col].toLowerCase());            
 
                     //Create a custom href
                     let href = Interpolate(column?.href, data)

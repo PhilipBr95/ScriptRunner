@@ -4,17 +4,6 @@
 <form method="post" action="/api/Script" id="form" autocomplete="off">
     @Html.AntiForgeryToken()    
 
-    <div class="toast-container position-fixed p-3 top-0 end-0">
-        <div id='liveToast' class="toast align-items-center text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" data-bs-animation="true">
-          <div class="d-flex">
-            <div class="toast-body">
-              Hello, world! This is a toast message.
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-        </div>
-       </div>
-
     <div class="container gy-2">
         <div class="row gx-2 gy-2">            
             <div class="col-12 col-lg-4">
@@ -196,7 +185,6 @@
 @section Scripts {
     <script src="~/js/results.js" asp-append-version="true"></script>
     <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
-    <script src="~/js/toast.js" asp-append-version="true" type="module"></script>
     <script src="~/lib/popper.js/umd/popper.js" type="module"></script>
     <script src="~/lib/tippy.js/tippy.umd.min.js" type="module"></script>
 

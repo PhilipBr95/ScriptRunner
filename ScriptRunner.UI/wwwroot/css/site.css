@@ -506,3 +506,11 @@ body {
 .my-dataTable > tbody th, table.dataTable tbody td {
     padding: 8px 10px; /* e.g. change 8x to 4px here */
 }
+
+.card-history {
+    background-color: rgb(236, 242, 249);
+}
+
+.historyResults {
+    margin-left: 20px;
+}

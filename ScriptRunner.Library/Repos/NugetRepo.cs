@@ -96,7 +96,7 @@ namespace ScriptRunner.Library.Repos
                             {
                                 _logger.LogInformation($"Downloaded {result.Id} version {result.Version} - {success}");
 
-                                await LogActivity(new Activity<Package> { ActionedBy = user, System = "ScriptRunner", Success = success, Description = $"Package imported - {result.Id} version {result.Version}" });
+                                await LogActivity(new ActivityWithData<Package> { ActionedBy = user, System = "ScriptRunner", Success = success, Description = $"Package imported - {result.Id} version {result.Version}" });
                             }
                             else
                                 _logger.LogError($"Failed to Download {result.Id} version {result.Version}");
@@ -111,7 +111,7 @@ namespace ScriptRunner.Library.Repos
             }
         }
 
-        private async Task LogActivity(Activity<Package> activity)
+        private async Task LogActivity(ActivityWithData<Package> activity)
         {
             await _historyService.LogActivityAsync(activity);
             await _transactionService.LogActivityAsync(activity);

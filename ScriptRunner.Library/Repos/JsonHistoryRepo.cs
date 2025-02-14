@@ -25,7 +25,7 @@ namespace ScriptRunner.Library.Repos
                 Directory.CreateDirectory(_historySettings.Folder);
         }
 
-        public async Task SaveActivityAsync<T>(Activity<T> activitity)
+        public async Task SaveActivityAsync<T>(ActivityWithData<T> activitity)
         {
             try
             {                
@@ -126,21 +126,21 @@ namespace ScriptRunner.Library.Repos
             return dailyBackup;
         }
 
-        public async Task<IList<Activity<T>>> LoadActivitiesAsync<T>()
+        public async Task<IList<ActivityWithData<T>>> LoadActivitiesAsync<T>()
         {
             try
             {
                 await _repoLock.WaitAsync();
                 
                 if (File.Exists(_historySettings.Filename) == false)
-                    return new List<Activity<T>>();
+                    return new List<ActivityWithData<T>>();
 
                 var json = await File.ReadAllTextAsync(_historySettings.Filename);
 
                 if (string.IsNullOrWhiteSpace(json))
-                    return new List<Activity<T>>();
+                    return new List<ActivityWithData<T>>();
 
-                return JsonConvert.DeserializeObject<IList<Activity<T>>>(json, new JsonSerializerSettings { Error = (sender, errorArgs) => 
+                return JsonConvert.DeserializeObject<IList<ActivityWithData<T>>>(json, new JsonSerializerSettings { Error = (sender, errorArgs) => 
                 {
                     _logger.LogError($"Unhandled Deserialision Error in {nameof(LoadActivitiesAsync)} - {errorArgs.ErrorContext.Error.Message}");
                     errorArgs.ErrorContext.Handled = true;

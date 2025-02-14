@@ -129,8 +129,8 @@ $(document).ready(function () {
                     var $child = $(format(row.data()));
                     row.child($child).show();
 
-                    var newId = $('#results').length + 1;
-                    var $results = $('#results').clone().appendTo($child).prop('id', 'results' + newId);
+                    var newId = $('#resultsWrapper').length + 1;
+                    var $results = $('#resultsWrapper').clone().appendTo($child).prop('id', 'results' + newId);
                     var scriptAndResults = row.data().data;
 
                     showResults(scriptAndResults, $results, scriptAndResults, false)

@@ -84,7 +84,7 @@ namespace ScriptRunner.Library.Services
 
         private async Task LogActivity(Package package, string actionedBy, bool success)
         {
-            var activity = new Activity<Package>
+            var activity = new ActivityWithData<Package>
             {
                 System = package.System,
                 Description = $"{package.Title} ({package.UniqueId})",

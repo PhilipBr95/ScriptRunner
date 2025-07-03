@@ -28,7 +28,7 @@ Example <a href="/files/MyApp_Fix_Name.1.1.3.nupkg">Nuget Package</a> and config
             { "Name": "Title", "Type": "combo", "Data": {"Mr": "Mr", "Mrs": "Mrs", "Dr": "Dr"}, "Required": false }
         ],
         "Options": {
-            "Layout": "mr",  <mark>now json </mark>
+            TODO!!! "DataTableLayout": "mr",  <mark>TODO!!! now json </mark>
             "DataTableDom": "t",
             "Css": [ "#resultsTable0 > tbody > tr > td { background-color: orange; cursor: copy; }" ],
             "JQuery": [{ "Parent": "#results", "Selector": "#resultsTable0 > tbody > tr > td:nth-child(1)", "Event": "click", "Function": "let $text = $(evt.target).text();  window.copyText($text, `${evt.data.script.id} ${$text} Copied!`);" }] 

@@ -37,6 +37,8 @@ $(document).ready(function () {
     
     var table = $('#history').DataTable({
         "rowId": 'id',
+        processing: true,
+        language: { "processing": '<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>' },
         ajax: { url: "/api/history", dataSrc: "" },
         "columns": [
             {

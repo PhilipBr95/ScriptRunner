@@ -5,8 +5,8 @@ namespace ScriptRunner.Library.Models
 {
     public class Options
     {
-        public object? DataTableLayout { get; set; }
-        public string? DataTableDom { get; set; }
+        public string Layout { get; set; }
+        public object[]? DataTables { get; set; }
         public IEnumerable<string>? Css { get; set; }
         public IEnumerable<JQuery>? JQuery { get; set; }
 

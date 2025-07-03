@@ -38,8 +38,8 @@ function addOptions(script) {
             }
         }
 
-        if (options.layout != null) {
-            layout = options.layout;
+        if (options.Layout != null) {
+            layout = options.Layout;
         }
 
         //Is there a custom label for the messages
@@ -128,7 +128,7 @@ function showResults(script, $results, packageResult, showResults) {
             let id = `resultsTable${tableCount}`
             $resultsDiv.append(`<table id='${id}' class="display resultsTable my-dataTable" style="width:100%"></table>`);
 
-            showResultsTable(id, dataTable, script?.options);
+            showResultsTable(id, dataTable, script?.options.dataTables[tableCount]);
 
             $resultsParent.removeClass('hidden');
 
@@ -216,8 +216,8 @@ function showResultsTable(id, dataTable, options) {
         bottom1Start: 'pageLength',
     };
 
-    if (options?.dataTableLayout != null) {
-        layout = options.dataTableLayout;
+    if (options?.Layout != null) {
+        layout = options.Layout;
     }
 
     let setup = {

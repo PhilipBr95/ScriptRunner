@@ -514,3 +514,44 @@ body {
 .historyResults {
     margin-left: 20px;
 }
+
+.card-logs {
+    background-color: rgb(249, 249, 240);
+}
+
+/* Admin */
+.card-admin {
+    background-color: rgb(230, 255, 230);
+}
+
+.admin-dataTable > tbody > tr:nth-child(even of :not(.child)) > td,
+.admin-dataTable > tbody > tr:nth-child(even of :not(.child)) + .child > td {
+    background-color: rgb(220, 255, 220);
+}
+
+.admin-dataTable > tbody > tr:nth-child(odd of :not(.child)) > td,
+.admin-dataTable > tbody > tr:nth-child(odd of :not(.child)) + .child > td {
+    background-color: rgb(240, 255, 240);
+}
+
+
+.dataTables_wrapper .dataTables_processing {
+    position: absolute;
+    top: 15% !important;
+    background: red;
+    border: 1px solid black;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/*div.dt-processing {
+    background: none;
+    text-indent: -9999px;
+}
+*/
+
+div.dt-processing > div {
+    display: none;
+  
+    background-color: rgba(255,255,255,0.5);
+}

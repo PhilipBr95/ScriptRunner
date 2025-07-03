@@ -43,7 +43,8 @@ function populateTop5() {
         ],
         dom: 'rt',
         autoWidth: false,
-        order: []
+        order: [],
+        processing: true,
     });            
 
 }

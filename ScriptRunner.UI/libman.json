@@ -3,7 +3,7 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "datatables.net@2.2.1",
+      "library": "datatables.net@2.3.2",
       "destination": "wwwroot/lib/datatables.net/"
     },
     {
@@ -37,14 +37,33 @@
     },
     {
       "provider": "cdnjs",
-      "library": "datatables.net-bs5@2.2.1",
+      "library": "datatables.net-bs5@2.3.2",
       "destination": "wwwroot/lib/datatables.net-bs5/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "toastr.js@2.1.4",
+      "destination": "wwwroot/lib/toastr.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jszip@3.10.1",
+      "destination": "wwwroot/lib/jszip/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables-buttons@3.2.4",
+      "destination": "wwwroot/lib/datatables-buttons/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "datatables.net-buttons-dt@3.2.4",
+      "destination": "wwwroot/lib/datatables.net-buttons-dt/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "font-awesome@6.7.2",
+      "destination": "wwwroot/lib/font-awesome/"
     }
-  ,
-{
-  "provider": "cdnjs",
-  "library": "toastr.js@2.1.4",
-  "destination": "wwwroot/lib/toastr.js/"
-}
-]
+  ]
 }

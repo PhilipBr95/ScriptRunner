@@ -77,7 +77,6 @@ function addOptions(script) {
         $(`<style id='customStyles_thead' type='text/css'>thead { visibility: hidden; } thead > tr > th { padding-top: 0!important; padding-bottom: 0!important } </style>\n`).appendTo('head');
     }
 
-
     //Remove the H
     layout = layout.replace(/H/ig, '');
 
@@ -111,14 +110,14 @@ function showResults(script, $results, packageResult, showResults) {
         let obj = packageResult.results[x];
 
         if (obj.messages != null && obj.messages.length > 0) {
-            let id = `resultsMessagesss${x}`
+            let id = `resultsMessages${x}`
 
             let messages = '';
             obj.messages.forEach(function (obj, x) {
                 messages += `<div>${obj}</div>`;
             });
 
-            $messagesDiv.append(`<label id='${id}' class="display" style="width:100%">${messages}</label>`);            
+            $messagesDiv.append(`<label id='${id}' class="resultsLabel" style="width:100%">${messages}</label>`);            
             $messagesParent.removeClass('hidden');
 
             showMessages = true;
@@ -126,7 +125,7 @@ function showResults(script, $results, packageResult, showResults) {
 
         obj.dataTables?.forEach(function (dataTable, y) {
             let id = `resultsTable${tableCount}`
-            $resultsDiv.append(`<table id='${id}' class="display resultsTable my-dataTable" style="width:100%"></table>`);
+            $resultsDiv.append(`<table id='${id}' class="resultsTable my-dataTable" style="width:100%"></table>`);
 
             showResultsTable(id, dataTable, script?.options.dataTables[tableCount]);
 
@@ -272,8 +271,8 @@ function showResultsTable(id, dataTable, options) {
         }
     };
 
-    if (options?.dataTableDom != null) {
-        //setup.dom = options.dataTableDom;
+    if (options?.Dom != null) {
+        setup.dom = options.Dom;
     }
 
     resultsTable = $(`#${id}`).DataTable(setup);      

@@ -11,10 +11,15 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ScriptRunner.UI.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/highlight-within-textarea/jquery.highlight-within-textarea.css">
-    <link rel="stylesheet" type="text/css" href="~/lib/tippy.js/tippy.css" />    
+    <link rel="stylesheet" type="text/css" href="~/lib/tippy.js/tippy.css" />
+    <link href="~/lib/datatables.net-bs5/datatables.bootstrap5.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs5/datatables.bootstrap5.min.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-dt/buttons.datatables.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-dt/buttons.datatables.min.css" rel="stylesheet" />
     <link href="~/lib/toastr.js/toastr.css" rel="stylesheet" />
     <link href="~/lib/toastr.js/toastr.min.css" rel="stylesheet" />
-
+    <link href="~/lib/font-awesome/css/all.css" rel="stylesheet" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
     <header>
@@ -80,11 +85,21 @@
 
     <script src="~/lib/datatables.net/datatables.js"></script>
     <script src="~/lib/datatables.net/datatables.min.js"></script>
+ 
     <script src="~/lib/datatables.net-bs5/datatables.bootstrap5.js"></script>
     <script src="~/lib/datatables.net-bs5/datatables.bootstrap5.min.js"></script>
+    
+    <script src="~/lib/datatables-buttons/js/datatables.buttons.js"></script>
+    <script src="~/lib/datatables-buttons/js/datatables.buttons.min.js"></script>
 
-    <link href="~/lib/datatables.net-bs5/datatables.bootstrap5.css" rel="stylesheet" />
-    <link href="~/lib/datatables.net-bs5/datatables.bootstrap5.min.css" rel="stylesheet" />
+    <script src="~/lib/datatables.net-buttons-dt/buttons.datatables.js"></script>
+    <script src="~/lib/datatables.net-buttons-dt/buttons.datatables.min.js"></script>
+
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js.min.js"></script>
+
+    <script src="~/lib/jszip/jszip.js"></script>
+    <script src="~/lib/jszip/jszip.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

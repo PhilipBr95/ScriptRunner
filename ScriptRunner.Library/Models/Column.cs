@@ -2,8 +2,18 @@
 {
     public class Column
     {
-        public int StartPosition { get; set; }
         public string ColumnName { get; set; }
-        public int EndPosition { get; set; }
+        public string? Href { get; set; }
+
+        public string? OnClick { get; set; }
+
+        public string? Title { get; set; }
+
+        public string? sType { get; set; }
+
+        /// <summary>
+        /// (Optional) The overriding custom CSS class to apply to the Href
+        /// </summary>
+        public string? HrefCss { get; set; }
     }
 }

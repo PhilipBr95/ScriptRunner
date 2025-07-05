@@ -3,91 +3,92 @@
 @{
     ViewData["Title"] = "Admin";
 }
-<h1>@ViewData["Title"]</h1>
-
-<br />
 
 <form method="post" action="/Admin" id="form" autocomplete="off">
 @Html.AntiForgeryToken()
 
-    <div class="container">
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Local Nuget Folder</label>
-            </div>
-            <div class="col-lg">
-                <label>@Model.NugetFolder</label>
-            </div>
-        </div>
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Local Script Folder</label>
-            </div>
-            <div class="col-lg">
-                <label>@Model.ScriptFolder</label>
-            </div>
-        </div>
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Remote Git Repo</label>
-            </div>
-            <div class="col-lg">
-                <label>@Model.GitRepo</label>
-            </div>
-        </div>
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Git Repo Tags</label>
-            </div>
-            <div class="col-lg">
-                <label>@Model.Tags</label>
-            </div>
-        </div>
-        <br />
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Local Packages</label>
-            </div>
-            <div class="col-lg tableDiv">
-                <table id='localScripts' class="display" style="width:100%">
-                </table>
-            </div>
-        </div>
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label></label>
-            </div>
-            <div class="col-lg" >
-                <div style="display:inline-block">
-                    <input id="reload" type="submit" class="btn btn-primary" value="Reload Local Scripts" asp-page-handler="Reload" />
+    <div class="grid container overflow-hidden grid gap-0 row-gap-3">
+        <div class="row gy-2">
 
-                    <span class="btn btn-primary btn-file" id="uploadFile2">
-                        Import SQL File <input id="uploadFile" type="file" value="Select SQL script" accept=".sql" />
-                    </span>
+            <div class="card card-admin col-6">
+                <div class="card-body">
+
+                    <div class="row ">
+                        <div class="col-4 label">
+                            <label>Local Nuget Folder</label>
+                        </div>
+                        <div class="col-8">
+                            <label>@Model.NugetFolder</label>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-4 label">
+                            <label>Local Script Folder</label>
+                        </div>
+                        <div class="col-8">
+                            <label>@Model.ScriptFolder</label>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-4 label">
+                            <label>Remote Git Repo</label>
+                        </div>
+                        <div class="col-8">
+                            <label>@Model.GitRepo</label>
+                        </div>
+                    </div>
+                    <div class="row ">
+                        <div class="col-4 label">
+                            <label>Git Repo Tags</label>
+                        </div>
+                        <div class="col-8">
+                            <label>@Model.Tags</label>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
-        </div>
-        <br />
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label>Remote Packages</label>
-            </div>
-            <div class="col-lg tableDiv">
-                <table id='remoteScripts' class="display" style="width:100%">
-                </table>
-            </div>
-        </div>
-        <div class="row withGap">
-            <div class="col-2 label">
-                <label></label>
-            </div>
-            <div class="col-lg">                
-                <input id="remote-sync" type="submit" class="btn btn-primary" value="Import Selected Packages" asp-page-handler="Sync" disabled />
-            </div>
-        </div>
 
+            <div class="card card-admin">
+                <div class="card-body">
+                    <h5 class="card-title">Local Packages</h5>
+
+                    <div class="row b-5">
+                        <table id='localScripts' class="display admin-dataTable" style="width:100%">
+                        </table>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div >
+                            <input id="reload" type="submit" class="btn btn-primary" value="Reload Local Scripts" asp-page-handler="Reload" />
+
+                            <span class="btn btn-primary btn-file" id="uploadFile2">
+                                Import SQL File <input id="uploadFile" type="file" value="Select SQL script" accept=".sql" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-admin">
+                <div class="card-body">
+                    <h5 class="card-title">Remote Packages</h5>
+                    <div class="row gy-5">
+                        <div class="">
+                            <table id='remoteScripts' class="display admin-dataTable" style="width:100%">
+                                </table>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div>                
+                            <input id="remote-sync" type="submit" class="btn btn-primary" value="Import Selected Packages" asp-page-handler="Sync" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

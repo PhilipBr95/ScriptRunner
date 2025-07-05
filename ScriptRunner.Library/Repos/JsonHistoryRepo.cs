@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ScriptRunner.Library.Helpers;
@@ -24,20 +25,20 @@ namespace ScriptRunner.Library.Repos
                 Directory.CreateDirectory(_historySettings.Folder);
         }
 
-        public async Task SaveActivityAsync<T>(Activity<T> activitity)
+        public async Task SaveActivityAsync<T>(ActivityWithData<T> activitity)
         {
             try
-            {
-                var activities = await LoadActivitiesAsync<T>();
+            {                
+                var activities = await LoadActivitiesAsync<T>();             
+                activities.Add(activitity);
 
                 await _repoLock.WaitAsync();
-              
-                activities.Add(activitity);
 
                 if (BackupRepo())
                 {
                     //Remove old items
-                    activities = activities.Where(w => DateTime.Now.Subtract(w.CreatedDate).TotalDays < _historySettings.MaxHistoryDaysOld)
+                    activities = activities.OrderByDescending(o => o.CreatedDate)
+                                           .Take(_historySettings.MaxActivitiesInHistoryFile)
                                            .ToList();
                 }
 
@@ -77,7 +78,8 @@ namespace ScriptRunner.Library.Repos
                                 //Get rid of really old backups
                                 var backupToDelete = Directory.GetFiles(_historySettings.Folder, Path.GetExtension(_historySettings.Filename))
                                                               .Select(s => new FileInfo(s))
-                                                              .Where(w => w.CreationTime.AddDays(_historySettings.MaxBackupAgeInDays) < DateTime.Now)
+                                                              .OrderByDescending(w => w.CreationTime)
+                                                              .Take(_historySettings.MaxBackupFiles)
                                                               .ToList();
 
                                 backupToDelete.ForEach(w => w.Delete());
@@ -124,21 +126,21 @@ namespace ScriptRunner.Library.Repos
             return dailyBackup;
         }
 
-        public async Task<IList<Activity<T>>> LoadActivitiesAsync<T>()
+        public async Task<IList<ActivityWithData<T>>> LoadActivitiesAsync<T>()
         {
             try
             {
                 await _repoLock.WaitAsync();
                 
                 if (File.Exists(_historySettings.Filename) == false)
-                    return new List<Activity<T>>();
+                    return new List<ActivityWithData<T>>();
 
                 var json = await File.ReadAllTextAsync(_historySettings.Filename);
 
                 if (string.IsNullOrWhiteSpace(json))
-                    return new List<Activity<T>>();
+                    return new List<ActivityWithData<T>>();
 
-                return JsonConvert.DeserializeObject<IList<Activity<T>>>(json, new JsonSerializerSettings { Error = (sender, errorArgs) => 
+                return JsonConvert.DeserializeObject<IList<ActivityWithData<T>>>(json, new JsonSerializerSettings { Error = (sender, errorArgs) => 
                 {
                     _logger.LogError($"Unhandled Deserialision Error in {nameof(LoadActivitiesAsync)} - {errorArgs.ErrorContext.Error.Message}");
                     errorArgs.ErrorContext.Handled = true;

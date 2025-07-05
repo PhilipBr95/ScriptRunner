@@ -3,31 +3,36 @@
 @{
     ViewData["Title"] = "Execution History";
 }
-<h1>@ViewData["Title"]</h1>
-
-<br />
 
 <form method="post" action="/History" id="form">
 @Html.AntiForgeryToken()
+    <div class="card card-history">
+        <div class="card-body">
 
-    <table id='history' class="display" style="width:100%">
-    </table>
+            <table id='history' class="display" style="width:100%">
+            </table>
 
-    <div id="results" class="hidden resultsTemplate">
-        <div class="row withBigGap">
-            <div class="col-1">
-                <label class="label">Messages</label>
+            <div id="resultsWrapper" class="historyResults hidden resultsTemplate col-12 gx-10 gy-2">
+                <div class="card card-results gx-10">
+                    <div class="card-body">
+                        <div class="row withGap">
+                            <h5 id="resultsLabel" class="card-title">Results</h5>
+                            <br />
+                        </div>
+                        <div id="tablesAndMessages">
+                            <div id="tables" class="row withGap hidden">
+                                <div class="col-lg tableDiv" id="resultsDiv">
+                                </div>
+                            </div>
+                            <div id="messages" class="row withGap hidden">
+                                <div class="col-lg resultsMessages" id="messagesDiv">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg resultsMessages" name="resultsMessages">
-            </div>
-        </div>
 
-        <div class="row withGap">
-            <div class="col-1">
-                <label class="label">Results</label>
-            </div>
-            <div class="col-lg tableDiv" name="resultsTables">
-            </div>
         </div>
     </div>
 </form>

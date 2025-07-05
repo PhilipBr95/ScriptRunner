@@ -1,140 +1,155 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["Title"] = "Execute Script";
-}
-
-<h1>@ViewData["Title"]</h1>
-
-<br />
 
 <form method="post" action="/api/Script" id="form" autocomplete="off">
-    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()    
 
-    <div class="container">
-        <!-- Modal -->
-        <div class="modal fade" id="scriptsModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Select a Script</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table id='scriptsTable' class="display scriptsTableView" style="width:100%">
+    <div class="container gy-2">
+        <div class="row gx-2 gy-2">            
+            <div class="col-12 col-lg-4">
+                <div class="card card-popular border h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Popular Scripts</h5>
+                        <br />
+
+                        <table id='popular' class="no-foooter">
                         </table>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" id="runScript">Run Script</button>
+                </div>
+            </div>
+
+            <div class="order-lg-first col-12 col-lg-8">
+                <div class="card card-execute border">
+                    <div class="card-body">
+                        <h5 class="card-title">Execute a Script</h5>
+                        <div>Choose the appropriate Category/System/Script and then fill in the necessary parameters and click Execute.</div>
+
+                        <br />
+                        <!-- Modal -->
+                        <div class="modal fade" id="scriptsModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Select a Script</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id='scriptsTable' class="display scriptsTableView" style="width:100%">
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" id="runScript">Run Script</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="categories" class="form-label label">Category</label>
+                                </div>
+                                <div class="col-10">
+                                    <select id="categories" class="form-select dropdown"></select>
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="systems" class="form-label label">System</label>
+                                </div>
+                                <div class="col-10">
+                                    <select id="systems" class="form-select dropdown"></select>
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="scripts" class="form-label label">Script</label>
+                                </div>
+                                <div class="col-10 input-group-flex">
+                                    <select id="scripts" class="form-select dropdown"></select>
+                                    <img id="viewScriptSelector" class=" input-group-append mytooltip mytooltip-pointer m-2" src="~/img/script-file.svg" height="20px" data-tooltip="View and search all Scripts" />
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="version" class="form-label label">UniqueId</label>
+                                </div>
+                                <div class="col-10">
+                                    <label id="version" class="form-label"></label>
+                                    <div id="versionTooltip" class=" input-group-append mytooltip m-2"></div>
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="description" class="form-label label">Description</label>
+                                </div>
+                                <div class="col-10">
+                                    <label id="description" class="form-label"></label>
+                                </div>
+                            </div>
+                            <div class="row mb-2 align-items-baseline">
+                                <div class="col-2">
+                                    <label for="tags" class="form-label label">Tags</label>
+                                </div>
+                                <div class="col-10">
+                                    <label id="tags" class="form-label"></label>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-2">
+                                    <label for="Params" class="form-label label">Parameters</label>
+                                </div>
+                                <div class="col-10 col-md-9">
+                                    <div id="Params">
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row withGap mb-2">
+                                <div class="col-2">
+                                </div>
+                                <div class="col-10">
+                                    <div>
+                                        <input id="execute" type="button" value="Execute" class="btn btn-primary hidden" />
+                                        <a href="" id="copyScript" class="hidden mytooltip mytooltip-pointer" data-tooltip="Copy the Script execution details to the clipboard for easy re-running"><img src="~/img/icons8-copy-48.png" height="20px" /></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-
-
-        <div style="width:75%">
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="categories" class="form-label label">Category</label>
-                </div>
-                <div class="col-10">
-                    <select id="categories" class="form-select dropdown"></select>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="systems" class="form-label label">System</label>
-                </div>
-                <div class="col-10">
-                    <select id="systems" class="form-select dropdown"></select>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="scripts" class="form-label label">Script</label>                    
-                </div>
-                <div class="col-10 input-group-flex">
-                    <select id="scripts" class="form-select dropdown"></select>
-                    <img id="viewScriptSelector" class=" input-group-append mytooltip mytooltip-pointer m-2" src="~/img/script-file.svg" height="20px" data-tooltip="View and search all Scripts" />
-                </div>
-            </div>
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="version" class="form-label label">UniqueId</label>
-                </div>
-                <div class="col-10">
-                    <label id="version" class="form-label"></label>
-                    <div id="versionTooltip" class=" input-group-append mytooltip m-2"></div>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="description" class="form-label label">Description</label>
-                </div>
-                <div class="col-10">
-                    <label id="description" class="form-label"></label>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-baseline">
-                <div class="col-2">
-                    <label for="tags" class="form-label label">Tags</label>
-                </div>
-                <div class="col-10">
-                    <label id="tags" class="form-label"></label>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-2">
-                    <label for="Params" class="form-label label">Parameters</label>
-                </div>
-                <div class="col-6">
-                    <div id="Params">
+        
+            <div id="resultsWrapper" class="col-12 gx-2 gy-2">
+                <div class="card card-results">
+                    <div class="card-body">
+                        <div class="row withGap">
+                            <h5 id="resultsLabel" class="card-title">Results</h5>
+                            <br />
+                        </div>
+                        <div id="tablesAndMessages">
+                            <div id="tables" class="row withGap hidden">
+                                <div class="col-lg tableDiv" id="resultsDiv">
+                                </div>
+                            </div> 
+                            <div id="messages" class="row withGap hidden">
+                                <div class="col-lg resultsMessages" id="messagesDiv">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <br />
-            <div class="row withGap mb-2">
-                <div class="col-2">
-                </div>
-                <div class="col-10">
-                    <div>
-                        <input id="execute" type="button" value="Execute" class="btn btn-primary hidden" />
-                        <a href="" id="copyScript" class="hidden mytooltip mytooltip-pointer" data-tooltip="Copy the Script details to the clipboard for easy re-running"><img src="~/img/icons8-copy-48.png" height="20px" /></a>
-                    </div>
-                </div>
-            </div>
+
+            <div id="toasts"></div>
         </div>
 
-        <hr width="50%" class="splitter" />
-
-        <div id="results" class="hidden">
-            <div id="resultsDiv" class="row withGap">
-                <div class="col-1">
-                    <label id="resultsLabel">Results</label>
-                </div>
-                <div class="col-lg tableDiv" name="resultsTables">
-                </div>
-            </div>
-
-            <div id="messagesDiv" class="row withBigGap">
-                <div class="col-1">
-                    <label id="messagesLabel">Messages</label>
-                </div>
-                <div class="col-lg resultsMessages" name="resultsMessages">
-                </div>
-            </div>
-        </div>
-
-        <div id="toasts"></div>
-    </div>
-
-
-    <div id="paramTemplate" class="paramTemplate">
+    <!--Templates-->
+        <div id="paramTemplate" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-
-            <label for="{Name}" class="form-label col-4 label">{Name}</label>
+            <label for="{Name}" class="form-label col-3">{Name}</label>
             <input type="{Type}" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs valueinputs-auto" />
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -142,8 +157,7 @@
 
     <div id="paramTemplate-File" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-
-            <label for="{Name}" class="form-label col-4 label">{Name}</label>
+            <label for="{Name}" class="form-label col-3">{Name}</label>
             <input type="file" placeholder="{Type}" value="{Value}" id="{Name}" class="form-control valueinputs valueinputs-auto" />
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -151,7 +165,7 @@
 
     <div id="paramTemplate-Checkbox" class="paramTemplate">
         <div class="input-group input-group-checkbox mb-2 align-items-baseline">
-            <label class="form-label col-4 label" for="{Name}">{Name}</label>
+            <label class="form-label col-3" for="{Name}">{Name}</label>
             <input class="form-check-input valueinputs" type="checkbox" value="" id="{Name}">
             <div class="input-group-append mytooltip {tooltipVisible} m-2" data-tooltip="{Tooltip}">?</div>
         </div>
@@ -159,7 +173,7 @@
 
     <div id="paramTemplate-Select" class="paramTemplate">
         <div class="input-group mb-2 align-items-baseline">
-            <label class="form-label col-4 label" for="{Name}">{Name}</label>
+            <label class="form-label col-3" for="{Name}">{Name}</label>
             <select name="{Name}" id="{Name}" class="form-select valueinputs valueinputs-auto">
                 {Options}
             </select>
@@ -169,9 +183,8 @@
 </form>
 
 @section Scripts {
-    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/js/results.js" asp-append-version="true"></script>
-    <script src="~/js/toast.js" asp-append-version="true" type="module"></script>
+    <script src="~/js/runner.js" asp-append-version="true" type="module"></script>
     <script src="~/lib/popper.js/umd/popper.js" type="module"></script>
     <script src="~/lib/tippy.js/tippy.umd.min.js" type="module"></script>
 

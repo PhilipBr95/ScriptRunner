@@ -28,6 +28,11 @@ namespace ScriptRunner.Library.Models
         public IEnumerable<ScriptResults>? Results { get; set; } = null;
         public Options? Options { get; set; }
 
+        /// <summary>
+        /// Whether to automatically execute
+        /// </summary>
+        public bool AutoExecute { get; set; } = false;
+
         public Package CloneWithParams(Package script)
         {
             var newScript = JsonConvert.DeserializeObject<Package>(JsonConvert.SerializeObject(script));

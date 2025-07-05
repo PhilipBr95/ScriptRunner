@@ -22,6 +22,7 @@ namespace ScriptRunner.Library.Services
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public async Task<ScriptResults> ExecuteAsync(PowershellScript powershellScript, IEnumerable<Param> @params, Models.Options? options)
         {
             var psCommand = string.Empty;
@@ -129,8 +130,13 @@ namespace ScriptRunner.Library.Services
                 //Backup plan
                 return ev.Value;
             });
-            
-            return (dataTables, messages.Split(_powershellSettings.NewLine).ToList());
+
+            //Tidy up the remaining messages            
+            var messageList = string.IsNullOrWhiteSpace(messages) ? 
+                                Array.Empty<string>().ToList() : 
+                                messages.Split(_powershellSettings.NewLine).ToList();
+
+            return (dataTables, messageList);
         }
     }
 }

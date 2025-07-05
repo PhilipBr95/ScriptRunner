@@ -4,7 +4,7 @@ namespace ScriptRunner.Library.Repos
 {
     public interface IHistoryRepo
     {
-        Task SaveActivityAsync<T>(Activity<T> activity);
-        Task<IList<Activity<T>>> LoadActivitiesAsync<T>();
+        Task SaveActivityAsync<T>(ActivityWithData<T> activity);
+        Task<IList<ActivityWithData<T>>> LoadActivitiesAsync<T>();
     }
 }

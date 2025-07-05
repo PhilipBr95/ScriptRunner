@@ -19,12 +19,12 @@ namespace ScriptRunner.UI.Services
             _logger = logger;
         }
 
-        public async Task LogActivityAsync<T>(Activity<T> activity)
+        public async Task LogActivityAsync<T>(ActivityWithData<T> activity)
         {
             await _historyRepo.SaveActivityAsync(activity);
         }
 
-        public async Task<IList<Activity<T>>> GetActivitiesAsync<T>()
+        public async Task<IList<ActivityWithData<T>>> GetActivitiesAsync<T>()
         {
             return await _historyRepo.LoadActivitiesAsync<T>();            
         }

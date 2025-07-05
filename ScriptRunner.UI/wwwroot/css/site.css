@@ -10,6 +10,13 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+#toast-container > .toast {
+    width: auto !important;
+    min-width: 250px; /* Optional: Set a minimum width */
+    max-width: 100%; /* Optional: Set a maximum width */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
 html {
   font-size: 14px;
 }
@@ -340,9 +347,215 @@ dd {
 
 .navbar-brand-text {
     font-weight: bold;
-    color: #1E3A4C!important;
+    font-size: x-large;
+    color: #1E3A4C !important;
 }
+.navbar-brand-text-script {
+    color: #265475 !important;
+    font-family: 'Script MT';
+}
+.navbar-brand-text-runner {
+    font-family: monospace;
+}
+
+.nav-link {
+    color: #265475 !important;
+    font-size: larger;
+    font-family: monospace;
+}
+
+.navbar-nav {
+    font-family: Arial;
+    list-style: none;
+    padding-top: 3px;
+    margin: 0;
+    float: left;
+}
+
+.navbar-nav li {
+    border-right: 2px solid #c4c4c4;
+    display: inline-block;
+    float: left;
+    padding: 0 15px;
+}
+
+.navbar-nav li:last-child {
+    border-right: 0;
+} 
 
 .scriptsTableView {
     cursor: pointer;
+}
+
+@-webkit-keyframes quickFlash {
+    0% {
+        background-color: rgb(191, 191, 191);
+        opacity: 1;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+.quickFlash {
+    -webkit-animation-name: quickFlash;
+    -webkit-animation-duration: 1900ms;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -moz-animation-name: quickFlash;
+    -moz-animation-duration: 1900ms;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+}
+
+.card {
+    border-radius: 20px;
+}
+
+.top-buffer {
+    margin-top: 3px;
+}
+
+body {
+    background-color: rgb(220,220,220);
+}
+.bg-white {
+    background-color: rgb(220,220,220) !important;
+}
+
+
+/*--Popular--------------------------------------------------------------------------*/
+
+.card-popular {
+    background-color: rgb(236, 242, 249);
+    font-size: medium;    
+}
+
+/*@media only screen and (max-width: 1000px) {
+    .card-popular {
+        display: none
+    }
+}
+*/
+
+#popular > thead {
+    display: none;
+}
+
+#popular > tbody .odd,
+#popular > tbody .odd > .sorting_1 {
+    background-color: transparent;
+}
+
+#popular > tbody .even,
+#popular > tbody .even > .sorting_1 {
+    background-color: transparent;
+}
+
+#popular tbody tr:hover {
+    background-color: rgb(200, 220, 240);
+}
+
+.playTop5 {
+    text-decoration: none;
+    /*cursor: pointer;*/
+    color: black;
+}
+
+.results-href {
+    text-decoration: none;
+    color: black;
+}
+
+#popular {
+    border-bottom: none;
+}
+
+/*--Execute--------------------------------------------------------------------------*/
+
+.card-execute {
+    background-color: rgb(230, 255, 230);
+    
+}
+
+/*--Results--------------------------------------------------------------------------*/
+
+.card-results {
+    background-color: rgb(242, 242, 242);
+}
+
+.col-gap {
+    column-gap: 10px;
+}
+
+/*.dataTables_length {
+    padding-top: 2px;
+}
+*/
+
+.my-dataTable > tbody > tr:nth-child(even of :not(.child)) > td,
+.my-dataTable > tbody > tr:nth-child(even of :not(.child)) + .child > td {
+    background-color: #e0dcdc;
+}
+
+.my-dataTable > tbody > tr:nth-child(odd of :not(.child)) > td,
+.my-dataTable > tbody > tr:nth-child(odd of :not(.child)) + .child > td {
+    background-color: #e7e6e2;
+}
+
+.my-dataTable > tbody th, table.dataTable tbody td {
+    padding: 8px 10px; /* e.g. change 8x to 4px here */
+}
+
+.card-history {
+    background-color: rgb(236, 242, 249);
+}
+
+.historyResults {
+    margin-left: 20px;
+}
+
+.card-logs {
+    background-color: rgb(249, 249, 240);
+}
+
+/* Admin */
+.card-admin {
+    background-color: rgb(230, 255, 230);
+}
+
+.admin-dataTable > tbody > tr:nth-child(even of :not(.child)) > td,
+.admin-dataTable > tbody > tr:nth-child(even of :not(.child)) + .child > td {
+    background-color: rgb(220, 255, 220);
+}
+
+.admin-dataTable > tbody > tr:nth-child(odd of :not(.child)) > td,
+.admin-dataTable > tbody > tr:nth-child(odd of :not(.child)) + .child > td {
+    background-color: rgb(240, 255, 240);
+}
+
+
+.dataTables_wrapper .dataTables_processing {
+    position: absolute;
+    top: 15% !important;
+    background: red;
+    border: 1px solid black;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/*div.dt-processing {
+    background: none;
+    text-indent: -9999px;
+}
+*/
+
+div.dt-processing > div {
+    display: none;
+  
+    background-color: rgba(255,255,255,0.5);
+}
+
+.resultsLabel {
+    margin-bottom:10px;
 }

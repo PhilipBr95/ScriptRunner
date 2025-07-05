@@ -37,6 +37,8 @@ $(document).ready(function () {
     
     var table = $('#history').DataTable({
         "rowId": 'id',
+        processing: true,
+        language: { "processing": '<div class="d-flex justify-content-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>' },
         ajax: { url: "/api/history", dataSrc: "" },
         "columns": [
             {
@@ -44,7 +46,7 @@ $(document).ready(function () {
                 "orderable": false,
                 "data": null,
                 "width": "0px", render: function (data, type, row) {
-                    let url = generateUrl(data);
+                    let url = generateUrlFromScript(data);
 
                     if (url == null)
                         return '';
@@ -105,7 +107,7 @@ $(document).ready(function () {
             }
         ],
         "order": [[6, 'desc']],
-        "pageLength": 25,
+            "pageLength": 25,
         dom: 'frtlip',
         "initComplete": function (settings, json) {
             // Add event listener for opening and closing details
@@ -129,10 +131,11 @@ $(document).ready(function () {
                     var $child = $(format(row.data()));
                     row.child($child).show();
 
-                    var newId = $('#results').length + 1;
-                    var $results = $('#results').clone().appendTo($child).prop('id', 'results' + newId);
-                    
-                    showResults(null, $results, row.data().data, false)
+                    var newId = $('#resultsWrapper').length + 1;
+                    var $results = $('#resultsWrapper').clone().appendTo($child).prop('id', 'results' + newId);
+                    var scriptAndResults = row.data().data;
+
+                    showResults(scriptAndResults, $results, scriptAndResults, false)
 
                     tr.addClass('shown');
 
@@ -145,16 +148,3 @@ $(document).ready(function () {
         }
     });            
 });
-
-function generateUrl(script) {
-    if (script.data != null) {
-        let url = `/?ScriptId=${script.data.id}`;
-    
-        script.data.params?.forEach(el => {
-            let value = $(`#${el.name}`).val();
-            url += `&${el.name}=${encodeURIComponent(el.value)}`;
-        });
-
-        return url;
-    }
-}

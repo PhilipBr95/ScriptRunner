@@ -1,5 +1,5 @@
 ﻿using NuGet.Protocol.Core.Types;
-using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 
 namespace ScriptRunner.Library.Repos
 {

@@ -3,9 +3,25 @@ var selectedScript;
 var tippyInstances = [];
 
 $(document).ready(function () {
+    const displayOptions = getDisplayOptions();
+
+    
     populateTop5();
+
     populateScripts();
 });
+
+function getDisplayOptions() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    //const dd =
+    //{
+    //    ShowTop5 = urlParams.get('HideTop5') ?? false,
+    //    ShowScripts = urlParams.get('HideScripts') ?? false
+    //}
+
+    return 1;
+}
 
 function showToast(message) {
     toastr.options.closeMethod = 'fadeOut';

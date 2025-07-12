@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using NuGet.Protocol.Core.Types;
 using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Repos;
 using ScriptRunner.Library.Services;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 using ScriptRunner.Library.Repos;
 
 namespace ScriptRunner.Library.Services

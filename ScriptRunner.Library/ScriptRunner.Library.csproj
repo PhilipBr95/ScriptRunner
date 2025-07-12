@@ -20,11 +20,11 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Models\NugetPackage.cs">
+	  <Compile Update="Models\Packages\NugetPackage.cs">
 	    <DependentUpon>Models\Package.cs</DependentUpon>
 	  </Compile>
 		
-	  <Compile Update="Models\SqlPackage.cs">	    
+	  <Compile Update="Models\Packages\SqlPackage.cs">	    
 		  <DependentUpon>Models\Package.cs</DependentUpon>
 	  </Compile>
 	</ItemGroup>

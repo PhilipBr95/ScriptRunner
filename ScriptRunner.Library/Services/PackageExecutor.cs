@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using NuGet.Common;
 using NuGet.Packaging;
 using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 using ScriptRunner.Library.Models.Scripts;
 
 namespace ScriptRunner.Library.Services

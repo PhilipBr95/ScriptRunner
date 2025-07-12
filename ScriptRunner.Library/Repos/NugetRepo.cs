@@ -7,6 +7,7 @@ using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Services;
 using ScriptRunner.Library.Settings;

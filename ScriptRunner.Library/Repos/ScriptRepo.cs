@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ScriptRunner.Library.Models;
+using ScriptRunner.Library.Models.Packages;
 using ScriptRunner.Library.Models.Scripts;
 using ScriptRunner.Library.Settings;
 using System.IO.Enumeration;
@@ -73,10 +74,19 @@ namespace ScriptRunner.Library.Repos
         private static async Task<Package> LoadPackage(string configFile)
         {
             var config = await File.ReadAllTextAsync(configFile);
+
+            //TODO - This is a bit of a hack, but we need to deserialize to SqlPackage first
             var package = JsonConvert.DeserializeObject<SqlPackage>(config);
 
             package.ImportedDate ??= new FileInfo(configFile).CreationTime;
             package.Filename = configFile;
+
+            //TODO - A bit of a hack, but check the ConnectionString is good
+            foreach(var script in package.Scripts)
+            {
+                if (script.ScriptType == nameof(SqlScript))
+                    (script as SqlScript)!.ConnectionString ??= package.ConnectionString;
+            }
 
             var extensions = new string[] { "*.sql", "*.ps1" };
             var scriptFiles = Directory.EnumerateFiles(Path.GetDirectoryName(configFile), "*.*", SearchOption.AllDirectories)
@@ -105,8 +115,16 @@ namespace ScriptRunner.Library.Repos
                 }
             }
 
-            package.Scripts = scripts;
-            
+            if (scripts != null && package.Scripts != null)
+            {
+                scripts.AddRange(package.Scripts);
+                package.Scripts = scripts;
+            }
+            else if (scripts != null)
+            {
+                package.Scripts = scripts;
+            }
+
             return package;
         }
 

@@ -1,4 +1,4 @@
-﻿using ScriptRunner.Library.Models;
+﻿using ScriptRunner.Library.Models.Packages;
 
 namespace ScriptRunner.Library.Services
 {

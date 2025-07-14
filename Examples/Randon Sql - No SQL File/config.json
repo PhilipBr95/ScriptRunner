@@ -1,0 +1,36 @@
+{
+	"Id": "SQL.Script - Random SQL - No SQL File",
+	"Version": "1.0.0",
+	"Category": "SQL",
+	"System": "MyApp",
+	"Description": "Randon SQL with No SQL File",
+	"ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
+	"Title": "Randon SQL with No SQL File",
+	"Scripts": [{ "ScriptType": "SqlScript", "Script": "SELECT 1 AS Num"}],
+	"Tags": [
+		"Member",
+		"Name"
+	],
+	"Params": [
+		{
+			"Name": "Name",
+			"Type": "text",
+			"Required": false
+		}
+	],
+	"Options": {
+		"Layout": "mr",
+		"DataTableDom": "t",
+		"Css": [
+			"#resultsTable0 > tbody > tr > td { background-color: orange; cursor: copy; }"
+		],
+		"JQuery": [
+			{
+				"Parent": "#resultsWrapper",
+				"Selector": "#resultsTable0 > tbody > tr > td:nth-child(1)",
+				"Event": "click",
+				"Function": "let $text = $(evt.target).text();  window.copyText($text, `${$text} Copied!`);"
+			}
+		]
+	}
+}

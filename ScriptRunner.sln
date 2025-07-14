@@ -9,6 +9,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScriptRunner.UI", "ScriptRu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BDA3B600-76FE-43F9-994A-553CFFB6CC80}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E8BE1CFF-79B4-4EA3-AF09-33FEE7E2B7A0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Randon Sql - No SQL File", "Randon Sql - No SQL File", "{631331C8-C157-4E56-ABCD-AFD5A07563CD}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\Randon Sql - No SQL File\config.json = Examples\Randon Sql - No SQL File\config.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Randon Sql with button", "Randon Sql with button", "{AEB6D040-1F6E-4732-A3BA-83B0A952A56D}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\Randon Sql with button\config.json = Examples\Randon Sql with button\config.json
+		Examples\Randon Sql with button\Fix1.sql = Examples\Randon Sql with button\Fix1.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +39,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{631331C8-C157-4E56-ABCD-AFD5A07563CD} = {E8BE1CFF-79B4-4EA3-AF09-33FEE7E2B7A0}
+		{AEB6D040-1F6E-4732-A3BA-83B0A952A56D} = {E8BE1CFF-79B4-4EA3-AF09-33FEE7E2B7A0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB258104-CFAA-4343-B5FE-29D068B13CA7}

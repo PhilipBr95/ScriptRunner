@@ -1,0 +1,62 @@
+{
+	"Id": "SQL.Script - Random SQL button",
+	"Version": "1.0.0",
+	"Category": "SQL",
+	"System": "MyApp",
+	"Description": "Randon SQL with button",
+	"ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
+	"Title": "Randon SQL with button",
+	"Tags": [
+		"Member",
+		"Name",
+		"button"
+	],
+	"Params": [
+		{
+			"Name": "Name",
+			"Type": "text",
+			"Required": false
+		}
+	],
+	"Options": {
+		"Layout": "mr",
+		"DataTables": [{
+			"Layout": {
+				"topEnd": {
+					"buttons": [
+						{
+							"extend": "copyHtml5",
+							"text": "<i class='fa-regular fa-copy'></i>",
+							"titleAttr": "Copy"
+						},
+						{
+							"extend": "excelHtml5",
+							"autoFilter": true,
+							"sheetName": "Exported data",
+							"text": "<i class='fa-regular fa-file-excel'></i>",
+							"titleAttr": "Excel"
+						},
+						{
+							"extend": "csvHtml5",
+							"text": "<i class='fa-regular fa-file-text'></i>",
+							"titleAttr": "CSV"
+						}
+					]
+				},
+				"topStart": null
+			}
+		}],
+		"Css": [
+			"#resultsTable0 > tbody > tr > td { background-color: orange; }",
+			"#resultsTable0 > tbody > tr > td:nth-child(1) { cursor: copy; }"
+		],
+		"JQuery": [
+			{
+				"Parent": "#resultsWrapper",
+				"Selector": "#resultsTable0 > tbody > tr > td:nth-child(1)",
+				"Event": "click",
+				"Function": "let $text = $(evt.target).text();  window.copyText($text, `${$text} Copied!`);"
+			}
+		]
+	}
+}

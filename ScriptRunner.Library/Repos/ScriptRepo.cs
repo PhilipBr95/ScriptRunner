@@ -82,7 +82,7 @@ namespace ScriptRunner.Library.Repos
             package.Filename = configFile;
 
             //TODO - A bit of a hack, but check the ConnectionString is good
-            foreach(var script in package.Scripts)
+            foreach(var script in package.Scripts ?? Array.Empty<SimpleScript>())
             {
                 if (script.ScriptType == nameof(SqlScript))
                     (script as SqlScript)!.ConnectionString ??= package.ConnectionString;

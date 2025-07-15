@@ -128,7 +128,7 @@ function showResults(script, $results, packageResult, showResults) {
             $resultsDiv.append(`<table id='${id}' class="resultsTable my-dataTable" style="width:100%"></table>`);
 
             var dataTables = script?.options?.dataTables ?? [];
-            showResultsTable(id, dataTable, dataTables ?? dataTables[tableCount] ?? null);
+            showResultsTable(id, dataTable, dataTables[tableCount] ?? null);
 
             $resultsParent.removeClass('hidden');
 

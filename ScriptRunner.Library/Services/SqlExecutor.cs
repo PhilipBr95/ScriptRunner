@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using NuGet.Common;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 using ScriptRunner.Library.Helpers;
 using ScriptRunner.Library.Models;
 using ScriptRunner.Library.Models.Scripts;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
-using System.Runtime.CompilerServices;
 
 namespace ScriptRunner.Library.Services
 {
@@ -34,15 +33,24 @@ namespace ScriptRunner.Library.Services
                 await conn.OpenAsync();
                 conn.InfoMessage += (sender, e) => messages.Add(e.Message);
 
-                var command = new SqlCommand(sql, conn);
+                Server server = new Server(new ServerConnection(conn));
 
-                var reader = await command.ExecuteReaderAsync();
-
-                while (reader.IsClosed == false && reader.HasRows)
+                //Do we need to record the output
+                if (sqlScript.NoOutput)
                 {
-                    var dataTable = new DataTable();
-                    dataTable.Load(reader);
-                    results.Add(dataTable);
+                    var recordCount = server.ConnectionContext.ExecuteNonQuery(sql);
+                    messages.Add($"{recordCount} records returned");
+                }
+                else
+                {
+                    var reader = server.ConnectionContext.ExecuteReader(sql);
+
+                    while (reader.IsClosed == false && reader.HasRows)
+                    {
+                        var dataTable = new DataTable();
+                        dataTable.Load(reader);
+                        results.Add(dataTable);
+                    }
                 }
 
                 return new ScriptResults { DataTables = results, Messages = messages };

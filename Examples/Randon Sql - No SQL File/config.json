@@ -6,7 +6,7 @@
 	"Description": "Randon SQL with No SQL File",
 	"ConnectionString": "Server=localhost;Database=Test;Trusted_Connection=True;",
 	"Title": "Randon SQL with No SQL File",
-	"Scripts": [{ "ScriptType": "SqlScript", "Script": "SELECT 1 AS Num"}],
+	"Scripts": [{ "ScriptType": "SqlScript", "Script": "SELECT 1 AS Num\r\nGOSELECT 1 AS Num\r\nGO"}],
 	"Tags": [
 		"Member",
 		"Name"

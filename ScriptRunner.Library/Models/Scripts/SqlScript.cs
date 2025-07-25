@@ -12,6 +12,7 @@ namespace ScriptRunner.Library.Models.Scripts
         }
 
         public string ConnectionString { get; set; }
+        public bool NoOutput { get; set; } = false;
 
         public static string Parameterise(string sql, Param[] @params)
         {

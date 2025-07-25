@@ -5,22 +5,26 @@ var tippyInstances = [];
 $(document).ready(function () {
     const displayOptions = getDisplayOptions();
 
-    
-    populateTop5();
+    if (displayOptions.showTop5 === 'false') {
+        $('#popularDiv').hide();
+    }
 
+    if (displayOptions.showScripts === 'false') {
+        $('#executeDiv').hide();
+    }
+
+    populateTop5();
     populateScripts();
 });
 
 function getDisplayOptions() {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search.toLowerCase());
+    console.log(Object.fromEntries(urlParams)) // outputs {foo: '1', bar: '2'}
 
-    //const dd =
-    //{
-    //    ShowTop5 = urlParams.get('HideTop5') ?? false,
-    //    ShowScripts = urlParams.get('HideScripts') ?? false
-    //}
-
-    return 1;
+    return {
+        showTop5: urlParams.get('showtop5') ?? true,
+        showScripts: urlParams.get('showscripts') ?? true
+    }
 }
 
 function showToast(message) {

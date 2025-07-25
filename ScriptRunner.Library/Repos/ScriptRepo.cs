@@ -81,11 +81,16 @@ namespace ScriptRunner.Library.Repos
             package.ImportedDate ??= new FileInfo(configFile).CreationTime;
             package.Filename = configFile;
 
-            //TODO - A bit of a hack, but check the ConnectionString is good
-            foreach(var script in package.Scripts ?? Array.Empty<SimpleScript>())
+            if (package.Scripts is not null)
             {
-                if (script.ScriptType == nameof(SqlScript))
-                    (script as SqlScript)!.ConnectionString ??= package.ConnectionString;
+                foreach (var script in package.Scripts)
+                {
+                    if (!string.IsNullOrWhiteSpace(script.Filename) && File.Exists(script.Filename))
+                        script.Script = File.ReadAllText(script.Filename);
+
+                    if (script.ScriptType == nameof(SqlScript))
+                        (script as SqlScript)!.ConnectionString ??= package.ConnectionString;
+                }
             }
 
             var extensions = new string[] { "*.sql", "*.ps1" };
@@ -124,6 +129,7 @@ namespace ScriptRunner.Library.Repos
             {
                 package.Scripts = scripts;
             }
+            //var ff = JsonConvert.SerializeObject(package, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             return package;
         }

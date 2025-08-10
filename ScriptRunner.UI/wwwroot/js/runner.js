@@ -151,6 +151,7 @@ function showScriptDetails(script) {
 
         $('#execute').addClass('hidden');
         $('#copyScript').addClass('hidden');
+        $('#copyScriptAutoRun').addClass('hidden');
 
         return;
     } else {
@@ -181,6 +182,7 @@ function showScriptDetails(script) {
 
         $('#execute').removeClass('hidden');
         $('#copyScript').removeClass('hidden');
+        $('#copyScriptAutoRun').removeClass('hidden');     
 
         selectedScript = script;
     }
@@ -281,12 +283,35 @@ function showScriptDetails(script) {
         $copyEl.attr("href", href)
     });
 
+    let $copyAutoEl = $("#copyScriptAutoRun");
+    $copyAutoEl.on("mouseenter", async function () {
+        let href = await generateUrlFromInputs(script);
+        href = href + "&showtop5=false&showscripts=false&autoexecute=true"
+
+        $copyAutoEl.attr("href", href)
+    });
+
     $copyEl.off("click");
     $copyEl.on("click", async function (event) {
         event.preventDefault();
 
         try {
             let href = await generateUrlFromInputs(script);
+            window.copyText(href, href, 'copied to clipboard');
+        } catch (err) {
+            alert(err);
+        }
+
+        return false;
+    });
+
+    $copyAutoEl.off("click");
+    $copyAutoEl.on("click", async function (event) {
+        event.preventDefault();
+
+        try {
+            let href = await generateUrlFromInputs(script);
+            href = href + "&showtop5=false&showscripts=false&autoexecute=true"
             window.copyText(href, href, 'copied to clipboard');
         } catch (err) {
             alert(err);
